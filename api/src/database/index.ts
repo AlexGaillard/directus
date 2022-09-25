@@ -10,6 +10,7 @@ import path from 'path';
 import { merge } from 'lodash';
 import { promisify } from 'util';
 import { getHelpers } from './helpers';
+import emitter from '../emitter';
 
 let database: Knex | null = null;
 let inspector: ReturnType<typeof SchemaInspector> | null = null;
@@ -82,7 +83,12 @@ export default function getDatabase(): Knex {
 			deprecate: (msg) => logger.info(msg),
 			debug: (msg) => logger.debug(msg),
 		},
-		pool: poolConfig,
+		pool: {
+			afterCreate: async function (conn: any, callback: any) {
+				await emitter.emitInit('app.afterCreate', { conn });
+				callback(null, conn);
+			},
+		},
 	};
 
 	if (client === 'sqlite3') {
