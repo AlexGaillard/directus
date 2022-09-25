@@ -86,6 +86,22 @@ export default function getDatabase(): Knex {
 		pool: {
 			afterCreate: async function (conn: any, callback: any) {
 				await emitter.emitInit('app.afterCreate', { conn });
+
+				if (client === 'sqlite3') {
+					logger.trace('Enabling SQLite Foreign Keys support...');
+
+					const run = promisify(conn.run.bind(conn));
+					await run('PRAGMA foreign_keys = ON');
+				}
+
+				if (client === 'cockroachdb') {
+					logger.trace('Setting CRDB serial_normalization and default_int_size');
+					const run = promisify(conn.query.bind(conn));
+
+					await run('SET serial_normalization = "sql_sequence"');
+					await run('SET default_int_size = 4');
+				}
+
 				callback(null, conn);
 			},
 		},
@@ -93,27 +109,6 @@ export default function getDatabase(): Knex {
 
 	if (client === 'sqlite3') {
 		knexConfig.useNullAsDefault = true;
-
-		poolConfig.afterCreate = async (conn: any, callback: any) => {
-			logger.trace('Enabling SQLite Foreign Keys support...');
-
-			const run = promisify(conn.run.bind(conn));
-			await run('PRAGMA foreign_keys = ON');
-
-			callback(null, conn);
-		};
-	}
-
-	if (client === 'cockroachdb') {
-		poolConfig.afterCreate = async (conn: any, callback: any) => {
-			logger.trace('Setting CRDB serial_normalization and default_int_size');
-			const run = promisify(conn.query.bind(conn));
-
-			await run('SET serial_normalization = "sql_sequence"');
-			await run('SET default_int_size = 4');
-
-			callback(null, conn);
-		};
 	}
 
 	if (client === 'mssql') {
