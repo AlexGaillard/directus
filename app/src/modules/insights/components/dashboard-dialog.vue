@@ -1,12 +1,20 @@
 <script setup lang="ts">
+import { isEqual } from 'lodash';
+import { computed, reactive, ref, watch } from 'vue';
 import api from '@/api';
+import VButton from '@/components/v-button.vue';
+import VCardActions from '@/components/v-card-actions.vue';
+import VCardText from '@/components/v-card-text.vue';
+import VCardTitle from '@/components/v-card-title.vue';
+import VCard from '@/components/v-card.vue';
+import VDialog from '@/components/v-dialog.vue';
+import VInput from '@/components/v-input.vue';
+import InterfaceSelectColor from '@/interfaces/select-color/select-color.vue';
+import InterfaceSelectIcon from '@/interfaces/select-icon/select-icon.vue';
 import { router } from '@/router';
 import { useInsightsStore } from '@/stores/insights';
 import { Dashboard } from '@/types/insights';
 import { unexpectedError } from '@/utils/unexpected-error';
-import { isEqual } from 'lodash';
-import { reactive, ref, watch } from 'vue';
-import { useI18n } from 'vue-i18n';
 
 const props = defineProps<{
 	modelValue?: boolean;
@@ -17,8 +25,6 @@ const emit = defineEmits<{
 	(e: 'update:modelValue', value: boolean): void;
 }>();
 
-const { t } = useI18n();
-
 const insightsStore = useInsightsStore();
 
 const values = reactive({
@@ -27,6 +33,8 @@ const values = reactive({
 	color: props.dashboard?.color ?? null,
 	note: props.dashboard?.note ?? null,
 });
+
+const isSaveDisabled = computed(() => !values.name);
 
 watch(
 	() => props.modelValue,
@@ -47,6 +55,8 @@ function cancel() {
 }
 
 async function save() {
+	if (isSaveDisabled.value || saving.value) return;
+
 	saving.value = true;
 
 	try {
@@ -69,41 +79,47 @@ async function save() {
 </script>
 
 <template>
-	<v-dialog :model-value="modelValue" persistent @update:model-value="$emit('update:modelValue', $event)" @esc="cancel">
+	<VDialog
+		:model-value="modelValue"
+		persistent
+		@update:model-value="$emit('update:modelValue', $event)"
+		@esc="cancel"
+		@apply="save"
+	>
 		<template #activator="slotBinding">
 			<slot name="activator" v-bind="slotBinding" />
 		</template>
 
-		<v-card>
-			<v-card-title v-if="!dashboard">{{ t('create_dashboard') }}</v-card-title>
-			<v-card-title v-else>{{ t('edit_dashboard') }}</v-card-title>
+		<VCard>
+			<VCardTitle v-if="!dashboard">{{ $t('create_dashboard') }}</VCardTitle>
+			<VCardTitle v-else>{{ $t('edit_dashboard') }}</VCardTitle>
 
-			<v-card-text>
+			<VCardText>
 				<div class="fields">
-					<v-input v-model="values.name" class="full" autofocus :placeholder="t('dashboard_name')" />
-					<interface-select-icon :value="values.icon" @input="values.icon = $event" />
-					<interface-select-color width="half" :value="values.color" @input="values.color = $event" />
-					<v-input v-model="values.note" class="full" :placeholder="t('note')" />
+					<VInput v-model="values.name" class="full" autofocus :placeholder="$t('dashboard_name')" />
+					<InterfaceSelectIcon :value="values.icon" @input="values.icon = $event" />
+					<InterfaceSelectColor width="half" :value="values.color" @input="values.color = $event" />
+					<VInput v-model="values.note" class="full" :placeholder="$t('note')" />
 				</div>
-			</v-card-text>
+			</VCardText>
 
-			<v-card-actions>
-				<v-button secondary @click="cancel">
-					{{ t('cancel') }}
-				</v-button>
-				<v-button :disabled="!values.name" :loading="saving" @click="save">
-					{{ t('save') }}
-				</v-button>
-			</v-card-actions>
-		</v-card>
-	</v-dialog>
+			<VCardActions>
+				<VButton secondary @click="cancel">
+					{{ $t('cancel') }}
+				</VButton>
+				<VButton :disabled="isSaveDisabled" :loading="saving" @click="save">
+					{{ $t('save') }}
+				</VButton>
+			</VCardActions>
+		</VCard>
+	</VDialog>
 </template>
 
 <style scoped>
 .fields {
 	display: grid;
 	grid-template-columns: 1fr 1fr;
-	gap: 12px;
+	gap: 0.6875rem;
 }
 
 .full {

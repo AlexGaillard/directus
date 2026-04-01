@@ -20,6 +20,8 @@
 #'SIMD', 'ArrayBuffer', 'DataView', 'JSON', 'Promise', 'Generator', 'GeneratorFunction', 'Reflect',
 #'Proxy', 'Intl'
 about: حول
+first_name: الاسم الأول
+last_name: الاسم الأخير
 identifier: المعرِّف
 avatar: الصورة الرمزية
 application: التطبيق
@@ -30,6 +32,7 @@ draft: مسوّدة
 archived: مؤرشف
 marketplace: المتجر
 extensions: الإضافات
+skip_link_main: تخطي إلى المحتوى الرئيسي
 modules: الوحدات
 module_bar: شريط الوحدة
 logs: السجلات
@@ -132,7 +135,6 @@ create_policy: إنشاء سياسة
 create_user: إضافة مستخدم
 message: الرسالة
 delete_panel: حذف لوحة
-create_webhook: إنشاء Webhook
 create_custom_translation: إنشاء ترجمة مخصصة
 edit_custom_translation: تعديل ترجمة مخصصة
 no_custom_translations: لا توجد ترجمات مخصصة
@@ -164,19 +166,9 @@ rename_version: إعادة تسمية الإصدار
 compare_version: مقارنة الإصدار
 save_version: حفظ الإصدار
 promote_version: تحديث الإصدار
-promote_version_disabled: لا يوجد تغييرات
-promote_version_drawer_title: تحديث الإصدار {version} إلى الإصدار الرئيس
-promote_version_changes: التغييرات
-promote_version_preview: معاينة
-outdated_notice: >-
-  تم تحديث العنصر الرئيس منذ إنشاء هذا الإصدار. يرجى مراجعة جميع قيم الحقول أدناه، وتأكيد الإصدار الذي يجب استخدامه عند تحديث هذا الإصدار إلى العنصر الرئيس.
-promote_notice: >-
-  يرجى مراجعة جميع قيم الحقول أدناه، وتأكيد الإصدار الذي يجب استخدامه عند تحديث هذا الإصدار إلى العنصر الرئيس.
 delete_version: حذف الإصدار
 delete_version_copy: >-
   هل أنت متأكد من أنك تريد حذف الإصدار "{version}"؟ لا يمكن التراجع عن هذا الإجراء.
-delete_on_promote_copy: >-
-  هل تريد حذف أو الإبقاء على الإصدار "{version}" بعد التحديث؟
 reset_bookmark: إعادة تعيين المفضلة
 update_bookmark: تحديث المفضلة
 delete_bookmark: حذف إشارة مرجعية
@@ -261,6 +253,7 @@ field_validation: مجال المصادقة
 field_presets: الإعداد المسبق للحقل
 permissions_for_role: 'عناصر الدور {role} يمكن أن {action}.'
 fields_for_role: 'عناصر الدور {role} يمكن أن {action}.'
+fields_for_policy: '.'
 validation_for_role: 'الحقل {action} قواعد الدور {role} يجب أن يطيع.'
 presets_for_role: 'قيمة الحقل الافتراضية لدور {role}.'
 presets_field_warning: 'يجب تكوين قوالب الإعدادات للعلاقات للحقل "{field}" بالشكل "التفصيلي".'
@@ -312,7 +305,6 @@ field_in_collection: '{field} ({collection})'
 reset_page_preferences: إعادة ضبط الإعدادات المفضّلة للتطبيقات
 hidden_field: حقل مخفي
 hidden_on_detail: مخفي في التفاصيل
-disabled_editing_value: تعطيل قيمة التحرير
 key: مفتاح
 alias: اسم مستعار
 bigInteger: عدد صحيح كبير
@@ -442,11 +434,11 @@ confirm_revert_body: سيؤدي هذا إلى إعادة العنصر إلى ا�
 display: عرض
 settings_update_success: تم تحديث الإعدادات
 title: العنوان
+subtitle: الترجمة
 revision_delta_created: تم الإنشاء
 revision_delta_created_externally: تم إنشاؤها خارجيا
 revision_delta_updated: 'تم تحديث حقل واحد | تحديث حقول {count}'
 revision_delta_deleted: حذف
-revision_delta_version_saved: 'تم حفظ الإصدار (تم تحديث حقل واحد) | تم حفظ الإصدار (تم تحديث {count} حقول)'
 revision_delta_reverted: تمت الإستعادة
 revision_delta_update_message: تم تحديث هذا الحقل ولكن يتم إخفاء قيمته لأسباب أمنية.
 revision_delta_other: تنقيح
@@ -469,6 +461,8 @@ related_collection: مجموعة ذات صلة
 related_collections: مجموعات ذات صلة
 translations_collection: مجموعة الترجمة
 languages_collection: مجموعة اللغات
+translations_preview_collections: مجموعات
+translations_preview_fields: حقول
 import_data_input_placeholder: CSV أو JSON...
 import_data_button: بدء الاستيراد
 import_data_indeterminate: استيراد البيانات...
@@ -518,6 +512,11 @@ hours: ساعات
 month: شهر
 year: سنة
 select_all: تحديد الكل
+permissionsLevel:
+  all: يمكن ال{action} بشكل كامل
+  partial: يمكن ال{action} بشكل جزئي
+  custom: يمكن ال{action} بشكل مخصص
+  none: لا يمكن ال{action}
 months:
   january: يناير
   february: فبراير
@@ -626,12 +625,6 @@ file_count: 'لايوجد دور أو صلاحية | دور أو صلاحية و
 no_files_copy: لا توجد ملفات هنا.
 user_count: 'لا توجد عناصر | عنصر واحد | {count} العناصر'
 no_users_copy: لا يوجد مستخدمون في هذه التجزئة.
-webhooks_count: 'لاتوجد روابط ويب | رابط ويب | {count} روابط ويب'
-webhooks_deprecation_notice: |
-  تم إهمال خُطافات الويب (Webhooks) ولا يُنصح باستخدامها مرة أخرى.
-
-  رجاءًا استخدم **Flows** مع عملية [Webhook / Request URL operation] (https://docs.directus.io/app/flows/operations.html#webhook-request-url) بدلاً من ذلك.
-no_webhooks_copy: لم يتم تكوين أي خطاف ويب بعد. إبدأ بإنشاء واحد أدناه.
 no_notifications: لا توجد إشعارات
 no_notifications_copy: لقد وصلت إلى المدخل الأخير!
 activity_log: سجل الأنشطة
@@ -662,7 +655,6 @@ action: الإجراء
 ip_address: عنوان IP
 user_agent: وكيل المستخدم
 origin: الأصل
-webhooks: روابط الويب (Webhooks)
 decimals: الأعداد العشرية
 value_decimals: القيمة العشرية
 min_value: أدنى قيمة
@@ -746,7 +738,6 @@ errors:
   VALUE_OUT_OF_RANGE: القيمة خارج النطاق
   VALUE_TOO_LONG: الاسم طويل جدا
 security: الأمان
-value_hashed: تم تجزئة القيمة بشكل آمن
 bookmark_name: اسم الإشارة المرجعية...
 create_bookmark: إنشاء إشارة مرجعية
 edit_bookmark: تحرير الإشارة المرجعية
@@ -762,7 +753,6 @@ unexpected_error_copy: حدث خطأ غير متوقع. يرجى المحاول�
 copy_details: نسخ التفاصيل
 no_app_access: لا توجد صلاحيه للوصول
 no_app_access_copy: هذا المستخدم غير مسموح له باستخدام تطبيق المدير.
-password_reset_sent: إذا كان لديك حساب، فقد أرسلنا لك رابط آمن لإعادة تعيين كلمة المرور الخاصة بك
 password_reset_successful: تم إعادة تعيين كلمة المرور بنجاح
 back: رجوع
 filter: فلترة
@@ -783,6 +773,8 @@ make_collection_hidden: جعل المجموعة مخفية
 make_folder_visible: جعل المجلد مرئي
 make_folder_hidden: جعل المجلد مخفي
 goto_collection_content: عرض المحتوى
+count_of_total_items: '{count} من {total} عنصر'
+start_end_of_count_items: '{start}-{end} من {count} عنصر'
 delete_collection_are_you_sure: >-
   هل أنت متيقِّن من أنك تريد حذف المجموعة"{collection}"؟ سيؤدي هذا إلى حذف المجموعة وجميع العناصر فيها. وهذا الإجراء دائم الأثر.
 delete_folder_are_you_sure: هل أنت متيقِّن من أنك تريد حذف المجلد"{folder}"؟ سيتم نقل المجلدات والمجموعات المتفرعة منه إلى أعلى مستوى.
@@ -875,6 +867,7 @@ create_item: أنشئ عنصر
 display_template: عرض القالب
 language_display_template: قالب عرض اللغة
 translations_display_template: قالب عرض الترجمات
+n_items_selected: 'لم يتم تحديد عناصر | عنصر واحد محدد | {n} عناصر محددة'
 per_page: لكل صفحة
 all_files: '‮كل الملفات'
 my_files: ملفاتي
@@ -918,13 +911,10 @@ label: تسمية
 flows: التدفقات
 flow: التدفق
 select_a_flow: حدد تدفق
-run_flow_confirm: هل أنت متأكد من أنك تريد تنفيذ هذا التدفق؟
 run_flow_on_current_collection: تشغيل التدفق على المجموعة الحالية
 run_flow_on_current: تشغيل التدفق على العنصر الحالي
-run_flow_on_current_edited_confirm: قد يتم تحديث هذا العنصر بواسطة هذا التدفق، هل أنت متيقِّن من أنك تريد تنفيذه؟
 run_flow_on_selected: حدد عنصر واحد أو أكثر أولاً | تشغيل العملية على عنصر واحد محدد | تشغيل العملية على {n} عناصر محددة
 run_flow: تشغيل التدفق
-run_flow_success: تدفق "{flow}" تم بنجاح
 field_name_placeholder: أدخل اسم الحقل...
 field_key_placeholder: أدخل مفتاح الحقل...
 trigger: المحفز
@@ -962,6 +952,15 @@ operation_key_unique_error: مفاتيح العملية يجب أن تكون ف�
 operation_handle_resolve: 'الحل: أنقر للإضافة أو سحب لإعادة التوجيه'
 operation_handle_reject: 'الرفض: أنقر للإضافة أو سحب لإعادة التوجيه'
 insights: بصائر
+deployment:
+  provider:
+    settings:
+      delete_confirm: هذا الإجراء دائم ولا يمكن التراجع عنه. هل أنت متأكد من رغبتك في المتابعة؟
+    run:
+      cancel_confirm: هذا الإجراء دائم ولا يمكن التراجع عنه. هل أنت متأكد من رغبتك في المتابعة؟
+      log_all: جميع مستويات السجل
+  target_value:
+    preview: معاينة
 dashboard: لوحة التحكم
 panel: لوحة
 panel_options: خيارات اللوحة
@@ -1094,7 +1093,6 @@ settings_roles: أدوار المستخدم
 settings_permissions: سياسات الوصول
 settings_project: إعدادات
 settings_appearance: المظهر
-settings_webhooks: روابط الويب (Webhooks)
 settings_flows: التدفقات
 settings_system_logs: سجلات النظام
 settings_presets: محفوظات
@@ -1122,44 +1120,6 @@ discard_changes_copy: هل أنت متيقِّن من أنك تريد تجاهل
 show_x_axis: إظهار المحور X
 show_y_axis: إظهار المحور Y
 keep_editing: استمر في التحرير
-page_help_collections_overview: '**نظرة عامة للمجموعات** - قائمة بجميع المجموعات التي لديك حق الوصول إليها.'
-page_help_collections_collection: >-
-  **استعراض العناصر** — قائمة بجميع عناصر {collection} التي لديك حق الوصول إليها. تخصيص نموذج العرض، التصفية، والترتيب لتصميم العرض الخاص بك، وحتى حفظ الإشارات المرجعية لهذه الإعدادات المختلفة للوصول السريع.
-page_help_collections_item: >-
-  **تفاصيل العنصر** - نموذج لمشاهدة وإدارة هذا العنصر. يحتوي هذا الشريط الجانبي أيضا على سجل كامل من التنقيحات، والتعليقات.
-page_help_activity_collection: >-
-  **تصفح النشاط** - قائمة شاملة لجميع انشطة النظام و المحتوى للمستخدم.
-page_help_docs_global: >-
-  **عرض عام للوثائق** - وثائق مصممة خصيصا لنسخة هذا المشروع ومخططه.
-page_help_files_collection: >-
-  **مكتبة الملفات** - قائمة جميع أصول الملفات التي تم تحميلها إلى هذا المشروع. تخصيص نموذج العرض، التصفية، والترتيب لتصميم العرض الخاص بك، وحتى حفظ الإشارات المرجعية لهذه الإعدادات المختلفة للوصول السريع.
-page_help_files_item: >-
-  **تفاصيل الملف** - نموذج لإدارة بيانات التعريف للملفات، تحرير الملف الأصلي، وتحديث إعدادات الوصول.
-page_help_settings_project: "**الإعدادات** — خيارات التكوين العالمي لمشروعك."
-page_help_settings_appearance: "**المظهر** — مظهر مشروعك وخيارات السمات."
-page_help_settings_extensions: '**الإضافات** - الإضافات المثبتة في مشروعك.'
-page_help_settings_datamodel_collections: >-
-  **نموذج البيانات: المجموعات** - قوائم جميع المجموعات المتاحة. ويشمل ذلك مجموعات النظام المرئية والمخفية، فضلا عن جداول قواعد البيانات غير المدارة التي يمكن إضافتها.
-page_help_settings_datamodel_fields: >-
-  **نموذج البيانات: المجموعة** - نموذج لإدارة هذه المجموعة وحقولها.
-page_help_settings_roles_item: "**تفاصيل الدور** - إدارة أذونات الدور والإعدادات الأخرى."
-page_help_settings_presets_collection: >-
-  **استعراض الإعدادات المسبقة** - عرض جميع الإعدادات المسبقة في المشروع، بما في ذلك: المستخدم، الدور، الإشارات المرجعية العالمية، فضلا عن نماذج عروض الافتراضية.
-page_help_settings_presets_item: >-
-  **تفاصيل الإعداد المسبق** - نموذج لإدارة الإشارات المرجعية والضبط المسبق الافتراضي للمجموعات.
-page_help_settings_webhooks_collection: '**تصفح Webhooks** - عرض جميع webhooks داخل المشروع.'
-page_help_settings_webhooks_item: '**تفاصيل Webhook ** - نموذج لإنشاء وإدارة webhook للمشروع.'
-page_help_settings_flows_collection: '**تصفح التدفقات** - عرض جميع التدفقات داخل المشروع.'
-page_help_settings_flows_item: '**تفاصيل التدفق** - مساحة عمل لإدارة عملية واحدة أو أكثر.'
-page_help_settings_translations_collection: '**تصفح الترجمات المخصصة** - يدرج جميع الترجمات المخصصة داخل المشروع.'
-page_help_settings_translations_item: '**تفاصيل الترجمات المخصصة** - نموذج لعرض وإدارة هذا العنصر.'
-page_help_users_collection: '**دليل المستخدم** - يعرض جميع مستخدمي النظام داخل هذا المشروع.'
-page_help_users_item: >-
-  **تفاصيل المستخدم** - إدارة معلومات حسابك، أو عرض تفاصيل المستخدمين الآخرين.
-page_help_insights_overview: '**البصائر** - قائمة لوحات التحكم التي لديك حق الوصول إليها.'
-page_help_insights_dashboard: '**لوحة البيانات** - مساحة العمل لإدارة لوحة واحدة أو أكثر'
-page_help_marketplace_account: '**الحساب** - ناشر أو مشرف امتداد منشور.'
-page_help_marketplace_registry: '**السجل** - الإضافات المتاحة في سوق Directus.'
 activity_feed: موجز النشاط
 add_new: إضافة جديدة
 create_new: أنشئ جديد
@@ -1185,7 +1145,6 @@ directus_collection:
   directus_dashboards: لوحات التحكم داخل وحدة البصائر
   directus_fields: تكوين وبيانات الحقل الإضافي الوصفية
   directus_files: البيانات الوصفية لجميع أصول الملفات المدارة
-  directus_flows: تدفقات الأتمتة
   directus_folders: يوفر مجلدات افتراضية للملفات
   directus_migrations: ما هي نسخة قاعدة البيانات التي تستخدمها
   directus_notifications: الإشعارات المرسلة إلى المستخدمين
@@ -1199,7 +1158,6 @@ directus_collection:
   directus_settings: خيارات تكوين المشروع
   directus_shares: تتبع العناصر المشتركة خارجيًا
   directus_users: مستخدمي النظام للمنصة
-  directus_webhooks: إعدادات لطلبات HTTP المستندة إلى الأحداث
   directus_translations: ترجمات مخصصة
   directus_extensions: إعدادات الإضافات
 fields:
@@ -1271,6 +1229,7 @@ fields:
     status: حالة
     status_draft: مسوّدة
     status_invited: مَدعُوّ
+    status_unverified: غير مؤكد
     status_active: مفعل
     status_suspended: معلّق
     status_archived: مؤرشف
@@ -1333,6 +1292,7 @@ fields:
     public_registration_email_filter_note: فقط عناوين البريد الإلكتروني المطابقة لهذا الفلتر تستطيع التسجيل.
     public_registration_verify_email: تحقق من البريد الإلكتروني
     public_registration_verify_email_note: يرسل رسالة بريد إلكتروني إلى المستخدم المسجل يطلب منه النقر على رابط التحقق قبل أن يتمكن من تسجيل الدخول.
+    ai_header_name: الترويسة
   directus_shares:
     name: الاسم
     role: الدور
@@ -1362,18 +1322,6 @@ fields:
     admin_access: وصول المسؤول
     ip_access: الوصول إلى IP
     enforce_tfa: يتطلب التحقق بخطوتين 2FA
-  directus_webhooks:
-    name: الاسم
-    method: الطريقة
-    status: حالة
-    data: البيانات
-    header: الترويسة
-    value: قيمة
-    headers: ترويسات الطلب
-    data_label: إرسال بيانات الحدث
-    triggers: المحفزات
-    actions: الإجراءات
-    collections: مجموعات
 field_options:
   directus_settings:
     project_name_placeholder: مشروعي...
@@ -1462,18 +1410,6 @@ field_options:
     status_dropdown_suspended: معلّق
     status_dropdown_archived: مؤرشف
     token: أدخل رمز الوصول الآمن...
-  directus_webhooks:
-    status_options_active: مفعل
-    status_options_inactive: غير نشط
-    data_label: إرسال بيانات الحدث
-    triggers_divider: المحفزات
-    actions_create: انشاء
-    actions_update: تحديث
-    actions_delete: حذف
-    actions_login: تسجيل الدخول
-    headers:
-      header: الترويسة
-      value: قيمة
 no_fields_in_collection: 'لا توجد حقول في "{collection}" حتى الآن'
 no_value: لا توجد قيمة
 do_nothing: لا تفعل شيئا
@@ -1493,10 +1429,32 @@ live_preview:
   new_window: فتح في نافذة جديدة
   close_window: فتح في وضع العرض المقسم
   toggle_3d: تفعيل وضع ثلاثي الأبعاد
+  display_options: خيارات العرض
 shares: مشاركات
 unlimited_usage: استخدام غير محدود
 no_shares: لا توجد مشاركات لإظهارها
 new_share: مشاركة جديدة
+ai:
+  input: إدخال
+  unknown: غير معروف
+  items: العناصر
+  content: المحتوى
+  settings: إعدادات
+  tool_approval:
+    disabled: مُعطل
+  ask_user_submit: إرسال
+  ask_user_next: التالي
+ai_tools:
+  items: العناصر
+  files: الملفات
+  folders: المجلدات
+  flows: التدفقات
+  operations: عمليات
+  schema: مخطط
+  collections: مجموعات
+  fields: حقول
+mcp_prompts_collection_schema:
+  messages_role_user: مستخدم
 expired: منتهية الصلاحية
 upcoming: القادم
 share: مشاركة
@@ -1526,7 +1484,6 @@ choose_action: اختر الإجراء
 continue_label: متابعة
 editing_role: 'دور {role}'
 no_permissions: لا توجد أذونات
-creating_webhook: إنشاء Webhook
 default_label: الافتراضي
 delete_label: حذف
 delete_are_you_sure: >-
@@ -1571,6 +1528,7 @@ authenticated: مصادق
 options: خيارات
 otp: كلمة السر لمرة واحدة OTP
 password: كلمة المرور
+confirm_password: تأكيد كلمة المرور
 permissions: أذونات
 relationship: العلاقة
 reset: إعادة تعيين
@@ -1611,7 +1569,6 @@ translation_placeholder: أدخل ترجمة...
 value: قيمة
 view_project: عرض المشروع
 report_error: الإبلاغ عن خطأ
-start: إبدأ
 table: الجدول
 list: قائمة
 search_filter: البحث والتصفية
@@ -1654,8 +1611,7 @@ interfaces:
     accordion_mode: قائمة منسدلة
     max_one_section_open: قسم واحد مفتوح كحد أقصى
   presentation-links:
-    presentation-links: روابط على شكل زر
-    links: روابط
+    presentation-links: أزرار
     style: النمط
     primary: الأساسي
     link: روابط
@@ -1715,6 +1671,7 @@ interfaces:
     choices_placeholder: أضف خيار جديد
     allow_other: السماح لآخرين
     allow_other_label: السماح بقيم أخرى
+    allow_none: السماح باختيار لا شيء
     allow_none_label: لا يسمح بتحديد
     choices_name_placeholder: أدخل اسم...
     choices_value_placeholder: أدخل قيمة...
@@ -1937,6 +1894,9 @@ interfaces:
     header_icon: أيقونة الرأس
   system-token:
     system-token: الرمز المميز
+  header:
+    header: الترويسة
+    links: روابط
 displays:
   translations:
     translations: الترجمة
@@ -2042,6 +2002,7 @@ layouts:
   kanban:
     advanced: متقدم
 both: كل منهما
+start: إبدأ
 panels:
   label:
     name: تسمية
@@ -2151,3 +2112,4 @@ export_dashboard: تصدير لوحة التحكم
 duplicate_dashboard: تكرار لوحة التحكم
 search_flow: ابحث في التدفق...
 percent: النسبة المئوية
+set_to_now: اضبط على الآن

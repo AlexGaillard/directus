@@ -1,10 +1,14 @@
 <script setup lang="ts">
+import dompurify from 'dompurify';
+import { computed, onMounted, onUnmounted, ref, watch } from 'vue';
+import FieldListItem from './FieldListItem.vue';
+import { FieldTree } from './types';
+import VIcon from '@/components/v-icon/v-icon.vue';
+import VInput from '@/components/v-input.vue';
+import VList from '@/components/v-list.vue';
+import VMenu from '@/components/v-menu.vue';
 import type { FieldNode } from '@/composables/use-field-tree';
 import { flattenFieldGroups } from '@/utils/flatten-field-groups';
-import { computed, onMounted, onUnmounted, ref, watch } from 'vue';
-import FieldListItem from './field-list-item.vue';
-import { FieldTree } from './types';
-import dompurify from 'dompurify';
 
 const props = withDefaults(
 	defineProps<{
@@ -61,26 +65,20 @@ function onInput() {
 
 function onClick(event: MouseEvent) {
 	const target = event.target as HTMLElement;
-
 	if (target.tagName.toLowerCase() !== 'button') return;
-
-	const field = target.dataset.field;
-	emit('update:modelValue', props.modelValue?.replace(`{{${field}}}`, ''));
-
-	const before = target.previousElementSibling;
-	const after = target.nextElementSibling;
-
-	if (!before || !after || !(before instanceof HTMLElement) || !(after instanceof HTMLElement)) return;
-
-	target.remove();
-	joinElements(before, after);
-	window.getSelection()?.removeAllRanges();
-	onInput();
+	removeField(target);
 }
 
 function onKeyDown(event: KeyboardEvent) {
-	if (event.key === 'Enter') {
+	const target = event.currentTarget as HTMLElement;
+	const isButton = target?.tagName.toLowerCase() !== 'button';
+
+	if (!isButton && event.key === 'Enter') {
 		event.preventDefault();
+	}
+
+	if (isButton && ['Enter', ' '].includes(event.key)) {
+		removeField(target);
 	}
 
 	if (event.key === '{' || event.key === '}') {
@@ -134,6 +132,7 @@ function addField(field: FieldTree) {
 	const button = document.createElement('button');
 	button.dataset.field = field.key;
 	button.setAttribute('contenteditable', 'false');
+	button.classList.add('selected-field');
 	button.innerText = String(field.name);
 
 	if (window.getSelection()?.rangeCount == 0) {
@@ -159,6 +158,23 @@ function addField(field: FieldTree) {
 	}
 
 	onInput();
+}
+
+function removeField(target: HTMLElement) {
+	const field = target.dataset.field;
+	emit('update:modelValue', props.modelValue?.replace(`{{${field}}}`, ''));
+
+	const before = target.previousElementSibling;
+	const after = target.nextElementSibling;
+
+	if (!before || !after || !(before instanceof HTMLElement) || !(after instanceof HTMLElement)) return;
+
+	target.remove();
+	joinElements(before, after);
+	window.getSelection()?.removeAllRanges();
+	onInput();
+
+	contentEl.value?.focus();
 }
 
 function findTree(tree: FieldTree[] | undefined, fieldSections: string[]): FieldTree | undefined {
@@ -248,24 +264,24 @@ function setContent() {
 
 				if (!field) return '';
 
-				return `<button contenteditable="false" data-field="${fieldKey}" ${props.disabled ? 'disabled' : ''}>${
-					field.name
-				}</button>`;
+				return `<button type="button" contenteditable="false" data-field="${fieldKey}" ${
+					props.disabled ? 'disabled' : ''
+				} class="selected-field">${field.name}</button>`;
 			})
 			.join('');
 
 		contentEl.value.innerHTML = dompurify.sanitize(newInnerHTML, {
 			ALLOWED_TAGS: ['span', 'button'],
-			ALLOWED_ATTR: ['contenteditable', 'data-field', 'disabled', 'class'],
+			ALLOWED_ATTR: ['type', 'contenteditable', 'data-field', 'disabled', 'class'],
 		});
 	}
 }
 </script>
 
 <template>
-	<v-menu v-model="menuActive" attached>
+	<VMenu v-model="menuActive" attached>
 		<template #activator="{ toggle }">
-			<v-input :disabled="disabled">
+			<VInput :disabled="disabled">
 				<template #input>
 					<span
 						ref="contentEl"
@@ -281,61 +297,61 @@ function setContent() {
 				</template>
 
 				<template #append>
-					<v-icon name="add_box" outline clickable :disabled="disabled" @click="toggle" />
+					<VIcon name="add_box" outline clickable :disabled="disabled" @click="toggle" />
 				</template>
-			</v-input>
+			</VInput>
 		</template>
 
-		<v-list v-if="!disabled" :mandatory="false" @toggle="loadPathLevel?.($event.value)">
-			<field-list-item v-for="field in tree" :key="field.field" :field="field" :depth="depth" @add="addField" />
-		</v-list>
-	</v-menu>
+		<VList v-if="!disabled" :mandatory="false" @toggle="loadPathLevel?.($event.value)">
+			<FieldListItem v-for="field in tree" :key="field.field" :field="field" :depth="depth" @add="addField" />
+		</VList>
+	</VMenu>
 </template>
 
 <style scoped lang="scss">
 .content {
 	display: block;
 	flex-grow: 1;
-	height: 100%;
+	block-size: 100%;
 	padding: var(--theme--form--field--input--padding) 0;
 	overflow: hidden;
-	font-size: 14px;
+	font-size: 0.8125rem;
 	font-family: var(--theme--fonts--monospace--font-family);
 	white-space: nowrap;
 
 	:deep(span) {
-		min-width: 1px;
-		min-height: 1em;
+		min-inline-size: 0.0625rem;
+		min-block-size: 1em;
 		white-space: pre;
 	}
-}
 
-:deep(br) {
-	display: none;
-}
+	:deep(br) {
+		display: none;
+	}
 
-:deep(button) {
-	margin: -1px 4px 0;
-	padding: 2px 4px 0;
-	color: var(--theme--primary);
-	background-color: var(--theme--primary-background);
-	border-radius: var(--theme--border-radius);
-	transition: var(--fast) var(--transition);
-	transition-property: background-color, color;
-	user-select: none;
-}
+	:deep(.selected-field) {
+		margin: -0.0625rem 0.25rem 0;
+		padding: 0.125rem 0.25rem 0;
+		color: var(--theme--primary);
+		background-color: var(--theme--primary-background);
+		border-radius: var(--theme--border-radius);
+		transition: var(--fast) var(--transition);
+		transition-property: background-color, color;
+	}
 
-:deep(button:not(:disabled):hover) {
-	color: var(--white);
-	background-color: var(--theme--danger);
+	:deep(.selected-field:not(:disabled):hover) {
+		color: var(--white);
+		background-color: var(--theme--danger);
+	}
 }
 
 .placeholder {
 	position: absolute;
-	top: 50%;
-	left: 14px;
+	inset-block-start: 50%;
+	inset-inline-start: 0.8125rem;
 	color: var(--theme--foreground-subdued);
 	transform: translateY(-50%);
+	-webkit-user-select: none;
 	user-select: none;
 	pointer-events: none;
 }

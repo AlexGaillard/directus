@@ -13,6 +13,8 @@ export default defineInterface({
 	localTypes: ['files'],
 	group: 'relational',
 	options: ({ relations }) => {
+		const collection = relations.m2o?.related_collection;
+
 		return [
 			{
 				field: 'folder',
@@ -31,6 +33,17 @@ export default defineInterface({
 					interface: 'system-display-template',
 					options: {
 						collectionName: relations.o2m?.collection,
+					},
+				},
+			},
+			{
+				field: 'filter',
+				name: '$t:filter',
+				type: 'json',
+				meta: {
+					interface: 'system-filter',
+					options: {
+						collectionName: collection,
 					},
 				},
 			},
@@ -72,6 +85,26 @@ export default defineInterface({
 				},
 				schema: {
 					default_value: 15,
+				},
+			},
+			{
+				field: 'allowedMimeTypes',
+				name: '$t:interfaces.file.allowed_mime_types',
+				type: 'json',
+				meta: {
+					interface: 'select-multiple-dropdown',
+					options: {
+						placeholder: '$t:interfaces.file.mime_types_placeholder',
+						choices: [
+							{ value: 'image/*', text: 'image/*' },
+							{ value: 'video/*', text: 'video/*' },
+							{ value: 'audio/*', text: 'audio/*' },
+							{ value: 'text/*', text: 'text/*' },
+							{ value: 'application/*', text: 'application/*' },
+						],
+						allowOther: true,
+					},
+					note: '$t:interfaces.file.mime_types_note',
 				},
 			},
 		];

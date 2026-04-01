@@ -90,11 +90,11 @@ const defaults: JoiOptions = {
 };
 
 /**
- * Generate a Joi schema from a filter object.
+ * Generate a Joi schema from a field filter object. This does not support relations or logical operators (_and/_or).
  *
- * @param {FieldFilter} filter - Field filter object. Note: does not support _and/_or filters.
- * @param {JoiOptions} [options] - Options for the schema generation.
- * @returns {AnySchema} Joi schema.
+ * @param filter - Field filter object. Note: does not support _and/_or filters.
+ * @param [options] - Options for the schema generation.
+ * @returns Joi schema.
  */
 
 export function generateJoi(filter: FieldFilter | null, options?: JoiOptions): AnySchema {
@@ -128,28 +128,34 @@ export function generateJoi(filter: FieldFilter | null, options?: JoiOptions): A
 		const getDateSchema = () => (schema[key] ?? Joi.date()) as DateSchema;
 
 		if (operator === '_eq') {
-			const numericValue =
-				compareValue === null || compareValue === '' || compareValue === true || compareValue === false
-					? NaN
-					: Number(compareValue);
+			let typecastedValue: string | number;
 
-			if (isNaN(numericValue)) {
+			if (typeof compareValue === 'number') {
+				typecastedValue = String(compareValue);
+			} else {
+				typecastedValue = [null, '', true, false].includes(compareValue) ? NaN : Number(compareValue);
+			}
+
+			if (typeof typecastedValue === 'number' && isNaN(typecastedValue)) {
 				schema[key] = getAnySchema().equal(compareValue);
 			} else {
-				schema[key] = getAnySchema().equal(compareValue, numericValue);
+				schema[key] = getAnySchema().equal(compareValue, typecastedValue);
 			}
 		}
 
 		if (operator === '_neq') {
-			const numericValue =
-				compareValue === null || compareValue === '' || compareValue === true || compareValue === false
-					? NaN
-					: Number(compareValue);
+			let typecastedValue: string | number;
 
-			if (isNaN(numericValue)) {
+			if (typeof compareValue === 'number') {
+				typecastedValue = String(compareValue);
+			} else {
+				typecastedValue = [null, '', true, false].includes(compareValue) ? NaN : Number(compareValue);
+			}
+
+			if (typeof typecastedValue === 'number' && isNaN(typecastedValue)) {
 				schema[key] = getAnySchema().not(compareValue);
 			} else {
-				schema[key] = getAnySchema().not(compareValue, numericValue);
+				schema[key] = getAnySchema().not(compareValue, typecastedValue);
 			}
 		}
 
@@ -367,7 +373,9 @@ export function generateJoi(filter: FieldFilter | null, options?: JoiOptions): A
 				const wrapped =
 					typeof compareValue === 'string' ? compareValue.startsWith('/') && compareValue.endsWith('/') : false;
 
-				schema[key] = getStringSchema().regex(new RegExp(wrapped ? (compareValue as any).slice(1, -1) : compareValue));
+				schema[key] = getStringSchema()
+					.min(0)
+					.regex(new RegExp(wrapped ? (compareValue as any).slice(1, -1) : compareValue));
 			}
 		}
 	}

@@ -2,7 +2,7 @@ import type { FieldFilter } from '@directus/types';
 import { escapeRegExp } from 'lodash-es';
 import { describe, expect, it } from 'vitest';
 import type { JoiOptions, StringSchema } from './generate-joi.js';
-import { Joi, generateJoi } from './generate-joi.js';
+import { generateJoi, Joi } from './generate-joi.js';
 
 describe(`generateJoi`, () => {
 	const date = new Date(1632431505992);
@@ -76,6 +76,30 @@ describe(`generateJoi`, () => {
 	});
 
 	it(`returns the correct schema for an integer _eq match`, () => {
+		const mockFieldFilter = { field: { _eq: 123 } } as FieldFilter;
+
+		const mockSchema = Joi.object({
+			field: Joi.any().equal(123, '123'),
+		})
+			.unknown()
+			.describe();
+
+		expect(generateJoi(mockFieldFilter).describe()).toStrictEqual(mockSchema);
+	});
+
+	it(`returns the correct schema for an integer _neq match`, () => {
+		const mockFieldFilter = { field: { _neq: 123 } } as FieldFilter;
+
+		const mockSchema = Joi.object({
+			field: Joi.any().not(123, '123'),
+		})
+			.unknown()
+			.describe();
+
+		expect(generateJoi(mockFieldFilter).describe()).toStrictEqual(mockSchema);
+	});
+
+	it(`returns the correct schema for a string containing an integer _eq match`, () => {
 		const mockFieldFilter = { field: { _eq: '123' } } as FieldFilter;
 
 		const mockSchema = Joi.object({
@@ -87,7 +111,7 @@ describe(`generateJoi`, () => {
 		expect(generateJoi(mockFieldFilter).describe()).toStrictEqual(mockSchema);
 	});
 
-	it(`returns the correct schema for an integer _neq match`, () => {
+	it(`returns the correct schema for a string containing an integer _neq match`, () => {
 		const mockFieldFilter = { field: { _neq: '123' } } as FieldFilter;
 
 		const mockSchema = Joi.object({
@@ -809,7 +833,7 @@ describe(`generateJoi`, () => {
 		const mockFieldFilter = { field: { _regex: '/.*field$/' } } as FieldFilter;
 
 		const mockSchema = Joi.object({
-			field: Joi.string().regex(new RegExp(`.*field$`)),
+			field: Joi.string().min(0).regex(new RegExp(`.*field$`)),
 		})
 			.unknown()
 			.describe();
@@ -821,7 +845,7 @@ describe(`generateJoi`, () => {
 		const mockFieldFilter = { field: { _regex: '.*field$' } } as FieldFilter;
 
 		const mockSchema = Joi.object({
-			field: Joi.string().regex(new RegExp(`.*field$`)),
+			field: Joi.string().min(0).regex(new RegExp(`.*field$`)),
 		})
 			.unknown()
 			.describe();

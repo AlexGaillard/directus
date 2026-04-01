@@ -13,6 +13,8 @@ export async function seed(knex) {
 		},
 	]);
 
+	await knex('directus_policies').where('id', '9cd8b17c-474b-4abb-b366-09dcdb45e177').del();
+
 	await knex('directus_policies').insert([
 		{
 			id: '9cd8b17c-474b-4abb-b366-09dcdb45e177',
@@ -22,6 +24,8 @@ export async function seed(knex) {
 		},
 	]);
 
+	await knex('directus_access').where('id', '27029bb1-8b2e-43c2-b966-eb049f84ea68').del();
+
 	await knex('directus_access').insert([
 		{
 			id: '27029bb1-8b2e-43c2-b966-eb049f84ea68',
@@ -30,6 +34,14 @@ export async function seed(knex) {
 		},
 	]);
 
+	await knex('directus_revisions')
+		.whereIn(
+			'version',
+			knex('directus_versions').select('id').where('user_created', '3d075128-c073-4f5d-891c-ed2eb2790a1c'),
+		)
+		.del();
+
+	await knex('directus_versions').where('user_created', '3d075128-c073-4f5d-891c-ed2eb2790a1c').del();
 	await knex('directus_users').where('id', '3d075128-c073-4f5d-891c-ed2eb2790a1c').del();
 
 	await knex('directus_users').insert([

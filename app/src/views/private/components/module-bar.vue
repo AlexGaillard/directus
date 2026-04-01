@@ -1,12 +1,14 @@
 <script setup lang="ts">
+import { omit } from 'lodash';
 import { computed } from 'vue';
-import ModuleBarLogo from './module-bar-logo.vue';
 import ModuleBarAvatar from './module-bar-avatar.vue';
+import ModuleBarLogo from './module-bar-logo.vue';
+import VButton from '@/components/v-button.vue';
+import VIcon from '@/components/v-icon/v-icon.vue';
+import { MODULE_BAR_DEFAULT } from '@/constants';
+import { useExtensions } from '@/extensions';
 import { useSettingsStore } from '@/stores/settings';
 import { translate } from '@/utils/translate-object-values';
-import { MODULE_BAR_DEFAULT } from '@/constants';
-import { omit } from 'lodash';
-import { useExtensions } from '@/extensions';
 
 const settingsStore = useSettingsStore();
 const { modules: registeredModules } = useExtensions();
@@ -47,10 +49,10 @@ const modules = computed(() => {
 
 <template>
 	<div class="module-bar">
-		<module-bar-logo />
+		<ModuleBarLogo />
 
 		<div class="modules">
-			<v-button
+			<VButton
 				v-for="modulePart in modules"
 				:key="modulePart.id"
 				v-tooltip.right="modulePart.name"
@@ -60,30 +62,34 @@ const modules = computed(() => {
 				:href="modulePart.href"
 				tile
 			>
-				<v-icon :name="modulePart.icon" />
-			</v-button>
+				<VIcon :name="modulePart.icon" />
+			</VButton>
 		</div>
 
-		<module-bar-avatar />
+		<ModuleBarAvatar />
 	</div>
 </template>
 
 <style lang="scss" scoped>
 .module-bar {
+	--focus-ring-color: var(--theme--navigation--modules--button--foreground);
+	--focus-ring-offset: var(--focus-ring-offset-inset);
+	--focus-ring-radius: 0;
+
 	display: flex;
 	flex-direction: column;
-	width: 60px;
-	height: 100%;
+	inline-size: 3.375rem;
+	block-size: 100%;
 	background-color: var(--theme--navigation--modules--background);
-	border-right: var(--theme--navigation--modules--border-width) solid var(--theme--navigation--modules--border-color);
+	border-inline-end: var(--theme--navigation--modules--border-width) solid
+		var(--theme--navigation--modules--border-color);
 
 	/* Explicitly render the border outside of the width of the bar itself */
 	box-sizing: content-box;
 
 	.modules {
 		flex-grow: 1;
-		overflow-x: hidden;
-		overflow-y: auto;
+		overflow: hidden auto;
 	}
 
 	.v-button {
@@ -93,6 +99,14 @@ const modules = computed(() => {
 		--v-button-background-color: var(--theme--navigation--modules--button--background);
 		--v-button-background-color-hover: var(--theme--navigation--modules--button--background-hover);
 		--v-button-background-color-active: var(--theme--navigation--modules--button--background-active);
+
+		:deep(.active) {
+			--focus-ring-color: var(--v-button-color-active);
+		}
 	}
+}
+
+.module-bar-logo {
+	--focus-ring-color: var(--foreground-inverted);
 }
 </style>

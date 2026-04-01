@@ -1,14 +1,18 @@
 <script setup lang="ts">
-import api from '@/api';
+import type { Filter, Item } from '@directus/types';
+import { getEndpoint, getFieldsFromTemplate } from '@directus/utils';
+import { computed, ref, toRefs, unref, watch } from 'vue';
+import VIcon from '@/components/v-icon/v-icon.vue';
+import VListItem from '@/components/v-list-item.vue';
+import VRemove from '@/components/v-remove.vue';
+import VSkeletonLoader from '@/components/v-skeleton-loader.vue';
+import sdk, { requestEndpoint } from '@/sdk';
 import { useCollectionsStore } from '@/stores/collections';
 import { useFieldsStore } from '@/stores/fields';
 import { adjustFieldsForDisplays } from '@/utils/adjust-fields-for-displays';
 import { unexpectedError } from '@/utils/unexpected-error';
 import DrawerCollection from '@/views/private/components/drawer-collection.vue';
-import { Filter } from '@directus/types';
-import { getEndpoint, getFieldsFromTemplate } from '@directus/utils';
-import { computed, ref, toRefs, unref, watch } from 'vue';
-import { useI18n } from 'vue-i18n';
+import RenderTemplate from '@/views/private/components/render-template.vue';
 
 type Value = {
 	key: (string | number) | null;
@@ -21,6 +25,7 @@ const props = withDefaults(
 		selectedCollection: string;
 		template?: string | null;
 		disabled?: boolean;
+		nonEditable?: boolean;
 		filter?: Filter | null;
 	}>(),
 	{
@@ -29,8 +34,6 @@ const props = withDefaults(
 		filter: null,
 	},
 );
-
-const { t } = useI18n();
 
 const emit = defineEmits(['input']);
 
@@ -85,14 +88,13 @@ async function getDisplayItem() {
 	try {
 		loading.value = true;
 
-		const response = await api.get(getEndpoint(unref(selectedCollection)), {
-			params: {
-				fields: Array.from(fields),
-				filter: { [primaryKey.value]: { _eq: value.value.key } },
-			},
-		});
+		const response = await sdk.request<Item[]>(
+			requestEndpoint(getEndpoint(unref(selectedCollection)), {
+				params: { fields: Array.from(fields), filter: { [primaryKey.value]: { _eq: value.value?.key } } },
+			}),
+		);
 
-		displayItem.value = response.data.data?.[0] ?? null;
+		displayItem.value = response?.[0] ?? null;
 	} catch (error) {
 		unexpectedError(error);
 	} finally {
@@ -102,30 +104,34 @@ async function getDisplayItem() {
 
 function onSelection(selectedIds: (number | string)[] | null) {
 	selectDrawerOpen.value = false;
-	value.value = { key: Array.isArray(selectedIds) ? selectedIds[0] : null, collection: unref(selectedCollection) };
+
+	value.value = {
+		key: Array.isArray(selectedIds) && selectedIds[0] ? selectedIds[0] : null,
+		collection: unref(selectedCollection),
+	};
 }
 </script>
 
 <template>
-	<div class="collection-item-dropdown">
-		<v-skeleton-loader v-if="loading" type="input" />
-		<v-input v-else clickable :placeholder="t('select_an_item')" :disabled="disabled" @click="selectDrawerOpen = true">
-			<template v-if="displayItem" #input>
-				<div class="preview">
-					<render-template :collection="selectedCollection" :item="displayItem" :template="displayTemplate" />
-				</div>
-			</template>
+	<div v-prevent-focusout="selectDrawerOpen" class="collection-item-dropdown">
+		<VSkeletonLoader v-if="loading" type="input" />
 
-			<template #append>
-				<div class="item-actions">
-					<v-remove v-if="displayItem" deselect @action="value = null" />
+		<VListItem v-else :disabled :non-editable block clickable @click="selectDrawerOpen = true">
+			<div v-if="displayItem && displayTemplate" class="preview">
+				<RenderTemplate :collection="selectedCollection" :item="displayItem" :template="displayTemplate" />
+			</div>
+			<div v-else class="placeholder">{{ $t('select_an_item') }}</div>
 
-					<v-icon v-else class="expand" name="expand_more" />
-				</div>
-			</template>
-		</v-input>
+			<div class="spacer" />
 
-		<drawer-collection
+			<div v-if="!nonEditable" class="item-actions">
+				<VRemove v-if="displayItem" deselect :disabled @action="value = null" />
+
+				<VIcon v-else class="expand" name="expand_more" />
+			</div>
+		</VListItem>
+
+		<DrawerCollection
 			v-model:active="selectDrawerOpen"
 			:collection="selectedCollection"
 			:selection="value?.key ? [value.key] : []"
@@ -139,6 +145,24 @@ function onSelection(selectedIds: (number | string)[] | null) {
 <style lang="scss" scoped>
 @use '@/styles/mixins';
 
+.v-list-item {
+	&.disabled:not(.non-editable) {
+		--v-list-item-background-color: var(--theme--form--field--input--background-subdued);
+	}
+
+	&:focus-within,
+	&:focus-visible {
+		--v-list-item-border-color: var(--v-input-border-color-focus, var(--theme--form--field--input--border-color-focus));
+		--v-list-item-border-color-hover: var(--v-list-item-border-color);
+
+		box-shadow: var(--theme--form--field--input--box-shadow-focus);
+	}
+}
+
+.placeholder {
+	color: var(--v-input-placeholder-color, var(--theme--foreground-subdued));
+}
+
 .item-actions {
 	@include mixins.list-interface-item-actions;
 }
@@ -146,7 +170,7 @@ function onSelection(selectedIds: (number | string)[] | null) {
 .preview {
 	display: block;
 	flex-grow: 1;
-	height: calc(100% - 16px);
+	block-size: calc(100% - 0.875rem);
 	overflow: hidden;
 }
 </style>

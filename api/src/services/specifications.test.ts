@@ -1,10 +1,12 @@
+import { SchemaBuilder } from '@directus/schema-builder';
+import type { Accountability } from '@directus/types';
 import type { Knex } from 'knex';
 import knex from 'knex';
 import { createTracker, MockClient, Tracker } from 'knex-mock-client';
+import type { RequestBodyObject } from 'openapi3-ts/oas30';
 import type { MockedFunction } from 'vitest';
 import { afterEach, beforeAll, describe, expect, it, vi } from 'vitest';
 import { SpecificationService } from './index.js';
-import type { CollectionsOverview } from '@directus/types';
 
 class Client_PG extends MockClient {}
 
@@ -22,6 +24,24 @@ describe('Integration Tests', () => {
 		vi.clearAllMocks();
 	});
 
+	const schema = new SchemaBuilder()
+		.collection('test_table', (c) => {
+			c.field('id').integer().primary().options({
+				nullable: false,
+			});
+
+			c.field('blob').json();
+		})
+		.build();
+
+	const schema2 = new SchemaBuilder()
+		.collection('test_table', (c) => {
+			c.field('id').integer().primary().options({
+				nullable: false,
+			});
+		})
+		.build();
+
 	describe('Services / Specifications', () => {
 		describe('oas', () => {
 			describe('generate', () => {
@@ -29,50 +49,8 @@ describe('Integration Tests', () => {
 					it('returns untyped schema for json fields', async () => {
 						const service = new SpecificationService({
 							knex: db,
-							schema: {
-								collections: {
-									test_table: {
-										collection: 'test_table',
-										primary: 'id',
-										singleton: false,
-										sortField: null,
-										accountability: 'all',
-										note: null,
-										fields: {
-											id: {
-												field: 'id',
-												type: 'integer',
-												nullable: false,
-												generated: false,
-												defaultValue: null,
-												dbType: 'integer',
-												precision: null,
-												scale: null,
-												special: [],
-												note: null,
-												validation: null,
-												alias: false,
-											},
-											blob: {
-												field: 'blob',
-												type: 'json',
-												dbType: 'json',
-												defaultValue: null,
-												nullable: true,
-												generated: false,
-												precision: null,
-												scale: null,
-												special: [],
-												note: null,
-												alias: false,
-												validation: null,
-											},
-										},
-									},
-								} as CollectionsOverview,
-								relations: [],
-							},
-							accountability: { role: 'admin', admin: true },
+							schema,
+							accountability: { role: 'admin', admin: true } as Accountability,
 						});
 
 						const spec = await service.oas.generate();
@@ -282,41 +260,14 @@ describe('Integration Tests', () => {
 					it('requestBody for CreateItems POST path should not have type in schema', async () => {
 						const service = new SpecificationService({
 							knex: db,
-							schema: {
-								collections: {
-									test_table: {
-										collection: 'test_table',
-										primary: 'id',
-										singleton: false,
-										sortField: null,
-										accountability: 'all',
-										note: null,
-										fields: {
-											id: {
-												field: 'id',
-												type: 'integer',
-												nullable: false,
-												generated: false,
-												defaultValue: null,
-												dbType: 'integer',
-												precision: null,
-												scale: null,
-												special: [],
-												note: null,
-												validation: null,
-												alias: false,
-											},
-										},
-									},
-								} as CollectionsOverview,
-								relations: [],
-							},
-							accountability: { role: 'admin', admin: true },
+							schema: schema2,
+							accountability: { role: 'admin', admin: true } as Accountability,
 						});
 
 						const spec = await service.oas.generate();
+						const requestBody = spec.paths['/items/test_table']?.post?.requestBody as RequestBodyObject;
 
-						const targetSchema = spec.paths['/items/test_table']?.post?.requestBody?.content['application/json'].schema;
+						const targetSchema = requestBody?.content?.['application/json']?.schema;
 
 						expect(targetSchema).toHaveProperty('oneOf');
 						expect(targetSchema).not.toHaveProperty('type');

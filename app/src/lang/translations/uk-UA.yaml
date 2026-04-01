@@ -20,6 +20,31 @@
 #'SIMD', 'ArrayBuffer', 'DataView', 'JSON', 'Promise', 'Generator', 'GeneratorFunction', 'Reflect',
 #'Proxy', 'Intl'
 about: Інформація про
+directus_bsl: Directus BSL 1,1
+privacy_policy: Політика конфіденційності
+contact_our_team: Звʼязок із нашою командою
+setup_welcome: Ласкаво просимо до Directus
+setup_info: Створімо ваш обліковий запис адміністратора та запустімо ваш проєкт.
+setup_license_notice: >
+  Directus безплатний для використання з об’єктами, чий річний дохід, фінансування або операційний бюджет становить менше ніж $5 мільйонів.
+setup_license_follow_up: >
+  Об’єкти, що перевищують цей поріг, потребують платної ліцензії. Ви можете продовжити оцінку Directus зараз і {contactOurTeam}, коли будете готові обговорити використання у виробництві.
+setup_save_accept_license: >
+  Натискаючи «Зберегти», ви погоджуєтесь з умовами {directusBsl} та {privacyPolicy}.
+setup_accept_license: Я погоджуюсь з умовами {directusBsl} та {privacyPolicy}
+setup_marketing_emails: Надіслати мені оновлення продукту та нотатки про випуск
+setup_launch: Запустити Directus
+setup_project: Запустити проєкт
+first_name: Ім'я
+last_name: Прізвище
+admin_email: Email адміністратора
+owner_email: Email власника
+email_address: Адреса електронної пошти
+organization_name: Назва організації
+how_do_you_use_directus: Для чого ви використовуєте Directus?
+usage_personal: Особисте / Навчання
+usage_commercial: Бізнес / Комерційне використання
+usage_community: Відкрите програмне забезпечення / Спільнота
 identifier: Ідентифікатор
 avatar: Аватар
 application: Додаток
@@ -28,8 +53,12 @@ method: Метод
 published: Опубліковано
 draft: Чернетка
 archived: Архівовано
-marketplace: Маркетплейс
+marketplace: Ринкова площа
 extensions: Розширення
+skip_link_nav: Перейти до навігації
+skip_link_module_nav: Перейти до навігації модуля
+skip_link_main: Перейти до основного вмісту
+skip_link_sidebar: Перейти до бічної панелі
 modules: Модулі
 module_bar: Панель модулів
 logs: Логи
@@ -42,6 +71,10 @@ location: Розташування
 collection_names_are_case_sensitive: Назви колекції чутливі до регістру букв
 condition_rules: Правила умов
 input: Введення
+invalid_input: Неправильне значення
+not_a_number: Не є числом
+invalid_range_min: Значення нижче мінімально допустимого{value}
+invalid_range_max: Значення перевищує максимально допустиме{value}
 maps: Мапи
 switch_user: Змінити користувача
 item_creation: Створення елемента
@@ -53,6 +86,8 @@ full_width: Повна ширина
 group: Група
 popular: Популярне
 recent: Останнє
+latest: Останні
+updated: Оновлено
 export_items: Експорт товарів
 and: Й
 or: Або
@@ -60,7 +95,7 @@ init: Ініціалізація
 dataset_too_large_currently_showing_n_items: Дані завеликі. Зараз показуються перші {n} елементів.
 modifier: Модифікатор
 extension_interface: Інтерфейс
-extension_display: Відображати
+extension_display: Показувати
 extension_layout: Макет
 extension_module: Модуль
 extension_panel: Панель
@@ -94,7 +129,7 @@ repository: Сховище
 reload_page: Перезавантажити Сторінку
 reload_required: Необхідно перезавантажити
 report_an_issue: Повідомити про проблему
-website: Веб-сайт
+website: Вебсайт
 github: GitHub
 beta: Бета
 n_downloads: '{n} Завантаження'
@@ -108,6 +143,12 @@ hook: Хук
 fill_width: Ширина заповнення
 field_name_translations: Переклад назви поля
 enter_password_to_enable_tfa: Введіть свій пароль, щоб увімкнути двофакторну аутентифікацію
+sso_tfa_setup_notice: Ви будете автоматично виведені зі свого облікового запису та зобов’язані увійти знову. Будь‑які незбережені зміни буде скасовано.
+enable_tfa: Увімкнути двофакторну автентифікацію 2FA
+cancel_tfa_setup: Скасувати налаштування 2FA
+cancel_tfa_setup_notice: Ви впевнені, що хочете скасувати налаштування 2FA?
+keep_setup: Зберегти налаштування
+cancel_setup: Скасувати налаштування
 add_field: Додати поле
 role_name: Назва ролі
 policy_name: Назва політики
@@ -132,7 +173,6 @@ create_policy: Створити політику
 create_user: Новий користувач
 message: Повідомлення
 delete_panel: Видалити панель
-create_webhook: Створити вебхук
 create_custom_translation: Створити спеціальний переклад
 edit_custom_translation: Редагувати спеціальний переклад
 no_custom_translations: Немає спеціальних перекладів
@@ -164,19 +204,14 @@ rename_version: Перейменувати версію
 compare_version: Порівняти версію
 save_version: Зберегти версію
 promote_version: Просування версії
-promote_version_disabled: Жодних змін
-promote_version_drawer_title: Просувати {version} на Головну
-promote_version_changes: Зміни
-promote_version_preview: Перегляд
-outdated_notice: >-
-  Основний елемент було оновлено після створення цієї версії. Перегляньте всі значення полів нижче та підтвердьте, яку версію слід використовувати під час підвищення цієї версії до основного елемента.
-promote_notice: >-
-  Перегляньте всі значення полів нижче та підтвердьте, яку версію слід використовувати під час підвищення цієї версії до основного елемента.
+apply: Застосувати
+select_all_differences: Вибрати всі відмінності
+main_updated_notice: Основний елемент був оновлений з моменту створення цієї версії.
 delete_version: Видалити версію
 delete_version_copy: >-
   Ви впевнені, що хочете видалити версію "{version}"? Цю дію не можна скасувати.
-delete_on_promote_copy: >-
-  Ви бажаєте видалити або зберегти версію "{version}" після підвищення?
+delete_on_apply_copy: >-
+  Ви збираєтесь просувати версію “{version}” до основної. Що повинно статися з версією “{version}” після її просування?
 reset_bookmark: Скинути закладку
 update_bookmark: Оновити закладку
 delete_bookmark: Видалити закладку
@@ -237,6 +272,8 @@ validationError:
   iends_with: Значення має закінчуватися на {substring}
   nends_with: Рядок не може закінчуватися на {substring}
   niends_with: Рядок не може закінчуватися на {substring}
+  confirm_password: Паролі не збігаються
+  org_name: Будь ласка, вкажіть назву організації
 all_access: Повний доступ
 no_access: Немає доступу
 use_custom: Використайте Користувацькі налаштування
@@ -316,7 +353,10 @@ field_in_collection: '{field} ({collection})'
 reset_page_preferences: Скинути налаштування сторінки
 hidden_field: Приховане поле
 hidden_on_detail: Приховано на деталі
-disabled_editing_value: Вимкнути редагування значення
+clear_hidden_field: Очистити значення (s)
+clear_value_on_save_when_hidden: Очистити значення(s) при збереженні, коли приховано
+readonly_field_label: Вимкнути поле в застосунку
+required_readonly_field_warning: Увімкнення одночасно “лише для читання” та “обов’язкове” для поля запобігає збереженню елемента, якщо значення порожнє.
 key: Клавіша
 alias: Ім'я користувача
 bigInteger: Велике ціле число
@@ -346,7 +386,7 @@ geometry:
   Polygon: Полігон
   MultiPoint: Багатофункціональний
   MultiLineString: Багатолінійний рядок
-  MultiPolygon: МультиПолігон
+  MultiPolygon: Багатокутник
 theme_auto: Автоматично (залежно від системи)
 theme_light: Світлий режим
 theme_dark: Темний режим
@@ -414,6 +454,8 @@ precision_scale: Точність і шкала
 readonly: Тільки читання
 unique: Унікальне
 index: Індекс
+searchable: Можна шукати
+field_searchable: Включити поле в пошукові запити
 updated_on: Оновлене
 updated_by: Оновлено
 primary_key: Первинний ключ
@@ -422,6 +464,7 @@ field_key: Ключ до поля
 finish_setup: Завершити налаштування
 dismiss: Відмінити
 toggle_raw_editor: Перемкнути редактор RAW
+toggle_variable_input: Перемкнути змінний ввід
 raw_editor_placeholder: "{'{'}{'{'}$trigger.payload.example{'}'}{'}'}"
 raw_value: Необроблене значення
 copy_raw_value: Скопіювати необроблене значення
@@ -448,15 +491,16 @@ confirm_revert_body: Це поверне елемент до вибраного 
 display: Відображати
 settings_update_success: Налаштування оновлено
 title: Заголовок
+subtitle: Підзаголовок
 revision_delta_created: Створено
 revision_delta_created_externally: Створено ззовні
 revision_delta_updated: 'Оновлено 1 поле | Оновлено {count} полів'
 revision_delta_deleted: Видалено
-revision_delta_version_saved: 'Збереження версії (оновлено 1 поле) | Збереження версії (оновлено {count} полів)'
 revision_delta_reverted: Відновлено
 revision_delta_update_message: Це поле оновлено, але його значення приховується з міркувань безпеки.
 revision_delta_other: Редакція
 revision_delta_by: '{date} {user}'
+differences_count: 'Без відмінностей | 1 відмінність | {count} відмінностей'
 presentation_text_values_cannot_be_reimported: 'Використовує текст презентації, значення не можуть бути повторно імпортовані.'
 download_page_as_csv: 'Завантажити сторінку у CSV'
 download_page_as_csv_unsupported: Цей макет не підтримує завантаження поточної сторінки.
@@ -475,11 +519,20 @@ related_collection: Пов'язана колекція
 related_collections: Схожі колекції
 translations_collection: Колекція перекладів
 languages_collection: Колекція мов
+translations_preview_collections: Колекції
+translations_preview_fields: Поля
 import_data_input_placeholder: CSV або JSON...
 import_data_button: Розпочати імпорт
 import_data_indeterminate: Імпорт даних...
 import_data_success: Дані успішно імпортовано з {filename}
+import_data_errors: Помилка імпорту
 import_data_error: Структура даних не відповідає підбірці.
+import_data_validation_errors_notice: 'У таких рядках містяться недійсні значення:'
+import_data_error_row: 'Рядок {rows}{field}:'
+snapshot:
+  export: Експорт схеми
+  download: Завантажити знімок (JSON)
+  info: Експорт лише схеми для спільного доступу або налагодження
 label_import: Імпортувати
 label_export: Експорт
 import_export: Імпорт / Експорт
@@ -496,7 +549,7 @@ move: Перемістити
 system: Система
 add_field_related: Додати поле до пов'язаної колекції
 interface_label: Інтерфейс
-display_label: Відображати
+display_label: Показувати
 today: Сьогодні
 yesterday: Вчора
 delete_comment: Видалити коментар
@@ -518,6 +571,7 @@ date-fns_time_24hour: 'HH:mm:ss'
 date-fns_time_no_seconds_24hour: 'HH:mm'
 date-fns_date_short: 'd MMM u'
 date-fns_time_short: 'HH:mm'
+date-fns_time_short_seconds: 'h:mm:ssa'
 date-fns_date_short_no_year: d MMM
 minutes: Хвилини
 hours: Години
@@ -552,6 +606,9 @@ original: Оригінал
 url: URL
 import_label: Імпортувати
 file_details: Подробиці файлу
+copy_id: Копіювати ID
+copy_id_success: ID скопійовано
+copy_id_fail: ID не скопійовано
 dimensions: Розміри
 size: Розмір
 created: Створено
@@ -580,7 +637,7 @@ download_file: Завантажити файл
 open_file_in_tab: Відкрити файл у новій вкладці
 start_export: Розпочати експорт
 not_available_for_local_downloads: Недоступний для локальних завантажень
-exporting_all_items_in_collection: Експорт усіх {total} елементів в межах {collection}.
+exporting_all_items_in_collection: Експорт усіх ({total}) елементів в межах {collection}.
 exporting_limited_items_in_collection: '{count} з {total} елементів в межах {collection} буде експортовано.'
 exporting_no_items_to_export: Немає елементів для експорту. Налаштуйте параметри експорту та/або додайте елементи до колекції.
 exporting_download_hint: Щойно {format} файл буде створено, його буде завантажено на ваш пристрій.
@@ -602,6 +659,7 @@ manual_string: Введений вручну рядок
 save_and_create_new: Зберігти і створити новий
 save_and_stay: Зберегти і Залишитись
 save_and_quit: Зберегти та Вийти
+save_and_return_to_main: Зберегти та повернутися на головну
 save_as_copy: Зберегти копію
 add_existing: Додати наявний
 creating_items: Створення об'єктів
@@ -638,18 +696,13 @@ file_count: 'Файлів немає | Один файл | {count} файлів'
 no_files_copy: Файлів не знайдено.
 user_count: 'Користувачів немає | Один користувач | {count} користувачів'
 no_users_copy: Ще немає користувачів в цій ролі.
-webhooks_count: 'Немає веб-хуків | Один веб-хук | {count} вебхуків'
-webhooks_deprecation_notice: |
-  Вебхуки застаріли і їх подальше використання не рекомендується
-
-  Будь ласка, використовуйте **Процеси** з командою [Webhook / Запит URL](https://docs.directus.io/app/flows/operations.html#webhook-request-url) замість цього.
-no_webhooks_copy: Ще не налаштовано жодного веб-хука. Розпочніть зі створення одного нижче.
 no_notifications: Немає сповіщень
 no_notifications_copy: У вас все налаштовано!
 activity_log: Журнал активності
 all_items: Всі об'єкти
 any: Будь-які
 csv: CSV
+csv_utf8: CSV Excel (UTF-8)
 no_collections: Немає колекцій
 create_collection: Створити колекцію
 no_collections_copy_admin: В вас ще немає колекцій. Натисніть кнопку нижче, щоб розпочати.
@@ -674,7 +727,6 @@ action: Дія
 ip_address: IP адреса
 user_agent: Ідентифікатор браузера
 origin: Джерело
-webhooks: Вебхуки
 decimals: Десяткові знаки
 value_decimals: Оцінити десяткові знаки
 min_value: Мінімальне значення
@@ -714,6 +766,7 @@ enabled_dev_tooltip: У режимі розробника розширення �
 disable_tfa: Вимкнути 2FA
 admin_disable_tfa_text: Ви впевнені що хочете вимкнути 2FA для даного користувача?
 tfa_setup: Налаштування 2FA
+tfa_setup_description: Налаштуйте двофакторну автентифікацію для захисту вашого облікового запису
 tfa_scan_code: Відскануйте код у програмі-аутентифікаторі, щоб завершити налаштування 2FA
 enter_otp_to_disable_tfa: Зайдіть в OTP, щоб вимкнути 2FA
 create_account: Створити обліковий запис
@@ -724,6 +777,7 @@ errors:
   COLLECTION_NOT_FOUND: "Колекція не існує"
   CONTAINS_NULL_VALUES: Поле містить нульові значення
   CONTENT_TOO_LARGE: Надісланий елемент/файл має надто великий розмір
+  FAILED_VALIDATION: Спроба перевірки зазнала невдачі
   FIELD_NOT_FOUND: Поле не знайдено
   FORBIDDEN: Заборонено
   GRAPHQL_VALIDATION: Верифікація GraphQL
@@ -758,7 +812,6 @@ errors:
   VALUE_OUT_OF_RANGE: Значення є поза діапазоном
   VALUE_TOO_LONG: Значення занадто довге
 security: Захист
-value_hashed: Значення надійно видалені
 bookmark_name: Назва закладки...
 create_bookmark: Створити закладку
 edit_bookmark: Редагувати закладку
@@ -774,7 +827,6 @@ unexpected_error_copy: Сталася неочікувана помилка. Б�
 copy_details: Копіювати деталі
 no_app_access: Немає доступу до додатку
 no_app_access_copy: В цього користувача нема дозволу на використовування додатку адміністратора.
-password_reset_sent: Якщо у вас є обліковий запис, ми надіслали вам безпечне посилання для відновлення пароля
 password_reset_successful: Пароль успішно оновлено
 back: Назад
 filter: Фільтр
@@ -935,12 +987,13 @@ flows: Автоматизація
 flow: Автоматизація
 select_a_flow: Виберіть Автоматизацію
 run_flow_confirm: Ви впевнені, що хочете виконати цей процес?
+run_flow_anyway: Все одно виконати процес
 run_flow_on_current_collection: Запуск програми на поточній колекції
 run_flow_on_current: Запуск програми на поточному елементі
-run_flow_on_current_edited_confirm: Ця автоматизацією може внести зміни до вибраного об'єкту, ви впевнені що хочете її виконати?
+run_flow_on_current_edited_confirm: Цей елемент може бути оновлений цим процесом. Ви впевнені, що хочете його виконати?
 run_flow_on_selected: Спочатку виберіть один або кілька елементів | Запустити процес на 1 вибраному елементі | Запустити процес на {n} вибраних елементах
 run_flow: Запустити процес
-run_flow_success: Автоматизацію {flow} успішно виконано
+trigger_flow_success: Процес {flow} успішно виконано
 field_name_placeholder: Введіть назву поля...
 field_key_placeholder: Введіть ключ до поля...
 trigger: Тригер
@@ -977,7 +1030,23 @@ operation_key: Ідентифікатор для довідки...
 operation_key_unique_error: Ключі операції повинні бути унікальними у потоці
 operation_handle_resolve: 'Рішення: натисніть, щоб додати, або перетягніть, щоб змінити маршрут'
 operation_handle_reject: 'Відмова: натисніть, щоб додати, або перетягніть, щоб змінити маршрут'
+visual_editor: Візуальний редактор
+toggle_navigation: Перемкнути навігацію
+toggle_editable_elements: Перемкнути редаговані елементи
+no_url: Не надано URL-адреси
+no_url_copy: Будь ласка, додайте URL-адресу в налаштуваннях.
+invalid_url: Недійсна URL-адреса
+invalid_url_copy: Вказана URL-адреса не відповідає жодній URL-адресі, зазначеній у налаштуваннях.
 insights: Статистика
+deployment:
+  provider:
+    settings:
+      delete_confirm: Ця дія постійна і не може бути скасована. Ви впевнені, що хочете продовжити?
+    run:
+      cancel_confirm: Ця дія постійна і не може бути скасована. Ви впевнені, що хочете продовжити?
+      log_all: Усі рівні журналу
+  target_value:
+    preview: Перегляд
 dashboard: Панель приладів
 panel: Панель
 panel_options: Налаштування панелі
@@ -1082,6 +1151,7 @@ wysiwyg_options:
   h4: Заголовок 4
   h5: Заголовок 5
   h6: Заголовок 6
+  pre: Попередньо відформатований
   fontselect: Обрати шрифт
   fontsizeselect: Обрати розмір шрифту
   indent: Відступ справа
@@ -1097,7 +1167,7 @@ wysiwyg_options:
   fullscreen: Повний екран
   directionality: Спрямування
   lazy_loading: Завантаження зображень на вимогу
-  lazy_loading_label: Увімкнути завантаження за вимогою
+  lazy_loading_label: Увімкнути відкладене завантаження
 dropdown: Випадаюче меню
 choices: Варіанти
 choices_option_configured_incorrectly: Варіанти налаштовані неправильно
@@ -1112,6 +1182,8 @@ appearance_dark: Темна
 other: Інше...
 adding_user: Додавання користувача
 unknown_user: Невідомий користувач
+unknown_version: Невідома версія
+unknown_revision: Невідома ревізія
 creating_in: 'Створення об''єкту в {collection}'
 editing_in: 'Редагування об''єкту в {collection}'
 viewing_in: 'Перегляд на запис від {collection}'
@@ -1124,7 +1196,8 @@ settings_roles: Ролі користувачів
 settings_permissions: Правила доступу
 settings_project: Налаштування
 settings_appearance: Вигляд
-settings_webhooks: Вебхуки
+settings_ai: ШІ
+model_context_protocol: Протокол контексту моделі
 settings_flows: Автоматизація
 settings_system_logs: Системні журнали
 settings_presets: Закладки
@@ -1152,49 +1225,6 @@ discard_changes_copy: Ви впевнені, що бажаєте скасува�
 show_x_axis: Показати вісь X
 show_y_axis: Показати вісь Y
 keep_editing: Продовжити редагування
-page_help_collections_overview: '**Огляд колекцій** — список усіх колекцій, до яких ви маєте доступ.'
-page_help_collections_collection: >-
-  **Переглянути об'єкти** — перелік усіх елементів {collection}, до яких у вас є доступ. Налаштуйте макет, фільтри та сортування, щоб налаштувати свій вигляд, і навіть зберігайте закладки різних конфігурацій для швидкого доступу.
-page_help_collections_item: >-
-  **Відомості про об'єкт** — форма для перегляду цього об'єкта та керування ним. Ця бічна панель також містить повну історію переглядів і вбудовані коментарі.
-page_help_activity_collection: >-
-  **Діяльність перегляду** — вичерпний перелік усіх дій ваших користувачів, пов'язаних з системою, або змістом.
-page_help_docs_global: >-
-  **Огляд документації** — документи, розроблені спеціально для версії та схеми цього проекту.
-page_help_files_collection: >-
-  **Бібліотека файлів** — перелічує всі файли, завантажені до цього проекту. Налаштуйте макет, фільтри та сортування, щоб налаштувати свій вигляд, і навіть зберігайте закладки різних конфігурацій для швидкого доступу.
-page_help_files_item: >-
-  **Відомості про файл** — форма для керування метаданими файлу, редагування вихідного об’єкта та оновлення налаштувань доступу.
-page_help_settings_project: "**Налаштування* – Глобальні параметри налаштування вашого проєкту."
-page_help_settings_appearance: "**Оформлення** – Зовнішній вигляд та параметри оформлення вашого проєкту."
-page_help_settings_extensions: '**Розширення** - Розширення, встановлені у вашому проєкті.'
-page_help_settings_datamodel_collections: >-
-  **Модель даних: колекції** — перелічує всі доступні колекції. Це включає видимі, приховані та системні колекції, а також незмінені таблиці бази даних, які можна додавати.
-page_help_settings_datamodel_fields: >-
-  **Модель даних: колекція** — форма для керування цією колекцією та її полями.
-page_help_settings_system_logs: '**Системні журнали** — доступ до прямої трансляції системних журналів.'
-page_help_settings_policies_collection: '**Переглянути політики** — список усіх політик у проєкті.'
-page_help_settings_policies_item: "**Деталі політики** — керуйте дозволами та іншими параметрами політики."
-page_help_settings_roles_collection: '**Огляд ролей** — перераховує всі ролі користувачів у проєкті.'
-page_help_settings_roles_item: "**Детальна інформація про роль** — керуйте дозволами для ролі та іншими налаштуваннями."
-page_help_settings_presets_collection: >-
-  **Огляд запрограмованих налаштувань** — перелік усіх попередніх налаштувань у проекті, включаючи: користувача, роль та глобальні закладки, а також вигляди за замовчуванням.
-page_help_settings_presets_item: >-
-  **Деталі попереднього налаштування** — форма для керування закладками та стандартними налаштуваннями колекцій.
-page_help_settings_webhooks_collection: '**Переглянути веб-хуки** — перелік усіх веб-хуків у проекті.'
-page_help_settings_webhooks_item: '**Деталі веб-хуку** — форма для створення веб-хуків проекту та керування ними.'
-page_help_settings_flows_collection: '**Перегляд потоків** - Перелік всіх потоків в проєкті.'
-page_help_settings_flows_item: '**Деталі потоку** - Робочий простір для управління однією або кількома операціями.'
-page_help_settings_translations_collection: '**Переглянути переклади користувачів** – відображає всі переклади користувачів у проєкті.'
-page_help_settings_translations_item: '**Подробиці замовлених перекладів** – сторінка для перегляду та керування цим параметром.'
-page_help_users_collection: '**Каталог користувачів** — перелік усіх користувачів системи в цьому проекті.'
-page_help_users_item: >-
-  **Інформація про користувача** — керуйте інформацією свого облікового запису або переглядайте відомості про інших користувачів.
-page_help_insights_overview: '**Інсайти** — список інформаційних панелей, до яких ви маєте доступ.'
-page_help_insights_dashboard: '**Інформаційна панель** — Робоча область для керування однією або кількома панелями.'
-page_help_marketplace_account: '**Обліковий запис** – видавець або адміністратор опублікованого розширення.'
-page_help_marketplace_registry: '**Реєстр** - розширення, доступні в Directus Marketplace.'
-page_help_marketplace_extension: '**Розширення** - розширення в Directus Marketplace.'
 activity_feed: Стрічка активності
 add_new: Створити
 create_new: Створити нову
@@ -1213,7 +1243,7 @@ uninstall: Видалити
 installed: Встановлено
 reinstall: Перевстановити
 open_in_marketplace: Відкрити в інтернет-магазині
-source_registry: Маркетплейс
+source_registry: Магазин
 source_local: Місцевий
 source_module: Модуль вузла
 collection: Колекція
@@ -1230,7 +1260,7 @@ directus_collection:
   directus_dashboards: Панелі керування в межах модуля інсайтів
   directus_fields: Додаткова конфігурація поля та метадані
   directus_files: Метадані для всіх керованих файлів
-  directus_flows: Автоматизація
+  directus_flows: Автоматизація процесів
   directus_folders: Забезпечує віртуальні каталоги для файлів
   directus_migrations: Яку версію бази даних ви використовуєте
   directus_notifications: Сповіщення відіслано користувачам
@@ -1246,7 +1276,6 @@ directus_collection:
   directus_settings: Параметри конфігурації проекту
   directus_shares: Відстежує зовнішні елементи
   directus_users: Користувачі системи для платформи
-  directus_webhooks: Конфігурація HTTP-запитів на основі подій
   directus_translations: Індивідуальні переклади
   directus_versions: Версії вмісту для позицій
   directus_extensions: Налаштування розширень
@@ -1317,6 +1346,7 @@ fields:
     tags: Теги
     user_preferences: Налаштування користувача
     language: Мова
+    text_direction: Напрямок тексту
     tfa_secret: Двофакторна автентифікація
     admin_options: Можливості адміністратора
     status: Статус
@@ -1392,8 +1422,23 @@ fields:
     public_registration_role_note: Ця роль призначається користувачам, які реєструються за допомогою цього методу. Не впливає на вже зареєстрованих користувачів.
     public_registration_email_filter: Фільтр поштових адрес
     public_registration_email_filter_note: Тільки email адреси, що відповідають цьому фільтру, можуть реєструватися.
-    public_registration_verify_email: Підтвердіть адресу
+    public_registration_verify_email: Підтвердити адресу
     public_registration_verify_email_note: Відправляє email до реєстраційного користувача із проханням натиснути на посилання для підтвердження, перш ніж він зможе увійти.
+    visual_editor_urls: URL-адреси візуального редактора
+    mcp_enabled: Сервер MCP
+    mcp_enabled_note: 'Приєднайте інструменти AI/LLM до вашого проєкту Directus за допомогою <a href="https://directus.io/docs/guides/ai/mcp" target="_blank">Протокол контексту моделі (MCP)</a>. Це дає змогу AI-асистентам безпечно читати та взаємодіяти з даними Directus.'
+    mcp_notice: 'Протокол контексту моделі є стандартним для підключення LLM до таких додатків, як Directus. Після увімкнення сервер Directus MCP буде доступний за адресою `/mcp`.<a href="https://directus.io/docs/guides/ai/mcp" target="_blank">Дізнайтеся більше про MCP та про те, як під''єднатися.</a>'
+    mcp_allow_deletes: Дозволити видалення
+    mcp_allow_deletes_note:
+      - Може спричинити втрату даних.</strong>За замовчуванням вимкнено з міркувань безпеки.'
+    mcp_prompts_collection: Збірка запитів для ШІ
+    mcp_prompts_collection_note: 'Виберіть колекцію для зберігання<a href="https://directus.io/docs/guides/ai/mcp/prompts" target="_blank">шаблонів підказок для багаторазового використання</a>для взаємодії з АІ.'
+    mcp_system_prompt_divider: Налаштування системних підказок
+    mcp_system_prompt_enabled: Використовувати системне підказування
+    mcp_system_prompt_enabled_note: "Використовуйте<a href='https://directus.io/docs/guides/ai/mcp#system-prompt' target='_blank'>стандартне системне запитування</a>для керування поведінкою LLM. Вимкніть, щоб видалити або замінити власним запитуванням нижче."
+    mcp_system_prompt: Користувацький Системний рядок
+    mcp_system_prompt_note: 'Спеціальний запит щодо заміни стандартної системи. Залиште порожнім, щоб використовувати стандартну (якщо вказано вище).'
+    ai_header_name: Заголовок
   directus_shares:
     name: Назва
     role: Роль
@@ -1424,18 +1469,6 @@ fields:
     admin_access: Доступ адміністратора
     ip_access: IP доступ
     enforce_tfa: Вимагати 2FA
-  directus_webhooks:
-    name: Назва
-    method: Метод
-    status: Статус
-    data: Дані
-    header: Заголовок
-    value: Значення
-    headers: Заголовки запиту
-    data_label: Надіслати дані про подію
-    triggers: Тріггери
-    actions: Дії
-    collections: Колекції
 field_options:
   directus_settings:
     project_name_placeholder: Мій проект...
@@ -1537,19 +1570,6 @@ field_options:
     status_dropdown_suspended: Призупинені
     status_dropdown_archived: Архівовані
     token: Введіть надійний ключ доступу...
-  directus_webhooks:
-    status_options_active: Активний
-    status_options_inactive: Неактивний
-    data_label: Надіслати дані про подію
-    triggers_divider: Тріггери
-    actions_create: Створити
-    actions_update: Оновити
-    actions_delete: Видалити
-    actions_login: Логін
-    headers:
-      header: Заголовок
-      value: Значення
-      add: Додати заголовок
 no_fields_in_collection: 'Ще немає полей в колекції "{collection}"'
 no_value: Значення відсутнє
 do_nothing: Нічого не робити
@@ -1571,17 +1591,64 @@ live_preview:
   new_window: Відкрити в новому вікні
   close_window: Відкрити в режимі розділеного екрана
   toggle_3d: Перемикнути 3D
+  iframe_title: Попередній перегляд вебсайту
+  display_options: Параметри дисплея
 shares: Акції
 unlimited_usage: Необмежене використання
 uses_left: Не залишилося використань | Залишилося одне використання | {n} використань залишилося
 no_shares: Немає спільних ресурсів для відображення
 new_share: Нова публікація
+ai:
+  input: Введення
+  unknown: Невідомо
+  items: Об'єкти
+  content: Вміст
+  settings: Налаштування
+  tool_approval:
+    disabled: Вимкнено
+  ask_user_submit: Підтвердити
+  ask_user_next: Уперед
+ai_tools:
+  items: Об'єкти
+  files: Файли
+  folders: Теки
+  flows: Автоматизація
+  trigger-flow: Ініціювати потік
+  operations: Операції
+  schema: Схема
+  collections: Колекції
+  fields: Поля
+mcp_prompts_collection:
+  no_collection_selected: Колекція не вибрана
+  no_collection_selected_copy: Виберіть колекцію, щоб увімкнути шаблони підказок, які можна використовувати повторно.
+  collection_not_found: Колекція не знайдена
+  collection_not_found_description: Колекція "{collection}" не існує в базі даних.
+  generate: Створити колекцію підказок АІ...
+  already_exists: Колекція підказок AI вже існує
+  generate_collection_dialog_title: Створити колекцію підказок для АІ
+  generate_fields_dialog_title: Створити поля підказок АІ
+  generate_collection_dialog_description: 'Буде створено нову збірку "{collection}" з необхідними полями та налаштуваннями для збереження багаторазових шаблонів запитів.'
+  generate_fields_dialog_description: 'Буде створено обов''язкові поля на вашій "{collection}" збірці.'
+  validation_success: 'Колекція готова до використання як збірка «AI Prompts».'
+  validation_error_invalid: Збірка не може бути використана
+  validation_error_missing: Збірка ще не доступна для використання
+  invalid_fields: 'Наступні поля існують, але мають несумісний тип:'
+  missing_fields: 'Наступні поля є обов''язковими, але відсутні:'
+  generate_missing: Створити відсутні поля...
+mcp_prompts_collection_schema:
+  system_prompt_note: Інструкції, що визначають, як LLM відповідає.
+  messages_note: 'Необов’язково: Визначте структуру розмови між користувачами та LLM. Використовується для додавання контексту та покращення результатів.'
+  messages_role_user: Користувач
+  messages_role_assistant: Помічник
+  messages_role_note: Хто говорить у цьому повідомленні.
+  meta_prompts_notice: 'Запити — це шаблони багаторазового використання, які можна застосовувати з LLM через сервер Directus MCP, Flows або інші програми штучного інтелекту.<a href="https://directus.io/docs/guides/ai/mcp/prompts" target="_blank">Дізнайтеся більше про створення ефективних запитів.</a>'
 expired: Закінчився
 upcoming: Майбутнє
 share: Поділитись
 share_item: Поділитися записом
 shared_with_you: З вами поділилися записом
 shared_enter_passcode: Введіть пароль для продовження...
+generate: Створити
 shared_leave_blank_for_passwordless_access: Залиште порожнім для доступу без пароля
 shared_leave_blank_for_unlimited: Залишіть порожнім для необмеженого
 shared_times_remaining: Посилання може бути використане {n} разів
@@ -1610,7 +1677,6 @@ editing_role: 'Роль {role}'
 editing_policy: 'Політика {policy}'
 no_permissions: Немає дозволів
 permission_add_collection: Додати колекцію
-creating_webhook: Створити вебхук
 default_label: За замовчуванням
 delete_label: Видалити
 delete_are_you_sure: >-
@@ -1663,6 +1729,8 @@ reset_password: Скинути пароль
 revisions: Версії
 no_revisions: Переглядів поки немає
 no_logs: Журнал порожній
+show_failed_only: Показати лише невдалі
+no_logs_on_page: Немає записів на цій сторінці
 revert: Повернути
 save: Зберегти
 schema: Схема
@@ -1698,7 +1766,6 @@ translation_placeholder: Введіть переклад...
 value: Значення
 view_project: Переглянути проект
 report_error: Звіт про помилку
-start: Почати
 table: Таблиця
 list: Список
 search_filter: Пошук і фільтр
@@ -1743,14 +1810,15 @@ interfaces:
     accordion_mode: Режим акордеон
     max_one_section_open: Максимальна кількість відкритих секцій – 1
   presentation-links:
-    presentation-links: Кнопки посилання
-    links: Посилання
-    description: Настроювані кнопки посилань для запуску динамічних URL-адрес
+    presentation-links: Кнопки
+    description: Налаштовувані кнопки-посилання для відкриття динамічних URL або запуску Flow
     style: Стиль
     primary: Стандартно
     link: Посилання
     button: Кнопки
     error: Неможливо виконати дію
+    action_type: Тип дії
+    select_manual_flow_note: Для цієї збірки Flow повинен мати ручний запуск
   select-multiple-checkbox:
     checkboxes: Прапорці
     description: Виберіть один із кількох варіантів за допомогою прапорців
@@ -1774,6 +1842,11 @@ interfaces:
     collection: Колекція
     description: Оберіть між інсуючими колекціями
     include_system_collections: Включити системні колекції
+  system-owner:
+    update: Оновити власника проєкту
+    edit: Редагувати власника проєкту
+    system-owner: Власник системи
+    description: Інтерфейс власника системи
   system-collections:
     collections: Колекції
     description: Обрати між існуючими колекціями
@@ -1853,7 +1926,7 @@ interfaces:
     interface-options: Опції інтерфейсу
     description: Плагін для вибору опцій інтерфейсу
   system-display:
-    display: Відображати
+    display: Показувати
     description: Виберіть наявний дисплей
     placeholder: Виберіть дисплей...
   system-display-options:
@@ -1869,8 +1942,11 @@ interfaces:
     description: Виберіть один пов'язаний об'єкт
     display_template: Шаблон відображення
   collection-item-dropdown:
-    collection-item-dropdown: Випадаючий список елементів колекції
+    collection-item-dropdown: Список елементів колекції
     description: Вибір елемент з колекції у форматі JSON
+  collection-item-multiple-dropdown:
+    collection-item-multiple-dropdown: Список елементів колекції (множинний вибір)
+    description: Виберіть кілька елементів із колекції у форматі JSON
   input-rich-text-md:
     markdown: Розмітка
     description: Увійти та переглянути розмітку
@@ -2012,6 +2088,7 @@ interfaces:
     folder_note: Тека для завантажених файлів. Не може вплинути на існуючі файли.
     imageToken: Статичний маркер доступу
     imageToken_label: До URL-адреси об’єкта додається статичний маркер доступу
+    media_preview_iframe_title: Попередній перегляд медіа
   input-block-editor:
     input-block-editor: Редактор блоків
     description: Редактор блоків для мультимедійних матеріалів, виводить дані в чистому вигляді у форматі JSON за допомогою Editor.js
@@ -2067,6 +2144,12 @@ interfaces:
   input-password:
     input-password: Введіть пароль
     description: Введення пароля з перемикачем, щоб приховати значення
+  flow-select:
+    flow-select: Вибір процесу
+  header:
+    header: Заголовок
+    links: Посилання
+    action_type: Тип дії
 displays:
   translations:
     translations: Переклади
@@ -2281,7 +2364,11 @@ show_labels: Показати мітки
 show_legend: Показати історію
 right: Справа
 left: Зліва
+start: Почати
+end: Кінець
 donut: Кільце
+continuous: Безперервно
+gap: Проміжок
 panels:
   metric:
     name: Метрична
@@ -2297,6 +2384,7 @@ panels:
     value_field: Поле значення
     fill_type: Тип заповнення
     curve_type: Тип кривої
+    missing_data: Відсутні дані
   label:
     name: Ярлик
     description: Показати деякі тексти
@@ -2346,7 +2434,8 @@ triggers:
     action: 'Дія (без блокування)'
     filter: 'Фільтр (блокування)'
   webhook:
-    name: Вебхук
+    name: Webhook
+    error_on_reject: Помилка при відхиленні
     description: Запуск за вхідним HTTP-запитом
     method: Метод
     async: Асинхронний
@@ -2369,11 +2458,11 @@ triggers:
 a_flow_uuid: Виберіть потік для запуску...
 any_string_or_json: Будь-який рядок або JSON...
 item_payload_placeholder: Це JSON, який використовується для оновлення значень полів елемента...
-operation_variables_note: Ви можете отримати доступ до даних потоку за допомогою таких змінних, як **{'{'}{'{'}$last{'}'}{'}'}**, **{'{'}{'{'}$trigger{'}'}{'}'}** та **{'{'}{'{'}$accountability{'}'}{'}'}** або зверніться до попередніх операцій за допомогою **{'{'}{'{'}operation_key{'}'}{'}'}**.'
+operation_variables_note: Ви можете отримати доступ до даних процесу за допомогою таких змінних, як **{'{'}{'{'}$last{'}'}{'}'}**, **{'{'}{'{'}$trigger{'}'}{'}'}** та **{'{'}{'{'}$accountability{'}'}{'}'}**, або звертатися до попередніх операцій за допомогою **{'{'}{'{'}operation_key{'}'}{'}'}**.'
 operations:
   condition:
     name: Умова
-    description: Керувати потоком на основі умови
+    description: Маршрутизація процесу на основі логіки If / Else
   exec:
     name: Виконати Скрипт
     description: Виконати довільний код щоб змінити дані
@@ -2403,8 +2492,8 @@ operations:
     payload: Вміст
     query: Запит
   json-web-token:
-    name: Веб-токен JSON (JWT)
-    description: Підписання та перевірка веб-токенів JSON
+    name: JSON Web Token (JWT)
+    description: Підписання та перевірка JSON Web Tokens
     operation: Операція
     secret: Приватно
     secret_placeholder: Введіть ключ...
@@ -2425,9 +2514,16 @@ operations:
     name: Надіслати Email
     description: Відправити лист одному або декільком людям
     to: До
+    to_placeholder: Додайте адреси електронної пошти та натисніть Enter...
     body: Тіло
     template: Шаблон
     data: Дані
+    cc: CC
+    cc_placeholder: Додайте адреси електронної пошти у CC і натисніть Enter...
+    bcc: BCC
+    bcc_placeholder: Додайте адресу електронної пошти BCC і натисніть Enter...
+    reply_to: Відповісти
+    reply_to_placeholder: Додайте адресу електронної пошти для відповіді та натисніть Enter...
   notification:
     name: Надіслати сповіщення
     description: Надіслати сповіщення в застосунку одному або декільком користувачам
@@ -2452,12 +2548,18 @@ operations:
     name: Спати
     description: Зачекайте декілька мілісекунд
     milliseconds: Мілісекунди
+  throw-error:
+    name: Видати помилку
+    description: Видавати помилку в шляху відхилення
+    code: Код помилки
+    status: Код статусу HTTP
+    message: Повідомлення про помилку
   transform:
     name: Перетворити вміст
     description: Змінити вміст JSON потоку
   trigger:
     name: Ініціювати потік
-    description: Передати ці дані в інший потік
+    description: Передати ці дані на інший Flow
     flows: Автоматизація
     flow: Автоматизація
     data: Дані
@@ -2471,7 +2573,7 @@ operations:
 unit: Одиниця
 standard: Стандартний
 scientific: Науковий
-engineering: Інженіринг
+engineering: Інженерія
 compact: Компактна
 currency: Валюта
 notation: Записка
@@ -2511,3 +2613,14 @@ search_flow: Пошуковий потік...
 percent: Відсоток
 show_password: Показати пароль
 hide_password: Приховати пароль
+bsl_banner:
+  title: Ви не встановили власника проєкту.
+  license: Нам потрібно це, щоб забезпечити дотримання нашої BSL 1.1 ліцензії. Це має бути основний контакт з відповіддю за ваш проєкт.
+  set_owner: Встановити власника
+  remind_later: Нагадати пізніше
+  remind_next_login: Ми нагадаємо вам про це під час наступного входу.
+accepted: Схвалено
+text_direction_auto: Автоматично (відповідно до мови)
+text_direction_ltr: Зліва направо (LTR)
+text_direction_rtl: Справа наліво (RTL)
+set_to_now: Перемкнути на Зараз

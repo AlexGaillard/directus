@@ -5,7 +5,7 @@ export default defineTheme({
 	name: '$t:theme_directus_default',
 	appearance: 'dark',
 	rules: {
-		borderRadius: '6px',
+		borderRadius: '0.3125rem',
 		borderWidth: '2px',
 
 		foreground: '#c9d1d9',
@@ -137,8 +137,8 @@ export default defineTheme({
 		},
 
 		form: {
-			columnGap: '32px',
-			rowGap: '40px',
+			columnGap: '1.8125rem',
+			rowGap: '2.25rem',
 
 			field: {
 				label: {
@@ -161,8 +161,8 @@ export default defineTheme({
 					boxShadowHover: 'none',
 					boxShadowFocus: '0 0 16px -8px var(--theme--primary)',
 
-					height: '60px',
-					padding: '16px',
+					height: '3.375rem',
+					padding: '0.875rem',
 				},
 			},
 		},
@@ -219,8 +219,8 @@ export default defineTheme({
 							boxShadowHover: 'var(--theme--form--field--input--box-shadow-hover)',
 							boxShadowFocus: 'var(--theme--form--field--input--box-shadow-focus)',
 
-							height: '52px',
-							padding: '12px',
+							height: '2.9375rem',
+							padding: '0.6875rem',
 						},
 					},
 				},
@@ -273,13 +273,13 @@ export default defineTheme({
 			menu: {
 				background: '#161b22',
 				borderRadius: 'var(--theme--border-radius)',
-				boxShadow: '0px 0px 6px 0px rgb(0, 0, 0, 0.2)',
+				boxShadow: '0px 0px 6px 0px black',
 			},
 		},
 
 		banner: {
 			background: '#0e1c2f',
-			padding: '40px',
+			padding: '2.25rem',
 			borderRadius: 'var(--theme--border-radius)',
 
 			avatar: {

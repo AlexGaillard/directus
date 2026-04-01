@@ -87,6 +87,11 @@ export function getTriggers() {
 									'response',
 									'auth.login',
 									'files.upload',
+									'extensions.load',
+									'extensions.unload',
+									'extensions.reload',
+									'extensions.installed',
+									'extensions.uninstalled',
 								],
 								font: 'monospace',
 							},
@@ -102,11 +107,12 @@ export function getTriggers() {
 							width: 'full' as Width,
 							readonly:
 								!scope ||
-								['items.create', 'items.update', 'items.delete', 'items.promote'].every(
+								['items.create', 'items.update', 'items.delete', 'items.promote', 'items.sort'].every(
 									(t) => scope?.includes(t) === false,
 								),
 							options: {
-								includeSystem: !scope || scope?.filter((t: string) => t !== 'items.promote').length > 0,
+								includeSystem:
+									!scope || scope?.filter((t: string) => t !== 'items.promote' && t !== 'items.sort').length > 0,
 							},
 						},
 					},
@@ -241,6 +247,19 @@ export function getTriggers() {
 					},
 				},
 				{
+					field: 'error_on_reject',
+					name: t('triggers.webhook.error_on_reject'),
+					type: 'boolean',
+					meta: {
+						width: 'half' as Width,
+						interface: 'toggle',
+						hidden: async,
+					},
+					schema: {
+						default_value: false,
+					},
+				},
+				{
 					field: 'return',
 					name: t('triggers.common.response_body'),
 					type: 'string',
@@ -358,7 +377,7 @@ export function getTriggers() {
 
 				return labels;
 			},
-			options: [
+			options: ({ async }) => [
 				{
 					field: 'collections',
 					name: t('collections'),
@@ -374,6 +393,19 @@ export function getTriggers() {
 					meta: {
 						width: 'half' as Width,
 						interface: 'toggle',
+					},
+					schema: {
+						default_value: false,
+					},
+				},
+				{
+					field: 'error_on_reject',
+					name: t('triggers.webhook.error_on_reject'),
+					type: 'boolean',
+					meta: {
+						width: 'half' as Width,
+						interface: 'toggle',
+						hidden: async,
 					},
 					schema: {
 						default_value: false,

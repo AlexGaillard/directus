@@ -1,13 +1,16 @@
 <script setup lang="ts">
-import { useEventListener } from '@/composables/use-event-listener';
-import { hideDragImage } from '@/utils/hide-drag-image';
 import { useSync } from '@directus/composables';
-import type { ShowSelect } from '@directus/extensions';
+import type { ShowSelect } from '@directus/types';
 import { clone, throttle } from 'lodash';
 import { computed, ref, useSlots } from 'vue';
-import { useI18n } from 'vue-i18n';
 import Draggable from 'vuedraggable';
 import { Header, Sort } from './types';
+import VCheckbox from '@/components/v-checkbox.vue';
+import VIcon from '@/components/v-icon/v-icon.vue';
+import VMenu from '@/components/v-menu.vue';
+import { useEventListener } from '@/composables/use-event-listener';
+import { useUserStore } from '@/stores/user';
+import { hideDragImage } from '@/utils/hide-drag-image';
 
 const props = withDefaults(
 	defineProps<{
@@ -15,6 +18,7 @@ const props = withDefaults(
 		sort: Sort;
 		reordering: boolean;
 		allowHeaderReorder: boolean;
+		allowColumnSort: boolean;
 		showSelect?: ShowSelect;
 		showResize?: boolean;
 		showManualSort?: boolean;
@@ -39,7 +43,9 @@ const props = withDefaults(
 );
 
 const emit = defineEmits(['update:sort', 'toggle-select-all', 'update:headers', 'update:reordering']);
-const { t } = useI18n();
+const userStore = useUserStore();
+
+const isRTL = computed(() => userStore.textDirection === 'rtl');
 
 const resizing = ref<boolean>(false);
 const resizeStartX = ref<number>(0);
@@ -133,7 +139,8 @@ function onResizeHandleMouseDown(header: Header, event: PointerEvent) {
 
 function onMouseMove(event: PointerEvent) {
 	if (resizing.value === true) {
-		const newWidth = resizeStartWidth.value + (event.pageX - resizeStartX.value);
+		const deltaX = event.pageX - resizeStartX.value;
+		const newWidth = resizeStartWidth.value + (isRTL.value ? -deltaX : deltaX);
 		const currentHeaders = clone(props.headers);
 
 		const newHeaders = currentHeaders.map((existing: Header) => {
@@ -174,7 +181,7 @@ function toggleManualSort() {
 
 <template>
 	<thead class="table-header" :class="{ resizing, reordering }">
-		<draggable
+		<Draggable
 			v-model="headersWritable"
 			:class="{ fixed }"
 			item-key="value"
@@ -195,13 +202,12 @@ function toggleManualSort() {
 					class="manual cell"
 					:class="{ 'sorted-manually': sort.by === manualSortKey }"
 					scope="col"
-					@click="toggleManualSort"
 				>
-					<v-icon v-tooltip="t('toggle_manual_sorting')" name="sort" small />
+					<VIcon v-tooltip="$t('toggle_manual_sorting')" name="sort" small clickable @click="toggleManualSort" />
 				</th>
 
 				<th v-if="showSelect !== 'none'" class="select cell" scope="col">
-					<v-checkbox
+					<VCheckbox
 						v-if="showSelect === 'multiple'"
 						:model-value="allItemsSelected"
 						:indeterminate="someItemsSelected"
@@ -211,45 +217,53 @@ function toggleManualSort() {
 			</template>
 
 			<template #item="{ element: header }">
-				<th :class="getClassesForHeader(header)" class="cell" scope="col" :style="{ width: header.width + 'px' }">
-					<v-menu v-if="hasHeaderContextMenuSlot" show-arrow placement="bottom-start">
+				<th :class="getClassesForHeader(header)" class="cell" scope="col" :style="{ inlineSize: header.width + 'px' }">
+					<VMenu v-if="hasHeaderContextMenuSlot" show-arrow placement="bottom-start">
 						<template #activator="{ toggle }">
-							<div class="content reorder-handle" @click="toggle">
-								<span class="name">
-									<span v-if="header.description" v-tooltip="header.description" class="description-dot"></span>
-									<slot :name="`header.${header.value}`" :header="header">
-										{{ header.text }}
-									</slot>
-								</span>
+							<div class="content reorder-handle">
+								<button class="header-btn" type="button" @click="toggle">
+									<span class="name">
+										<span v-if="header.description" v-tooltip="header.description" class="description-dot"></span>
+										<slot :name="`header.${header.value}`" :header="header">
+											{{ header.text }}
+										</slot>
+									</span>
 
-								<v-icon
-									v-if="hasHeaderContextMenuSlot"
-									:name="sort.by === header.value ? 'sort' : 'arrow_drop_down'"
-									class="action-icon"
-									small
-								/>
+									<VIcon :name="sort.by === header.value ? 'sort' : 'arrow_drop_down'" class="action-icon" small />
+								</button>
 							</div>
 						</template>
 
 						<slot name="header-context-menu" v-bind="{ header }" />
-					</v-menu>
+					</VMenu>
 
-					<div v-else class="content reorder-handle" @click="changeSort(header)">
-						<span class="name">
-							<span v-if="header.description" v-tooltip="header.description" class="description-dot"></span>
-							<slot :name="`header.${header.value}`" :header="header">
-								{{ header.text }}
-							</slot>
-						</span>
+					<div v-else class="content reorder-handle">
+						<button
+							type="button"
+							class="header-btn"
+							:class="{ disabled: !allowColumnSort }"
+							:disabled="!allowColumnSort || !header.sortable"
+							:aria-label="allowColumnSort && header.sortable ? $t(getTooltipForSortIcon(header)) : undefined"
+							@click="changeSort(header)"
+						>
+							<span class="name">
+								<span v-if="header.description" v-tooltip="header.description" class="description-dot"></span>
+								<slot :name="`header.${header.value}`" :header="header">
+									{{ header.text }}
+								</slot>
+							</span>
 
-						<v-icon
-							v-if="header.sortable"
-							v-tooltip.top="t(getTooltipForSortIcon(header))"
-							name="sort"
-							class="action-icon"
-							small
-						/>
+							<VIcon
+								v-if="header.sortable"
+								v-tooltip.top="allowColumnSort && $t(getTooltipForSortIcon(header))"
+								name="sort"
+								class="action-icon"
+								:class="{ disabled: !allowColumnSort }"
+								small
+							/>
+						</button>
 					</div>
+
 					<span
 						v-if="showResize"
 						class="resize-handle"
@@ -266,7 +280,7 @@ function toggleManualSort() {
 				</td>
 				<th v-if="hasItemAppendSlot && !$slots['header-append']" class="spacer cell" scope="col" />
 			</template>
-		</draggable>
+		</Draggable>
 		<!-- </tr> -->
 	</thead>
 </template>
@@ -275,12 +289,16 @@ function toggleManualSort() {
 .table-header {
 	.cell {
 		position: relative;
-		height: 50px; /* +2px for bottom border */
-		padding: 0 12px;
+		block-size: 2.8125rem; /* +2px for bottom border */
+		padding: 0 0.6875rem;
 		font-weight: 500;
-		font-size: 14px;
+		font-size: 0.8125rem;
 		background-color: var(--v-table-background-color, var(--theme--background));
-		border-bottom: var(--theme--border-width) solid var(--theme--border-color-subdued);
+		border-block-end: var(--theme--border-width) solid var(--theme--border-color-subdued);
+
+		&.select {
+			--focus-ring-offset: var(--focus-ring-offset-invert);
+		}
 
 		&.select,
 		&.manual {
@@ -291,21 +309,43 @@ function toggleManualSort() {
 		.content {
 			display: flex;
 			align-items: center;
-			height: 100%;
+			block-size: 100%;
 			color: var(--theme--foreground-accent);
 			font-weight: 600;
 
-			> span {
-				overflow: hidden;
-				white-space: nowrap;
-				text-overflow: ellipsis;
+			.header-btn {
+				inline-size: 100%;
+				display: flex;
+				align-items: center;
+				justify-content: start;
+
+				.name,
+				.action-button {
+					overflow: hidden;
+					white-space: nowrap;
+					text-overflow: ellipsis;
+				}
+
+				&.disabled {
+					cursor: not-allowed;
+					color: var(--theme--foreground-subdued);
+				}
+
+				&:focus-visible .action-icon {
+					opacity: 1;
+				}
 			}
 		}
 
 		&.small {
 			padding: 0;
+
 			.content {
 				justify-content: center;
+
+				.header-btn {
+					inline-size: auto;
+				}
 
 				.name {
 					display: none;
@@ -323,18 +363,17 @@ function toggleManualSort() {
 	}
 
 	.actionable {
-		cursor: pointer;
 		position: relative;
 
 		.action-icon {
-			margin-left: 4px;
+			margin-inline-start: 0.25rem;
 			color: var(--theme--foreground-subdued);
 			opacity: 0;
 			transition: opacity var(--fast) var(--transition);
 			transform: scaleY(-1);
 		}
 
-		&:hover .action-icon {
+		&:hover .action-icon:not(.disabled) {
 			opacity: 1;
 		}
 
@@ -359,22 +398,21 @@ function toggleManualSort() {
 
 	.select,
 	.manual {
-		padding-right: 0;
+		padding-inline-end: 0;
 	}
 
 	.fixed {
 		position: sticky;
-		top: var(--v-table-sticky-offset-top, 0);
+		inset-block-start: var(--v-table-sticky-offset-top, 0);
 		z-index: 3;
 	}
 
 	.manual {
 		color: var(--theme--foreground-subdued);
-		cursor: pointer;
 
 		.v-icon {
 			position: relative;
-			left: 2px;
+			inset-inline-start: 0.125rem;
 		}
 
 		&.sorted-manually {
@@ -384,20 +422,20 @@ function toggleManualSort() {
 
 	.resize-handle {
 		position: absolute;
-		top: 0;
-		right: 0;
-		width: 5px;
-		height: 100%;
+		inset-block-start: 0;
+		inset-inline-end: 0;
+		inline-size: 0.3125rem;
+		block-size: 100%;
 		cursor: ew-resize;
 		transition: opacity var(--fast) var(--transition);
 
 		&::after {
 			position: relative;
-			top: 20%;
-			left: 3px;
+			inset-block-start: 20%;
+			inset-inline-start: 0.1875rem;
 			display: block;
-			width: var(--theme--border-width);
-			height: 60%;
+			inline-size: var(--theme--border-width);
+			block-size: 60%;
 			background-color: var(--theme--border-color-subdued);
 			content: '';
 			transition: background-color var(--fast) var(--transition);
@@ -416,19 +454,18 @@ function toggleManualSort() {
 :deep(.header-order-ghost) {
 	&::after,
 	&::before {
-		width: 2px;
+		inline-size: 0.125rem;
 		content: '';
 		display: block;
 		position: absolute;
-		right: 0;
-		top: 20%;
-		height: 60%;
+		inset-inline-end: 0;
+		inset-block-start: 20%;
+		block-size: 60%;
 		background-color: var(--theme--primary);
 	}
 
 	&::before {
-		right: auto;
-		left: 0;
+		inset-inline: 0 auto;
 	}
 }
 
@@ -437,14 +474,14 @@ function toggleManualSort() {
 }
 
 .description-dot {
-	width: 8px;
-	height: 8px;
+	inline-size: 0.4375rem;
+	block-size: 0.4375rem;
 	background-color: var(--theme--foreground-subdued);
 	display: inline-block;
 	border-radius: 50%;
 	border: var(--theme--background) 6px solid;
 	box-sizing: content-box;
-	margin-right: 8px;
+	margin-inline-end: 0.4375rem;
 	vertical-align: middle;
 }
 </style>

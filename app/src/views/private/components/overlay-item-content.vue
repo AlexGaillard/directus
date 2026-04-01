@@ -1,7 +1,11 @@
 <script setup lang="ts">
-import { Field, PrimaryKey } from '@directus/types';
-import { computed } from 'vue';
-import { useI18n } from 'vue-i18n';
+import type { Field, PrimaryKey } from '@directus/types';
+import { cloneDeep, isEqual } from 'lodash';
+import { computed, nextTick, useTemplateRef, watch } from 'vue';
+import ValidationErrors from '@/components/v-form/components/validation-errors.vue';
+import VForm from '@/components/v-form/v-form.vue';
+import VInfo from '@/components/v-info.vue';
+import type { CollabContext } from '@/composables/use-collab';
 import FilePreviewReplace from '@/views/private/components/file-preview-replace.vue';
 
 const {
@@ -11,7 +15,9 @@ const {
 	relatedCollectionFields,
 	initialValues,
 	fields,
+	validationErrors,
 	junctionFieldLocation = 'bottom',
+	relatedPrimaryKeyField,
 } = defineProps<{
 	collection: string;
 	primaryKey: PrimaryKey | null;
@@ -20,19 +26,37 @@ const {
 	initialValues: Record<string, any> | null;
 	fields: Field[];
 	disabled: boolean;
+	nonEditable: boolean;
 	loading: boolean;
 	validationErrors: any[];
 	junctionFieldLocation?: string;
 	relatedCollectionFields: Field[];
 	relatedPrimaryKey: PrimaryKey;
+	relatedPrimaryKeyField: string | null;
 	refresh: () => void;
+	collabContext?: CollabContext;
+	relatedCollabContext?: CollabContext;
 }>();
 
 const internalEdits = defineModel<Record<string, any>>('internal-edits');
 
-const { t } = useI18n();
-
+const { mainInitialValues, junctionInitialValues } = useInitialValues();
 const { file } = useFile();
+const { scrollToField } = useValidationScrollToField();
+
+const validationErrorsEl = useTemplateRef('validationErrors');
+
+watch(
+	() => validationErrors,
+	async (newVal, oldVal) => {
+		if (isEqual(newVal, oldVal)) return;
+
+		if (newVal?.length > 0) {
+			await nextTick();
+			validationErrorsEl.value?.$el?.scrollIntoView({ behavior: 'smooth' });
+		}
+	},
+);
 
 const swapFormOrder = computed(() => junctionFieldLocation === 'top');
 const hasVisibleFieldsRelated = computed(() => relatedCollectionFields.some((field: Field) => !field.meta?.hidden));
@@ -45,58 +69,111 @@ function setRelationEdits(edits: any) {
 	internalEdits.value[junctionField] = edits;
 }
 
+function useInitialValues() {
+	const mainInitialValues = computed(() => {
+		if (!initialValues) return null;
+		if (!junctionField || !initialValues[junctionField] || !relatedPrimaryKeyField) return initialValues;
+
+		const tempInitialValues = cloneDeep(initialValues);
+		tempInitialValues[junctionField] = initialValues[junctionField][relatedPrimaryKeyField];
+
+		return tempInitialValues;
+	});
+
+	const junctionInitialValues = computed(() => {
+		if (!initialValues || !junctionField || !initialValues[junctionField]) return null;
+		return initialValues[junctionField];
+	});
+
+	return {
+		mainInitialValues,
+		junctionInitialValues,
+	};
+}
+
 function useFile() {
 	const isDirectusFiles = computed(() => {
 		return collection === 'directus_files' || relatedCollection === 'directus_files';
 	});
 
 	const file = computed(() => {
-		if (isDirectusFiles.value === false || !initialValues) return null;
+		if (isDirectusFiles.value === false) return null;
 
-		const fileData = junctionField ? initialValues?.[junctionField] : initialValues;
+		const fileData = junctionField ? junctionInitialValues.value : mainInitialValues.value;
 
 		return fileData || null;
 	});
 
 	return { file, isDirectusFiles };
 }
+
+function useValidationScrollToField() {
+	const mainFormEl = useTemplateRef<any>('mainForm');
+	const junctionFormEl = useTemplateRef<any>('junctionForm');
+
+	return { scrollToField };
+
+	function scrollToField(fieldKey: string) {
+		const fieldOfMainForm = fields.find((field: Field) => field.field === fieldKey);
+
+		if (fieldOfMainForm) {
+			mainFormEl.value?.$refs?.el?.scrollIntoView({ behavior: 'smooth' });
+			return;
+		}
+
+		junctionFormEl.value?.$refs?.el?.scrollIntoView({ behavior: 'smooth' });
+	}
+}
 </script>
 
 <template>
 	<div class="overlay-item-content" :class="{ empty: emptyForm }">
-		<file-preview-replace v-if="file" class="preview" :file="file" in-modal @replace="refresh" />
+		<FilePreviewReplace v-if="file" class="preview" :disabled :non-editable :file in-modal @replace="refresh" />
 
-		<v-info v-if="emptyForm" :title="t('no_visible_fields')" icon="search" center>
-			{{ t('no_visible_fields_copy') }}
-		</v-info>
+		<VInfo v-if="emptyForm" :title="$t('no_visible_fields')" icon="search" center>
+			{{ $t('no_visible_fields_copy') }}
+		</VInfo>
 
 		<div v-else class="overlay-item-order" :class="{ swap: swapFormOrder }">
-			<v-form
+			<ValidationErrors
+				v-if="validationErrors?.length"
+				ref="validationErrors"
+				class="validation-errors"
+				:validation-errors
+				:fields="[...fields, ...relatedCollectionFields]"
+				@scroll-to-field="scrollToField"
+			/>
+
+			<VForm
 				v-if="junctionField"
+				ref="junctionForm"
+				:model-value="internalEdits?.[junctionField]"
 				:disabled="disabled"
+				:non-editable="nonEditable"
 				:loading="loading"
 				:show-no-visible-fields="false"
-				:initial-values="initialValues?.[junctionField]"
-				:primary-key="relatedPrimaryKey"
-				:model-value="internalEdits?.[junctionField]"
-				:fields="relatedCollectionFields"
-				:validation-errors="junctionField ? validationErrors : undefined"
+				:initial-values="junctionInitialValues"
 				:autofocus="!swapFormOrder"
 				:show-divider="!swapFormOrder && hasVisibleFieldsJunction"
+				:primary-key="relatedPrimaryKey"
+				:fields="relatedCollectionFields"
+				:collab-context="relatedCollabContext"
 				@update:model-value="setRelationEdits"
 			/>
 
-			<v-form
+			<VForm
+				ref="mainForm"
 				v-model="internalEdits"
 				:disabled="disabled"
+				:non-editable="nonEditable"
 				:loading="loading"
 				:show-no-visible-fields="false"
-				:initial-values="initialValues"
+				:initial-values="mainInitialValues"
 				:autofocus="swapFormOrder"
 				:show-divider="swapFormOrder && hasVisibleFieldsRelated"
 				:primary-key="primaryKey"
 				:fields="fields"
-				:validation-errors="!junctionField ? validationErrors : undefined"
+				:collab-context="collabContext"
 			/>
 		</div>
 	</div>
@@ -104,15 +181,19 @@ function useFile() {
 
 <style lang="scss" scoped>
 .v-divider {
-	margin: 52px 0;
+	margin: 2.9375rem 0;
 }
 
 .overlay-item-content {
 	padding: var(--content-padding);
-	padding-bottom: var(--content-padding-bottom);
+	padding-block-end: var(--content-padding-bottom);
 
 	.preview {
-		margin-bottom: var(--theme--form--row-gap);
+		margin-block-end: var(--theme--form--row-gap);
+	}
+
+	.validation-errors {
+		margin-block-end: var(--theme--form--row-gap);
 	}
 
 	.overlay-item-order {

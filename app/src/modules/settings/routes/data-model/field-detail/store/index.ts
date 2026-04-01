@@ -1,10 +1,3 @@
-import api from '@/api';
-import { useExtensions } from '@/extensions';
-import { useCollectionsStore } from '@/stores/collections';
-import { useFieldsStore } from '@/stores/fields';
-import { useRelationsStore } from '@/stores/relations';
-import { getLocalTypeForField } from '@/utils/get-local-type';
-import { unexpectedError } from '@/utils/unexpected-error';
 import type { DisplayConfig, InterfaceConfig } from '@directus/extensions';
 import type { Collection, DeepPartial, Field, LocalType, Relation } from '@directus/types';
 import { getEndpoint } from '@directus/utils';
@@ -12,6 +5,13 @@ import { cloneDeep, get, has, isEmpty, mergeWith, orderBy, set, sortBy } from 'l
 import { defineStore } from 'pinia';
 import { computed } from 'vue';
 import * as alterations from './alterations';
+import api from '@/api';
+import { useExtensions } from '@/extensions';
+import { useCollectionsStore } from '@/stores/collections';
+import { useFieldsStore } from '@/stores/fields';
+import { useRelationsStore } from '@/stores/relations';
+import { getLocalTypeForField } from '@/utils/get-local-type';
+import { unexpectedError } from '@/utils/unexpected-error';
 
 export function syncFieldDetailStoreProperty(path: string, defaultValue?: any) {
 	const fieldDetailStore = useFieldDetailStore();
@@ -163,6 +163,24 @@ export const useFieldDetailStore = defineStore({
 
 				if (localType) {
 					alterations[localType].applyChanges(updates, state, { hasChanged, getCurrent });
+				}
+
+				if (hasChanged('relations.m2o.related_collection')) {
+					const currentType = getCurrent('localType');
+					let targetType = currentType;
+
+					if (get(updates, 'relations.m2o.related_collection') === 'directus_files') {
+						if (currentType === 'm2o') targetType = 'file';
+						if (currentType === 'm2m') targetType = 'files';
+					} else {
+						if (currentType === 'file') targetType = 'm2o';
+						if (currentType === 'files') targetType = 'm2m';
+					}
+
+					if (currentType !== targetType) {
+						updates.localType = targetType;
+						alterations.global.switchInterfaceAndDisplay(updates);
+					}
 				}
 
 				const { field: fieldUpdates, items: itemUpdates, ...restUpdates } = updates;

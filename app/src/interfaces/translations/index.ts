@@ -1,7 +1,7 @@
-import { useFieldsStore } from '@/stores/fields';
 import { defineInterface } from '@directus/extensions';
 import PreviewSVG from './preview.svg?raw';
 import InterfaceTranslations from './translations.vue';
+import { useFieldsStore } from '@/stores/fields';
 
 export default defineInterface({
 	id: 'translations',
@@ -55,17 +55,6 @@ export default defineInterface({
 				},
 			},
 			{
-				field: 'defaultLanguage',
-				name: '$t:interfaces.translations.default_language',
-				meta: {
-					interface: 'input',
-					width: 'half',
-					options: {
-						placeholder: '$t:primary_key',
-					},
-				},
-			},
-			{
 				field: 'userLanguage',
 				name: '$t:interfaces.translations.user_language',
 				type: 'string',
@@ -78,6 +67,17 @@ export default defineInterface({
 						label: '$t:interfaces.translations.enable',
 					},
 					width: 'half',
+				},
+			},
+			{
+				field: 'defaultLanguage',
+				name: '$t:interfaces.translations.default_language',
+				meta: {
+					interface: 'input',
+					width: 'half',
+					options: {
+						placeholder: '$t:primary_key',
+					},
 				},
 			},
 			{

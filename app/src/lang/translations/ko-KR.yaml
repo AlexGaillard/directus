@@ -20,6 +20,8 @@
 #'SIMD', 'ArrayBuffer', 'DataView', 'JSON', 'Promise', 'Generator', 'GeneratorFunction', 'Reflect',
 #'Proxy', 'Intl'
 about: 앱 정보
+first_name: 이름/별명
+last_name: 성
 identifier: 식별자
 avatar: 아바타
 application: 애플리케이션
@@ -30,6 +32,10 @@ draft: 초안
 archived: 보관됨
 marketplace: 마켓플레이스
 extensions: 확장 기능
+skip_link_nav: 탐색으로 건너뛰기
+skip_link_module_nav: 모듈 탐색으로 건너뛰기
+skip_link_main: 메인 콘텐츠로 건너뛰기
+skip_link_sidebar: 사이드바로 건너뛰기
 modules: 모듈
 module_bar: 모듈 바
 logs: 로그
@@ -42,6 +48,8 @@ location: 위치
 collection_names_are_case_sensitive: 컬렉션 이름은 대소문자를 구분합니다
 condition_rules: 조건식
 input: 입력
+invalid_input: 잘못된 입력
+not_a_number: 숫자가 아닙니다
 maps: 지도
 switch_user: 사용자 전환
 item_creation: 추가
@@ -108,8 +116,15 @@ hook: 후크
 fill_width: 전체 폭
 field_name_translations: 필드명 번역
 enter_password_to_enable_tfa: 암호를 입력하여 이중 인증을 활성화하십시오
+sso_tfa_setup_notice: 계정에서 로그아웃되며 다시 로그인해야 합니다. 저장하지 않은 변경 사항은 삭제됩니다.
+enable_tfa: 2FA 활성화
+cancel_tfa_setup: 2FA 설정 취소
+cancel_tfa_setup_notice: 2FA 설정을 취소하시겠습니까?
+keep_setup: 설정 유지
+cancel_setup: 설정 취소
 add_field: 필드 추가
 role_name: 역할명
+policy_name: 정책 이름
 branch: 브랜치
 leaf: 잎
 indeterminate: 불확정 상태
@@ -127,10 +142,10 @@ requires_value: 필수 항목
 create_preset: 사전설정 생성
 create_panel: 판넬 추가
 create_role: 역할 생성
+create_policy: 정책 등록
 create_user: 사용자 생성
 message: 메시지
 delete_panel: 판넬 삭제
-create_webhook: 웹훅 생성
 create_custom_translation: 사용자 정의 번역 생성
 edit_custom_translation: 사용자 정의 번역 수정
 no_custom_translations: 사용자 정의 번역 없음
@@ -162,19 +177,9 @@ rename_version: 버전 이름 변경
 compare_version: 버전 비교
 save_version: 버전 저장
 promote_version: 버전 승격
-promote_version_disabled: 변경 사항 없음
-promote_version_drawer_title: '{version}을(를) 메인으로 승격'
-promote_version_changes: 변경 사항
-promote_version_preview: 미리보기
-outdated_notice: >-
-  이 버전이 생성된 이후 메인 항목이 업데이트되었습니다. 아래의 모든 필드 값을 검토하고 이 버전을 메인 항목으로 승격할 때 사용할 버전을 확인하세요.
-promote_notice: >-
-  아래의 모든 필드 값을 검토하고 이 버전을 메인 항목으로 승격할 때 사용할 버전을 확인하세요.
 delete_version: 버전 삭제
 delete_version_copy: >-
   "{version}" 버전을 삭제하시겠습니까? 이 작업은 취소할 수 없습니다.
-delete_on_promote_copy: >-
-  승격 후 "{version}" 버전을 삭제하거나 유지하시겠습니까?
 reset_bookmark: 북마크 초기화
 update_bookmark: 북마크 업데이트
 delete_bookmark: 북마크 삭제
@@ -188,7 +193,10 @@ logoutReason:
   SESSION_EXPIRED: 세션 만료
 public_label: 공개
 public_description: 인증 없이 사용할 수 있는 API 데이터를 제어합니다.
+public_role_info: >-
+  public 역할은 인증되지 않은 사용자 또는 역할이 없는 사용자가 사용할 수 있는 API 데이터를 제어합니다. public 역할의 요청에는 앱 또는 관리자 액세스 권한이 없을 수 있습니다. public 역할에 할당된 정책에 앱 또는 관리자 액세스 권한이 부여되면 무시됩니다.
 admin_description: 제한 없는 앱/API 액세스 권한이 있는 초기 관리자 역할입니다.
+admin_policy_description: 무제한 앱/API 액세스를 사용하는 초기 관리 정책입니다.
 no_description: 설명 없음...
 reached_maximum_number_of_extensions: 이 프로젝트에 대한 확장 한도에 도달했습니다 ({n}). 자세한 내용은 시스템 관리자에게 문의하십시오.
 not_allowed: 허용되지 않음
@@ -255,9 +263,13 @@ field_permissions: 필드 관리 권한
 field_validation: 필드 검증
 field_presets: 필드 사전 설정
 permissions_for_role: '{role} 역할이 있는 항목은 {action}할 수 있습니다.'
+permissions_for_policy: '{policy} 정책이 {action} 수 있는 항목입니다.'
 fields_for_role: '{role} 역할을 입력하면 {action}할 수 있습니다.'
+fields_for_policy: '{policy} 정책이 {action} 수 있는 필드입니다.'
 validation_for_role: '필드 {action} 규칙은 {role} 역할이 준수해야 합니다.'
+validation_for_policy: '{policy} 정책이 따라야 하는 필드 {action} 규칙입니다.'
 presets_for_role: '{role} 역할에 대한 필드 값 기본값입니다.'
+presets_for_policy: '{policy} Policy의 필드 값이 기본값입니다.'
 presets_field_warning: '"{field}" 필드의 관계형 프리셋은 "상세" 구문으로 구성해야 합니다.'
 presentation_and_aliases: 프레젠테이션
 revision_post_create: 이 항목이 생성되었을 때의 모습은 다음과 같습니다.
@@ -307,7 +319,10 @@ field_in_collection: '{field} ({collection})'
 reset_page_preferences: 앱 환경설정 초기화
 hidden_field: 숨김 필드
 hidden_on_detail: 실행 시 숨김
-disabled_editing_value: 편집 값 비활성화
+clear_hidden_field: 값(들) 지우기
+clear_value_on_save_when_hidden: 숨김 시 저장 시 값 지우기
+readonly_field_label: 앱에서 필드를 비활성화합니다.
+required_readonly_field_warning: 필드에 대해 readonly와 required를 모두 활성화하면 값이 비어 있는 경우 항목을 저장하지 못합니다.
 key: 키
 alias: 별칭
 bigInteger: 큰 정수형
@@ -363,6 +378,7 @@ no_collections_found: 컬렉션 없음
 new_data_alert: '데이터 모델 내에 다음이 생성됩니다.'
 search_collection: 컬렉션 검색
 search_role: 역할 검색...
+search_policy: 검색 정책...
 search_field: 검색 필드...
 new_field: '새 필드'
 new_collection: '새 컬렉션'
@@ -403,6 +419,7 @@ soft_length: 보통
 precision_scale: 정밀도 및 확장성
 readonly: 읽기 전용
 unique: 고유
+index: 색인
 updated_on: 수정일
 updated_by: 수정자
 primary_key: 기본키
@@ -411,6 +428,7 @@ field_key: 필드 키
 finish_setup: 셋업 종료
 dismiss: 무효
 toggle_raw_editor: RAW 편집기 토글
+toggle_variable_input: 변수 입력 토글
 raw_editor_placeholder: "{'{'}{'{'}$trigger.payload.example{'}'}{'}'}"
 raw_value: RAW 값
 copy_raw_value: RAW 값 복사
@@ -437,11 +455,11 @@ confirm_revert_body: 항목이 선택한 상태로 되돌아갑니다.
 display: 표시하다
 settings_update_success: 설정이 수정됨.
 title: 제목
+subtitle: 부제
 revision_delta_created: 생성됨
 revision_delta_created_externally: 외부에서 생성됨
 revision_delta_updated: '업데이트 된 1개의 필드 | 업데이트 된 {count}개의 필드'
 revision_delta_deleted: 삭제됨
-revision_delta_version_saved: '버전 저장 (1개 필드 업데이트) | 버전 저장 ({count} 필드 업데이트)'
 revision_delta_reverted: 되돌림
 revision_delta_update_message: 이 필드는 업데이트되었지만 보안상의 이유로 해당 값이 숨겨져 있습니다.
 revision_delta_other: 리비전
@@ -464,11 +482,17 @@ related_collection: 관계 컬렉션
 related_collections: 관계 컬렉션
 translations_collection: 번역 컬렉션
 languages_collection: 언어 컬렉션
+translations_preview_collections: 컬렉션
+translations_preview_fields: 필드
 import_data_input_placeholder: CSV 또는 JSON...
 import_data_button: 가져오기 시작
 import_data_indeterminate: 데이터를 가져오는 중...
 import_data_success: '{filename}에서 데이터를 성공적으로 가져왔습니다.'
 import_data_error: 이 파일의 데이터 구조가 컬렉션과 일치하지 않습니다.
+snapshot:
+  export: 스키마 내보내기
+  download: 스냅샷 다운로드(JSON)
+  info: 공유 또는 디버깅을 위한 스키마 전용 내보내기
 label_import: 가져오기
 label_export: 내보내기
 import_export: 가져오기 / 내보내기
@@ -507,12 +531,18 @@ date-fns_time_24hour: 'HH:mm:ss'
 date-fns_time_no_seconds_24hour: 'HH:mm'
 date-fns_date_short: 'MMM d, u'
 date-fns_time_short: 'h:mma'
+date-fns_time_short_seconds: 'h:mm:ssa'
 date-fns_date_short_no_year: MMM d
 minutes: 분
 hours: 시간
 month: 월
 year: 년
 select_all: 모두 선택
+permissionsLevel:
+  all: 전체 {action} 액세스
+  partial: 부분 {action} 액세스
+  custom: 부분 {action} 액세스
+  none: '{action} 액세스 권한 없음'
 months:
   january: 1월
   february: 2월
@@ -536,9 +566,13 @@ original: 원본
 url: URL
 import_label: 가져오기
 file_details: 파일 세부 정보
+copy_id: ID 복사
+copy_id_success: ID가 복사되었습니다.
+copy_id_fail: ID가 복사되지 않음
 dimensions: 규격
 size: 용량
 created: 작성됨
+uploaded: 업로드됨
 modified: 수정됨
 owner: 소유자
 edited_by: 편집자
@@ -585,6 +619,7 @@ manual_string: 수동으로 입력한 문자열
 save_and_create_new: 저장하고 새로 만들기
 save_and_stay: 저장 및 유지
 save_and_quit: 저장하고 종료
+save_and_return_to_main: 저장하고 메인으로 돌아가기
 save_as_copy: 사본으로 저장
 add_existing: 데이터 선택
 creating_items: 데이터 추가
@@ -615,15 +650,12 @@ display_not_found: '"{display}"를 찾을 수 없습니다.'
 reset_display: 디스플레이 재설정
 list-m2a: 빌더 (M2A)
 item_count: '데이터 없음 | 1개 항목 | {count}개 항목'
+filtered_item_count: '필터링된 항목 없음 | 필터링된 항목 하나 | 필터링된 항목 {count}'
 no_items_copy: 이 목록에는 등록된 내용이 없습니다.
 file_count: '파일 없음 | 파일 1개 | 파일 {count}개'
 no_files_copy: 표시할 파일이 없습니다.
 user_count: '사용자 없음 | 한명의 사용자 | {count}명의 사용자'
 no_users_copy: 이 역할(role)의 사용자가 아직 없습니다.
-webhooks_count: '웹훅 없음 | 한개의 웹훅 | {count}개의 웹훅'
-webhooks_deprecation_notice: |
-  웹훅은 더 이상 사용하지 않으며, **Flows**와 [Webhook / Request URL 작업](https://docs.directus.io/app/flows/operations.html#webhook-request-url)을 대신 사용하세요.
-no_webhooks_copy: 아직 웹훅이 구성되지 않았습니다. 아래 버튼을 통해 시작해 보세요.
 no_notifications: 알림 없음
 no_notifications_copy: 모든 알림을 확인하셨습니다!
 activity_log: 활동 기록
@@ -647,13 +679,13 @@ copy_to: 복사 ...
 no_other_dashboards_copy: 아직 다른 대시보드가 ​​없습니다.
 inactive: 비활성화
 users: 사용자
+roles: 역할
 activity: 활동
 activity_item: 활동 항목
 action: 활동
 ip_address: IP 주소
 user_agent: 사용자 에이전트
 origin: 출처
-webhooks: 웹훅
 decimals: 소수
 value_decimals: 값 소수점
 min_value: 최소값
@@ -693,6 +725,7 @@ enabled_dev_tooltip: 앱 확장 기능은 개발 모드에서 항상 활성화�
 disable_tfa: 2FA 비활성화
 admin_disable_tfa_text: 이 사용자에 대해 2FA를 비활성화하시겠습니까?
 tfa_setup: 2FA 설정
+tfa_setup_description: 계정을 보호하기 위해 2단계 인증을 설정하세요
 tfa_scan_code: 인증 앱에서 코드를 스캔하여 2FA 설정을 완료하세요.
 enter_otp_to_disable_tfa: 2FA를 비활성화하려면 OTP를 입력하세요.
 create_account: 계정 추가
@@ -703,6 +736,7 @@ errors:
   COLLECTION_NOT_FOUND: "목록이 존재하지 않습니다."
   CONTAINS_NULL_VALUES: 필드에 null 값이 포함되어 있습니다.
   CONTENT_TOO_LARGE: 제출한 항목/파일이 너무 큽니다.
+  FAILED_VALIDATION: 유효성 검사 실패
   FIELD_NOT_FOUND: 필드가 존재하지 않습니다.
   FORBIDDEN: 접근이 허용되지 않음.
   GRAPHQL_VALIDATION: GraphQL 유효성 검사
@@ -737,7 +771,6 @@ errors:
   VALUE_OUT_OF_RANGE: 값이 범위를 벗어났습니다.
   VALUE_TOO_LONG: 값이 너무 깁니다.
 security: 보안
-value_hashed: 안전하게 해시된 값
 bookmark_name: 북마크 이름...
 create_bookmark: 북마크 만들기
 edit_bookmark: 북마크 편집
@@ -753,7 +786,6 @@ unexpected_error_copy: 예기치 않은 오류가 발생했습니다. 다시 시
 copy_details: 세부정보 복사
 no_app_access: 앱 액세스 없음
 no_app_access_copy: 이 사용자는 관리 앱을 사용할 수 없습니다.
-password_reset_sent: 계정이 있는 경우 비밀번호를 재설정할 수 있는 보안 링크를 보내드립니다.
 password_reset_successful: 비밀번호가 성공적으로 재설정되었습니다.
 back: 뒤로
 filter: 필터
@@ -774,6 +806,9 @@ make_collection_hidden: 컬렉션 숨김
 make_folder_visible: 폴더 표시
 make_folder_hidden: 폴더 숨기기
 goto_collection_content: 내용 보기
+count_of_total_items: '{total} 항목 중 {count}'
+start_end_of_count_items: '{count} 항목의 {start}-{end}'
+start_end_of_count_filtered_items: '필터링된 항목 {count} {start}-{end}'
 delete_collection_are_you_sure: >-
   정말 "{collection}" 컬렉션을 삭제하시겠습니까? 이렇게 하면 컬렉션과 그 안에 있는 모든 항목이 삭제됩니다. 이 작업은 영구적입니다.
 delete_folder_are_you_sure: 정말로 "{folder}" 폴더를 삭제하시겠습니까? 중첩된 폴더 및 컬렉션은 최상위 레벨로 이동됩니다.
@@ -860,11 +895,13 @@ columns: 열
 collection_setup: 컬렉션 설정
 optional_system_fields: 선택적 필드
 value_unique: 생산Key는 유일해야만 합니다.
+value_index: 필드가 인덱싱됩니다.
 all_activity: 전체 활동
 create_item: 추가
 display_template: 표시 형식
 language_display_template: 언어 표시 템플릿
 translations_display_template: 번역 표시 템플릿
+n_items_selected: '선택한 항목 없음 | One Item Selected (한 항목 선택) | {n} 항목 선택됨'
 per_page: 페이지 당
 all_files: 전체 파일
 my_files: 내 파일
@@ -908,13 +945,12 @@ label: 상표
 flows: 플로우
 flow: 플로우
 select_a_flow: 플로우 선택
-run_flow_confirm: 이 규칙을 실행하시겠습니까?
+run_flow_anyway: 어쨌든 플로우를 실행
 run_flow_on_current_collection: 현재 컬렉션에서 플로우 실행
 run_flow_on_current: 현재 항목에서 플로우 실행
-run_flow_on_current_edited_confirm: 이 항목은 이 플로우에 의해 업데이트될 수 있습니다. 실행하시겠습니까?
 run_flow_on_selected: 먼저 하나 이상의 항목 선택 | 선택한 항목 1개에서 플로우 실행 | {n} 선택한 항목에서 플로우 실행
 run_flow: 플로우 실행
-run_flow_success: '"{flow}" 플로우이 성공적으로 실행되었습니다.'
+trigger_flow_success: 플로우 "{flow}"가 성공적으로 트리거되었습니다.
 field_name_placeholder: 필드 이름 입력...
 field_key_placeholder: 필드 키 입력...
 trigger: 방아쇠
@@ -951,7 +987,23 @@ operation_key: 참조용 식별자...
 operation_key_unique_error: 고유 키는 플로우에서 고유해야 합니다.
 operation_handle_resolve: '해결: 클릭하여 추가하거나 드래그하여 경로 변경'
 operation_handle_reject: '거부: 클릭하여 추가하거나 드래그하여 경로 변경'
+visual_editor: 비주얼 편집기
+toggle_navigation: 토글 내비게이션
+toggle_editable_elements: 편집 가능한 요소 토글
+no_url: URL이 제공되지 않았습니다.
+no_url_copy: 설정에서 URL을 추가해 주세요.
+invalid_url: 잘못된 URL 주소
+invalid_url_copy: 지정된 URL이 설정에 지정된 URL과 일치하지 않습니다.
 insights: 현황판
+deployment:
+  provider:
+    settings:
+      delete_confirm: 이 작업은 영구적이며 취소할 수 없습니다. 계속하시겠습니까?
+    run:
+      cancel_confirm: 이 작업은 영구적이며 취소할 수 없습니다. 계속하시겠습니까?
+      log_all: 모든 로그 수준
+  target_value:
+    preview: 미리보기
 dashboard: 대쉬보드
 panel: 패널
 panel_options: 패널 옵션
@@ -976,6 +1028,22 @@ no_data_in_flow: 이 플로우 내에서 데이터가 생성되거나 액세스�
 accountability: 책임
 payload: 유효 탑재량
 details: 세부
+resume_streaming_logs: 스트리밍 로그 재개
+pause_streaming_logs: 스트리밍 로그 일시 중지
+logs_session_resumed: 로그 세션이 다시 시작되었습니다...
+logs_session_paused: 로그 세션이 일시 중지되었습니다...
+logs_stream_disconnected: 로그 스트림 연결 끊김...
+log_detail_filter_paths: '필터 경로 (예 : req.method , res.statusCode )'
+logs_beginning: 이것이 로그 세션의 시작입니다...
+logs_waiting: '더 많은 로그를 기다리는 중...'
+logs_unread_count: '읽지 않은 {count}'
+clear_logs: 로그 지우기
+search_logs: 로그 검색...
+all_instances: 모든 인스턴스
+instance_count: '인스턴스 없음 | 단일 인스턴스 | {count} 인스턴스'
+all_log_levels: 모든 로그 수준
+log_level_count: '로그 수준 없음 | 단일 로그 수준 | {count} 로그 수준'
+soft_wrap_lines: 소프트 랩 라인
 full_screen: 전체화면
 full_text_search: 전체 검색
 edit_panels: 판넬 수정
@@ -1004,6 +1072,7 @@ tooltip: 툴팁
 tooltip_placeholder: 툴팁을 입력하세요...
 unlimited: 제한 없는
 open_link_in: 링크 열기
+new_tab: 새 탭
 save_image: 이미지를 저장
 save_media: 미디어 저장
 wysiwyg_options:
@@ -1039,6 +1108,7 @@ wysiwyg_options:
   h4: 제목 4
   h5: 제목 5
   h6: 제목 6
+  pre: 사전 서식화
   fontselect: 글꼴 선택
   fontsizeselect: 글꼴 크기 선택
   indent: 톱니 모양
@@ -1077,10 +1147,14 @@ editing_unit: '편집 {unit}'
 editing_in_batch: '일괄 편집 {count} 항목'
 no_options_available: 사용 가능한 옵션 없음
 settings_data_model: 데이터 모델
+settings_roles: 사용자 역할
+settings_permissions: 액세스 정책
 settings_project: 설정
 settings_appearance: 외관
-settings_webhooks: 웹후크
+settings_ai: AI
+model_context_protocol: 모델 컨텍스트 프로토콜
 settings_flows: 플로우
+settings_system_logs: 시스템 로그
 settings_presets: 북마크
 settings_translations: 번역
 one_or_more_options_are_missing: 하나 이상의 옵션이 없습니다.
@@ -1106,45 +1180,6 @@ discard_changes_copy: 모든 변경 사항을 취소하시겠습니까?
 show_x_axis: X축 표시
 show_y_axis: Y축 표시
 keep_editing: 계속 수정
-page_help_collections_overview: '**컬렉션 개요** — 액세스 권한이 있는 모든 컬렉션 목록입니다.'
-page_help_collections_collection: >-
-  **항목 찾아보기** — 액세스할 수 있는 모든 {collection} 항목을 나열합니다. 레이아웃, 필터 및 정렬을 사용자 지정하여 보기를 맞춤화하고 이러한 다양한 구성의 책갈피를 저장하여 빠르게 액세스할 수도 있습니다.
-page_help_collections_item: >-
-  **항목 세부 정보** — 이 항목을 보고 관리하기 위한 양식입니다. 이 사이드바에는 전체 수정 내역과 포함된 댓글도 포함되어 있습니다.
-page_help_activity_collection: >-
-  **찾아보기 활동** — 모든 사용자의 시스템 및 콘텐츠 활동에 대한 포괄적인 목록입니다.
-page_help_docs_global: >-
-  **문서 개요** — 이 프로젝트의 버전 및 스키마에 맞게 특별히 조정된 문서입니다.
-page_help_files_collection: >-
-  **파일 라이브러리** — 이 프로젝트에 업로드된 모든 파일 자산을 나열합니다. 레이아웃, 필터 및 정렬을 사용자 지정하여 보기를 맞춤화하고 이러한 다양한 구성의 책갈피를 저장하여 빠르게 액세스할 수도 있습니다.
-page_help_files_item: >-
-  **파일 세부 정보** — 파일 메타데이터 관리, 원본 자산 편집 및 액세스 설정 업데이트를 위한 양식입니다.
-page_help_settings_project: "**설정** — 프로젝트의 전역 구성 옵션입니다."
-page_help_settings_appearance: "**외형** - 프로젝트의 외형과 테마 옵션입니다."
-page_help_settings_extensions: '**확장 프로그램** - 프로젝트에 설치된 확장 프로그램입니다.'
-page_help_settings_datamodel_collections: >-
-  **데이터 모델: 컬렉션** - 사용 가능한 모든 컬렉션을 나열합니다. 여기에는 추가할 수 있는 관리되지 않는 데이터베이스 테이블뿐만 아니라 가시적, 숨김 및 시스템 컬렉션이 포함됩니다.
-page_help_settings_datamodel_fields: >-
-  **데이터 모델: 컬렉션** — 이 컬렉션과 해당 필드를 관리하기 위한 양식입니다.
-page_help_settings_roles_item: "**역할 세부 정보** — 역할의 권한 및 기타 설정을 관리합니다."
-page_help_settings_presets_collection: >-
-  **사전 설정 찾아보기** — 사용자, 역할, 전역 책갈피 및 기본 보기를 포함하여 프로젝트의 모든 사전 설정을 나열합니다.
-page_help_settings_presets_item: >-
-  **사전 설정 세부 정보** — 책갈피 및 기본 컬렉션 사전 설정을 관리하기 위한 양식입니다.
-page_help_settings_webhooks_collection: '**웹훅 찾아보기** — 프로젝트 내의 모든 웹훅을 나열합니다.'
-page_help_settings_webhooks_item: '**Webhook 세부 정보** — 프로젝트 Webhook 생성 및 관리를 위한 양식입니다.'
-page_help_settings_flows_collection: '**플로우 찾아보기** — 프로젝트 내의 모든 플로우을 나열합니다.'
-page_help_settings_flows_item: '**Flow Detail** — 하나 이상의 작업을 관리하기 위한 작업 공간입니다.'
-page_help_settings_translations_collection: '**사용자 정의 번역** - 프로젝트 내의 모든 사용자 지정 번역을 나열합니다.'
-page_help_settings_translations_item: '**사용자 정의 번역 세부 정보** - 이 항목을 보고 관리하기 위한 양식입니다.'
-page_help_users_collection: '**사용자 디렉터리** — 이 프로젝트 내의 모든 시스템 사용자를 나열합니다.'
-page_help_users_item: >-
-  **사용자 세부 정보** — 계정 정보를 관리하거나 다른 사용자의 세부 정보를 봅니다.
-page_help_insights_overview: '**Insights** — 액세스 권한이 있는 대시보드 목록입니다.'
-page_help_insights_dashboard: '**대시보드** — 하나 이상의 패널을 관리하기 위한 작업 공간'
-page_help_marketplace_account: '**계정** - 게시된 확장 프로그램의 게시자 또는 관리자입니다.'
-page_help_marketplace_registry: '**레지스트리** - Directus 마켓플레이스에서 사용할 수 있는 확장 기능입니다.'
-page_help_marketplace_extension: '**확장** - Directus 마켓플레이스의 확장 기능입니다.'
 activity_feed: 활동 내역
 add_new: 새로운 걸 더하다
 create_new: 새로 만들기
@@ -1173,17 +1208,20 @@ singleton: 싱글턴 패턴
 singleton_label: 단일 객체로 취급
 system_fields_locked: 시스템 필드가 잠겨 있어 편집할 수 없습니다.
 directus_collection:
+  directus_access: 정책 첨부 파일
   directus_activity: 모든 이벤트에 대한 책임 로그
   directus_collections: 추가 컬렉션 구성 및 메타데이터
+  directus_comments: 항목에 대한 설명
   directus_dashboards: Insights 모듈 내의 대시보드
   directus_fields: 추가 필드 구성 및 메타데이터
   directus_files: 관리되는 모든 파일 자산의 메타데이터
-  directus_flows: 자동화 플로우
   directus_folders: 파일을 위한 가상 디렉터리 제공
   directus_migrations: 사용 중인 데이터베이스 버전
   directus_notifications: 사용자에게 전송된 알림
   directus_operations: 플로우에서 실행되는 작업
   directus_panels: Insights 대시보드 내의 개별 패널
+  directus_permissions: 각 정책에 대한 액세스 권한
+  directus_policies: 액세스 제어 정책
   directus_presets: 컬렉션 기본값 및 책갈피에 대한 사전 설정
   directus_relations: 관계 구성 및 메타데이터
   directus_revisions: 모든 활동에 대한 데이터 스냅샷
@@ -1192,7 +1230,6 @@ directus_collection:
   directus_settings: 프로젝트 구성 옵션
   directus_shares: 외부 공유 항목 추적
   directus_users: 플랫폼의 시스템 사용자
-  directus_webhooks: 이벤트 기반 HTTP 요청 구성
   directus_translations: 사용자 정의 번역 생성
   directus_versions: 항목의 콘텐츠 버전
   directus_extensions: 확장 기능 구성
@@ -1263,6 +1300,7 @@ fields:
     tags: 태그(Tags)
     user_preferences: 개인 설정
     language: 언어
+    text_direction: 텍스트 방향
     tfa_secret: 이중 인증
     admin_options: 관리 옵션
     status: 상태
@@ -1340,6 +1378,21 @@ fields:
     public_registration_email_filter_note: 이 필터와 일치하는 이메일 주소만 등록할 수 있습니다.
     public_registration_verify_email: 이메일 인증
     public_registration_verify_email_note: 등록하는 사용자에게 로그인하기 전에 인증 링크를 클릭하도록 요청하는 이메일을 보냅니다.
+    visual_editor_urls: 비주얼 에디터 URL
+    mcp_enabled: MCP 서버
+    mcp_enabled_note: '<a href="https://directus.io/docs/guides/ai/mcp" target="_blank">모델 컨텍스트 프로토콜(MCP)</a> 을 통해 AI/LLM 도구를 Directus 프로젝트에 연결하세요. 이를 통해 AI 어시스턴트가 Directus 데이터를 안전하게 읽고 상호 작용할 수 있습니다.'
+    mcp_notice: '모델 컨텍스트 프로토콜(MCP)은 Directus와 같은 애플리케이션에 LLM을 연결하는 표준입니다. 활성화되면 Directus MCP 서버를 `/mcp`에서 사용할 수 있습니다. <a href="https://directus.io/docs/guides/ai/mcp" target="_blank">MCP 및 연결 방법에 대해 자세히 알아보세요.</a>'
+    mcp_allow_deletes: 삭제 허용
+    mcp_allow_deletes_note:
+      - 데이터 손실이 발생할 수 있습니다. 안전을 위해 기본적으로 비활성화되어 있습니다.
+    mcp_prompts_collection: AI 프롬프트 컬렉션
+    mcp_prompts_collection_note: 'AI 상호작용을 위한 <a href="https://directus.io/docs/guides/ai/mcp/prompts" target="_blank">재사용 가능한 프롬프트 템플릿을</a> 저장하기 위한 컬렉션을 선택하세요.'
+    mcp_system_prompt_divider: 시스템 프롬프트 구성
+    mcp_system_prompt_enabled: 시스템 프롬프트 사용
+    mcp_system_prompt_enabled_note: "LLM 동작을 안내하려면 <a href='https://directus.io/docs/guides/ai/mcp#system-prompt' target='_blank'>기본 시스템 프롬프트를</a> 사용하세요. 아래의 프롬프트를 제거하거나 재정의하려면 비활성화하세요."
+    mcp_system_prompt: 사용자 정의 시스템 프롬프트
+    mcp_system_prompt_note: '기본값을 대체할 사용자 지정 시스템 프롬프트입니다. 기본값을 사용하려면 비워 두세요(위에서 활성화한 경우).'
+    ai_header_name: 머리글
   directus_shares:
     name: 이름
     role: 역할
@@ -1361,20 +1414,15 @@ fields:
     icon: 역할 아이콘
     description: 설명
     users: 이 역할의 사용자 목록
+    parent: 상위 역할
+    children: 하위 역할
   directus_policies:
+    name: 정책 이름
     description: 설명
-  directus_webhooks:
-    name: 이름
-    method: 방법
-    status: 상태
-    data: 데이터
-    header: 머리글
-    value: 값
-    headers: 요청 헤더
-    data_label: 이벤트 데이터 보내기
-    triggers: 트리거
-    actions: 액션
-    collections: 컬렉션
+    app_access: 앱 액세스
+    admin_access: 관리자 액세스
+    ip_access: IP 액세스
+    enforce_tfa: 2FA 필요
 field_options:
   directus_settings:
     project_name_placeholder: 내 프로젝트...
@@ -1445,6 +1493,12 @@ field_options:
     focal_point_divider: 초점
     filename_disk: 디스크 저장소의 이름...
     filename_download: 다운로드 시 이름...
+  directus_policies:
+    name: 이 정책의 고유한 이름...
+    description: 이 정책에 대한 설명...
+    ip_access: 허용된 IP 주소, IP 범위 및 CIDR 블록을 추가합니다. 모두 허용하려면 비워 두십시오...
+    enforce_tfa: 2단계 인증 적용
+    assigned_to: 담당자
   directus_roles:
     name: 이 역할의 고유한 이름...
     description: 이 역할에 대한 설명...
@@ -1454,6 +1508,8 @@ field_options:
       name_placeholder: 제목을 입력하세요...
       link_name: 링크
       link_placeholder: 상대 또는 절대 URL...
+    parent_note: 이 역할이 권한을 상속하는 선택적 부모 역할
+    children_note: 이 역할 권한을 상속하는 중첩된 자식 역할
     collections_name: 컬렉션
     collections_addLabel: 컬렉션 추가...
   directus_users:
@@ -1468,19 +1524,6 @@ field_options:
     status_dropdown_suspended: 정지된
     status_dropdown_archived: 보관됨
     token: 보안 액세스 토큰을 입력하세요...
-  directus_webhooks:
-    status_options_active: 활성화
-    status_options_inactive: 비활성화
-    data_label: 이벤트 데이터 보내기
-    triggers_divider: 트리거
-    actions_create: 작성/추가
-    actions_update: 업데이트
-    actions_delete: 삭제
-    actions_login: 로그인
-    headers:
-      header: 머리글
-      value: 값
-      add: 헤더 추가
 no_fields_in_collection: '아직 "{collection}"에 필드가 없습니다.'
 no_value: 값 없음
 do_nothing: 아무것도하지 마세요
@@ -1502,16 +1545,64 @@ live_preview:
   new_window: 새 창에서 열기
   close_window: 분할 화면에서 열기
   toggle_3d: 토글 3D
+  iframe_title: 라이브 웹사이트 미리보기
+  display_options: 디스플레이 옵션
 shares: 공유
 unlimited_usage: 무제한 사용
+uses_left: 남은 용도 없음 | 1회 사용 남음 | {n} 왼쪽 사용
 no_shares: 표시할 공유가 없습니다.
 new_share: 새 공유
+ai:
+  input: 입력
+  unknown: 알 수 없음
+  items: 항목
+  content: 데이터 및 컨텐츠 관리
+  settings: 설정
+  tool_approval:
+    disabled: 비활성화 됨
+  ask_user_submit: 확인
+  ask_user_next: 다음
+ai_tools:
+  items: 항목
+  files: 파일
+  folders: 폴더
+  flows: 플로우
+  trigger-flow: 트리거 플로우
+  operations: 작업
+  schema: 개요
+  collections: 컬렉션
+  fields: 필드
+mcp_prompts_collection:
+  no_collection_selected: 선택된 컬렉션이 없습니다
+  no_collection_selected_copy: 재사용 가능한 프롬프트 템플릿을 활성화하려면 컬렉션을 선택하세요.
+  collection_not_found: 컬렉션을 찾을 수 없습니다
+  collection_not_found_description: 컬렉션 "{collection}"이 데이터베이스에 없습니다.
+  generate: AI 프롬프트 컬렉션 생성...
+  already_exists: AI 프롬프트 컬렉션이 이미 존재합니다.
+  generate_collection_dialog_title: AI 프롬프트 컬렉션 생성
+  generate_fields_dialog_title: AI 프롬프트 필드 생성
+  generate_collection_dialog_description: '이렇게 하면 재사용 가능한 프롬프트 템플릿을 저장하는 데 필요한 필드와 설정이 포함된 새 컬렉션 "{collection}"이 생성됩니다.'
+  generate_fields_dialog_description: '이렇게 하면 "{collection}" 컬렉션에 필수 필드가 생성됩니다.'
+  validation_success: '"AI 프롬프트" 컬렉션으로 사용할 준비가 된 컬렉션입니다.'
+  validation_error_invalid: 컬렉션을 사용할 수 없습니다
+  validation_error_missing: 아직 컬렉션을 사용할 수 없습니다
+  invalid_fields: '다음 필드는 존재하지만 호환되지 않는 유형입니다.'
+  missing_fields: '다음 필드는 필수이지만 누락되었습니다.'
+  generate_missing: 누락된 필드 생성...
+mcp_prompts_collection_schema:
+  system_prompt_note: LLM이 어떻게 대응할지에 대한 지침입니다.
+  messages_note: '선택 사항: 사용자와 LLM 간의 대화 구조를 정의합니다. 맥락을 추가하고 결과를 개선하는 데 사용됩니다.'
+  messages_role_user: 사용자
+  messages_role_assistant: 어시스턴트
+  messages_role_note: 이 메시지에서 말하는 사람은 누구입니까?
+  meta_prompts_notice: '프롬프트는 Directus MCP 서버, Flows 또는 기타 AI 애플리케이션을 통해 LLM과 함께 사용할 수 있는 재사용 가능한 템플릿입니다. <a href="https://directus.io/docs/guides/ai/mcp/prompts" target="_blank">효과적인 프롬프트 생성에 대해 자세히 알아보세요.</a>'
 expired: 만료됨
 upcoming: 다가오는
 share: 공유하다
 share_item: 항목 공유
 shared_with_you: 항목이 나와 공유되었습니다.
 shared_enter_passcode: 계속하려면 비밀번호를 입력하세요...
+generate: 생성
 shared_leave_blank_for_passwordless_access: 비밀번호 없이 액세스하려면 비워두세요
 shared_leave_blank_for_unlimited: 무제한으로 하려면 비워두세요
 shared_times_remaining: 이 링크는 {n}번만 사용할 수 있습니다.
@@ -1537,7 +1628,9 @@ continue_label: 계속
 continue_as: >-
   현재 {name}으로 인증되었습니다. 이 계정으로 계속하려면 계속을 누르세요.
 editing_role: '{role} 역할'
-creating_webhook: 웹훅 만들기
+editing_policy: '{policy} 정책'
+no_permissions: 권한 없음
+permission_add_collection: 컬렉션 추가
 default_label: 기본
 delete_label: 삭제
 delete_are_you_sure: >-
@@ -1590,6 +1683,8 @@ reset_password: 암호를 재설정
 revisions: 수정내역
 no_revisions: 수정 내역 없음
 no_logs: 아직 로그가 없습니다
+show_failed_only: 실패만 표시
+no_logs_on_page: 이 페이지에는 로그가 없습니다.
 revert: 돌아가는 것
 save: 저장
 schema: 개요
@@ -1625,7 +1720,6 @@ translation_placeholder: 번역을 입력하세요...
 value: 값
 view_project: 프로젝트 보기
 report_error: 오류 신고
-start: 시작
 table: 테이블
 list: 목록
 search_filter: 검색 및 필터링
@@ -1670,14 +1764,13 @@ interfaces:
     accordion_mode: 아코디언 모드
     max_one_section_open: 최대 1개 섹션 열기
   presentation-links:
-    presentation-links: 버튼 링크
-    links: 연결
-    description: 동적 URL 실행을 위한 구성 가능한 링크 버튼
+    presentation-links: 버튼
     style: 스타일
     primary: 기본
     link: 연결
     button: 버튼
     error: 작업을 수행할 수 없습니다.
+    select_manual_flow_note: 이 데이터 수집을 위해서는 수동 트리거를 사용하여 흐름을 구성해야 합니다
   select-multiple-checkbox:
     checkboxes: 확인란
     description: 확인란을 통해 여러 옵션 중에서 선택
@@ -1770,6 +1863,8 @@ interfaces:
     description: 이미지 선택 또는 업로드
     crop: 자르기
     crop_label: 필요에 따라 이미지 자르기
+    letterbox: 레터박스
+    letterbox_label: 이미지 미리보기에 패딩 추가
   system-interface:
     interface: 인터페이스
     description: 기존 인터페이스 선택
@@ -1796,6 +1891,8 @@ interfaces:
   collection-item-dropdown:
     collection-item-dropdown: 컬렉션 항목 드롭다운
     description: JSON 형식의 컬렉션에서 항목 선택
+  collection-item-multiple-dropdown:
+    description: JSON 형식의 컬렉션에서 여러 항목을 선택하세요
   input-rich-text-md:
     markdown: 마크다운
     description: 마크다운 입력 및 미리보기
@@ -1804,6 +1901,7 @@ interfaces:
     editorFont: 편집기 글꼴
     previewFont: 글꼴 미리보기
     default_view: 기본 보기
+    default_view_editor: 편집자
     default_view_preview: 미리보기
     customSyntax: 맞춤형 블록
     customSyntax_label: 사용자 정의 구문 유형 추가
@@ -1936,6 +2034,7 @@ interfaces:
     folder_note: 업로드된 파일의 폴더입니다. 기존 파일에는 영향을 주지 않습니다.
     imageToken: 정적 액세스 토큰
     imageToken_label: 정적 액세스 토큰이 자산의 URL에 추가됩니다.
+    media_preview_iframe_title: 미디어 미리보기
   input-block-editor:
     input-block-editor: 블록 편집기
     description: Editor.js를 사용하여 리치 미디어 스토리를 위한 블록 스타일 편집기, JSON 형식의 깨끗한 데이터를 출력합니다.
@@ -1988,6 +2087,21 @@ interfaces:
   system-raw-editor:
     system-raw-editor: RAW 편집기
     description: RAW 또는 콧수염 템플릿 값 입력 허용
+  input-password:
+    input-password: 비밀번호 입력
+    description: 값을 숨기기 위해 토글을 사용한 비밀번호 입력
+  header:
+    header: 머리글
+    description: 사용자가 Flow를 탐색하거나 실행하는 데 도움이 되도록 제목, 부제목, 도움말 정보 및/또는 링크가 포함된 헤더를 만드세요.
+    links: 연결
+    help:
+      note: 사용자가 도움말 정보를 켜고 끌 수 있도록 제공합니다.
+    help_display_mode:
+      note: 도움말 정보의 표시 모드를 선택하십시오.
+    enable_help_translations:
+      note: 이 기능을 활성화하면 도움말 필드가 도움말 번역 문자열 필드의 값으로 덮어쓰여집니다.
+    help_translations_string:
+      note: 지원하려는 각 언어에 대해 번역된 콘텐츠를 사용하여 프로젝트의 번역 설정에서 해당 키에 대한 번역 값을 생성해야 합니다.
 displays:
   translations:
     translations: 번역
@@ -2202,7 +2316,11 @@ show_labels: 레이블 표시
 show_legend: 범례 표시
 right: 오른쪽
 left: 왼쪽
+start: 시작
+end: 끝
 donut: 도넛
+continuous: 연속 (Continuos)
+gap: 간격
 panels:
   metric:
     name: 미터법
@@ -2218,6 +2336,7 @@ panels:
     value_field: 값 필드
     fill_type: 채우기 유형
     curve_type: 곡선 유형
+    missing_data: 누락된 데이터
   label:
     name: 상표
     description: 일부 텍스트 표시
@@ -2268,6 +2387,7 @@ triggers:
     filter: '필터(차단)'
   webhook:
     name: 웹훅
+    error_on_reject: 거부 시 오류
     description: 들어오는 HTTP 요청에서 트리거
     method: 방법
     async: 비동기식
@@ -2290,11 +2410,10 @@ triggers:
 a_flow_uuid: 트리거할 플로우 선택...
 any_string_or_json: 모든 문자열 또는 JSON...
 item_payload_placeholder: 항목의 필드 값을 업데이트하는 데 사용되는 JSON입니다...
-operation_variables_note: '**{''{''}{''{''}$last{''}''}{''}''}**, **{''{''}{''{''}$trigger와 같은 변수를 사용하여 플로우 데이터에 액세스할 수 있습니다. {''}''}{''}''}** 및 **{''{''}{''{''}$accountability{''}''}{''}''}** 또는 **{''{를 사용하여 이전 작업 참조 ''}{''{''}operation_key{''}''}{''}''}**.'''
+operation_variables_note: Flow 데이터는 **{'{'}{'{'}$last{'}'}{'}'}**, **{'{'}{'{'}$trigger{'}'}{'}'}** 및 **{'{'}{'{'}$accountability{'}'}{'}'}**와 같은 변수를 사용하여 액세스하거나 **{'{'}{'{'}operation_key{'}'}{'}'}**를 사용하여 이전 작업을 참조할 수 있습니다.
 operations:
   condition:
     name: 상태
-    description: If / Else 논리를 기반으로 플로우 라우팅
   exec:
     name: 스크립트 실행
     description: 임의의 코드를 실행하여 페이로드 수정
@@ -2346,9 +2465,16 @@ operations:
     name: 이메일 전송
     description: 한 명 이상의 사람에게 이메일 보내기
     to: 에게
+    to_placeholder: 이메일 주소를 추가하고 Enter 키를 누릅니다...
     body: 본문
     template: 템플릿
     data: 데이터
+    cc: 참조
+    cc_placeholder: 참조 이메일 주소를 추가하고 Enter 키를 누릅니다...
+    bcc: 숨은 참조
+    bcc_placeholder: 숨은 참조 이메일 주소를 추가하고 Enter 키를 누릅니다...
+    reply_to: 답장
+    reply_to_placeholder: 회신 이메일 주소를 추가하고 Enter 키를 누릅니다...
   notification:
     name: 알림 보내기
     description: 한 명 이상의 사용자에게 인앱 알림 보내기
@@ -2373,12 +2499,18 @@ operations:
     name: 잠
     description: 주어진 시간(밀리초) 동안 대기
     milliseconds: 밀리초
+  throw-error:
+    name: 오류 발생
+    description: 거부 경로에 오류를 던집니다.
+    code: 오류 코드
+    status: HTTP 상태 코드
+    message: 에러 메시지
   transform:
     name: 페이로드 변환
     description: 플로우의 JSON 페이로드 변경
   trigger:
     name: 트리거 플로우
-    description: 이 데이터를 다른 플로우에 전달
+    description: 이 데이터를 다른 플로우로 전달하세요
     flows: 플로우
     flow: 플로우
     data: 데이터
@@ -2430,3 +2562,14 @@ duplicate_dashboard: 대시보드 복제
 search_dashboard: 대시보드 검색...
 search_flow: 흐름 검색...
 percent: 퍼센트
+show_password: 비밀번호 보이기
+hide_password: 비밀번호 숨기기
+bsl_banner:
+  title: 프로젝트 담당자를 지정하지 않으셨습니다.
+  license: 이는 BSL 1.1 라이선스 준수를 위해 필요합니다. 해당 담당자가 프로젝트 책임자가 되어야 합니다.
+  remind_next_login: 다음 로그인 시 다시 알려드리겠습니다.
+accepted: 수락됨
+text_direction_auto: 자동(일치 언어)
+text_direction_ltr: 왼쪽에서 오른쪽으로(LTR)
+text_direction_rtl: 오른쪽에서 왼쪽(RTL)
+set_to_now: 현재로 설정

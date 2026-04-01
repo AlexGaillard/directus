@@ -1,3 +1,4 @@
+import { SchemaBuilder } from '@directus/schema-builder';
 import type { DeepPartial, SchemaOverview } from '@directus/types';
 import { describe, expect, it } from 'vitest';
 import type { FieldNode, FunctionFieldNode, NestedCollectionNode } from '../../../../types/ast.js';
@@ -61,7 +62,7 @@ describe('a2o', () => {
 			'test-collection',
 			children as NestedCollectionNode[],
 			fieldMap,
-			{ relations: [] } as unknown as SchemaOverview,
+			new SchemaBuilder().build(),
 			[],
 		);
 
@@ -217,7 +218,7 @@ describe('m2o', () => {
 			'test-collection',
 			children as NestedCollectionNode[],
 			fieldMap,
-			{ relations: [] } as unknown as SchemaOverview,
+			new SchemaBuilder().build(),
 			[],
 		);
 
@@ -319,7 +320,7 @@ describe('o2m', () => {
 			'test-collection',
 			children as NestedCollectionNode[],
 			fieldMap,
-			{ relations: [] } as unknown as SchemaOverview,
+			new SchemaBuilder().build(),
 			[],
 		);
 
@@ -378,13 +379,7 @@ describe('functionField', () => {
 			},
 		] as FunctionFieldNode[];
 
-		extractFieldsFromChildren(
-			'test-collection',
-			children,
-			fieldMap,
-			{ relations: [] } as unknown as SchemaOverview,
-			[],
-		);
+		extractFieldsFromChildren('test-collection', children, fieldMap, new SchemaBuilder().build(), []);
 
 		expect(fieldMap).toEqual(
 			createFieldMap({

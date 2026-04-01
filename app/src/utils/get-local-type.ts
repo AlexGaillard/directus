@@ -1,6 +1,7 @@
+import { LocalType, Relation } from '@directus/types';
+import { getRelation } from '@directus/utils';
 import { useFieldsStore } from '@/stores/fields';
 import { useRelationsStore } from '@/stores/relations';
-import { LocalType, Relation } from '@directus/types';
 
 export function getLocalTypeForField(collection: string, field: string): LocalType | null {
 	const fieldsStore = useFieldsStore();
@@ -24,7 +25,7 @@ export function getLocalTypeForField(collection: string, field: string): LocalTy
 	}
 
 	if (relations.length === 1) {
-		const relation = relations[0];
+		const relation = relations[0]!;
 		if (relation.related_collection === 'directus_files' && relation.related_collection !== collection) return 'file';
 		if (relation.collection === collection && relation.field === field) return 'm2o';
 		return 'o2m';
@@ -39,18 +40,20 @@ export function getLocalTypeForField(collection: string, field: string): LocalTy
 			return 'm2a';
 		}
 
-		const relationForCurrent = relations.find((relation: Relation) => {
-			return (
-				(relation.collection === collection && relation.field === field) ||
-				(relation.related_collection === collection && relation.meta?.one_field === field)
-			);
-		});
+		const relationForCurrent = getRelation(relations, collection, field);
 
 		if (relationForCurrent?.collection === collection && relationForCurrent?.field === field) {
 			return 'm2o';
 		}
 
-		if (relations[0].related_collection === 'directus_files' || relations[1].related_collection === 'directus_files') {
+		const directusFilesRelationsCount = relations.filter(
+			(relation) => relation.related_collection === 'directus_files',
+		).length;
+
+		const isRelationToDirectusFiles = collection !== 'directus_files' && directusFilesRelationsCount === 1;
+		const isSelfRelationToDirectusFiles = directusFilesRelationsCount === 2;
+
+		if (isRelationToDirectusFiles || isSelfRelationToDirectusFiles) {
 			return 'files';
 		} else {
 			return 'm2m';

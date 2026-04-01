@@ -1,12 +1,11 @@
-import { InvalidPayloadError, RecordNotUniqueError } from '@directus/errors';
-import { randomUUID } from '@directus/random';
-import type { Accountability, SchemaOverview } from '@directus/types';
+import { ForbiddenError, InvalidPayloadError, RecordNotUniqueError } from '@directus/errors';
+import { SchemaBuilder } from '@directus/schema-builder';
+import type { Accountability, MutationOptions } from '@directus/types';
+import { UserIntegrityCheckFlag } from '@directus/types';
 import knex from 'knex';
-import { MockClient, createTracker } from 'knex-mock-client';
+import { createTracker, MockClient } from 'knex-mock-client';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { validateRemainingAdminUsers } from '../permissions/modules/validate-remaining-admin/validate-remaining-admin-users.js';
-import type { MutationOptions } from '../types/items.js';
-import { UserIntegrityCheckFlag } from '../utils/validate-user-count-integrity.js';
 import { ItemsService, MailService, UsersService } from './index.js';
 
 vi.mock('../../src/database/index', () => ({
@@ -34,35 +33,13 @@ vi.mock('../permissions/modules/validate-remaining-admin/validate-remaining-admi
 
 const testRoleId = '4ccdb196-14b3-4ed1-b9da-c1978be07ca2';
 
-const testSchema = {
-	collections: {
-		directus_users: {
-			collection: 'directus_users',
-			primary: 'id',
-			singleton: false,
-			sortField: null,
-			note: null,
-			accountability: null,
-			fields: {
-				id: {
-					field: 'id',
-					defaultValue: null,
-					nullable: false,
-					generated: true,
-					type: 'uuid',
-					dbType: 'uuid',
-					precision: null,
-					scale: null,
-					special: [],
-					note: null,
-					validation: null,
-					alias: false,
-				},
-			},
-		},
-	},
-	relations: [],
-} as SchemaOverview;
+const schema = new SchemaBuilder()
+	.collection('directus_users', (c) => {
+		c.field('id').uuid().primary().options({
+			nullable: false,
+		});
+	})
+	.build();
 
 describe('Integration Tests', () => {
 	const db = vi.mocked(knex.default({ client: MockClient }));
@@ -75,11 +52,11 @@ describe('Integration Tests', () => {
 	describe('Services / Users', () => {
 		const service = new UsersService({
 			knex: db,
-			schema: testSchema,
+			schema,
 		});
 
-		const superCreateOneSpy = vi.spyOn(ItemsService.prototype, 'createOne').mockResolvedValue(randomUUID());
-		const superUpdateManySpy = vi.spyOn(ItemsService.prototype, 'updateMany').mockResolvedValue([randomUUID()]);
+		const superCreateOneSpy = vi.spyOn(ItemsService.prototype, 'createOne').mockResolvedValue('user-id-1');
+		const superUpdateManySpy = vi.spyOn(ItemsService.prototype, 'updateMany').mockResolvedValue(['user-id-2']);
 
 		const checkUniqueEmailsSpy = vi
 			.spyOn(UsersService.prototype as any, 'checkUniqueEmails')
@@ -171,7 +148,7 @@ describe('Integration Tests', () => {
 			it('should not request user integrity checks if no relevant fields are changed', async () => {
 				const opts: MutationOptions = {};
 
-				await service.updateMany([randomUUID()], {}, opts);
+				await service.updateMany(['user-id-3'], {}, opts);
 
 				expect(opts.userIntegrityCheckFlags).toBe(undefined);
 				expect(clearUserSessionsSpy).not.toBeCalled();
@@ -180,7 +157,7 @@ describe('Integration Tests', () => {
 			it('should request all user integrity checks if role is changed', async () => {
 				const opts: MutationOptions = {};
 
-				await service.updateMany([randomUUID()], { role: testRoleId }, opts);
+				await service.updateMany(['user-id-4'], { role: testRoleId }, opts);
 
 				expect(opts.userIntegrityCheckFlags).toBe(UserIntegrityCheckFlag.All);
 			});
@@ -188,7 +165,7 @@ describe('Integration Tests', () => {
 			it('should request all user integrity checks if status is changed to not "active"', async () => {
 				const opts: MutationOptions = {};
 
-				await service.updateMany([randomUUID()], { status: 'inactive' }, opts);
+				await service.updateMany(['user-id-5'], { status: 'inactive' }, opts);
 
 				expect(opts.userIntegrityCheckFlags).toBe(UserIntegrityCheckFlag.All);
 				expect(clearUserSessionsSpy).toBeCalled();
@@ -197,7 +174,7 @@ describe('Integration Tests', () => {
 			it('should request user limit checks if status is changed to "active"', async () => {
 				const opts: MutationOptions = {};
 
-				await service.updateMany([randomUUID()], { status: 'active' }, opts);
+				await service.updateMany(['user-id-6'], { status: 'active' }, opts);
 
 				expect(opts.userIntegrityCheckFlags).toBe(UserIntegrityCheckFlag.UserLimits);
 				expect(clearUserSessionsSpy).not.toBeCalled();
@@ -206,19 +183,19 @@ describe('Integration Tests', () => {
 			it('should clear caches if role is changed', async () => {
 				const clearCacheSpy = vi.spyOn(UsersService.prototype as any, 'clearCaches');
 
-				await service.updateMany([randomUUID()], { role: testRoleId });
+				await service.updateMany(['user-id-7'], { role: testRoleId });
 
 				expect(clearCacheSpy).toHaveBeenCalled();
 			});
 
 			it('should not checkUniqueEmails', async () => {
-				await service.updateMany([randomUUID()], {});
+				await service.updateMany(['user-id-8'], {});
 
 				expect(checkUniqueEmailsSpy).not.toBeCalled();
 			});
 
 			it('should checkUniqueEmails once', async () => {
-				await service.updateMany([randomUUID()], { email: 'test@example.com' });
+				await service.updateMany(['user-id-9'], { email: 'test@example.com' });
 
 				expect(checkUniqueEmailsSpy).toBeCalledTimes(1);
 				expect(clearUserSessionsSpy).toBeCalled();
@@ -227,12 +204,13 @@ describe('Integration Tests', () => {
 			it('should disallow updating multiple items to same email', async () => {
 				const opts: MutationOptions = {};
 
-				await service.updateMany([randomUUID(), randomUUID()], { email: 'test@example.com' }, opts);
+				await service.updateMany(['user-id-10', 'user-id-11'], { email: 'test@example.com' }, opts);
 
 				expect(opts.preMutationError).toStrictEqual(
 					new RecordNotUniqueError({
 						collection: 'directus_users',
 						field: 'email',
+						value: 'test@example.com',
 					}),
 				);
 
@@ -240,14 +218,14 @@ describe('Integration Tests', () => {
 			});
 
 			it('should not checkPasswordPolicy', async () => {
-				await service.updateMany([randomUUID()], {});
+				await service.updateMany(['user-id-12'], {});
 
 				expect(checkPasswordPolicySpy).not.toBeCalled();
 				expect(clearUserSessionsSpy).not.toBeCalled();
 			});
 
 			it('should checkPasswordPolicy once', async () => {
-				await service.updateMany([randomUUID()], { password: 'testpassword' });
+				await service.updateMany(['user-id-13'], { password: 'testpassword' });
 
 				expect(checkPasswordPolicySpy).toBeCalledTimes(1);
 				expect(clearUserSessionsSpy).toBeCalled();
@@ -257,7 +235,7 @@ describe('Integration Tests', () => {
 				describe('should disallow updates for non-admin users', () => {
 					const service = new UsersService({
 						knex: db,
-						schema: testSchema,
+						schema,
 						accountability: { role: 'test', admin: false } as Accountability,
 					});
 
@@ -280,12 +258,12 @@ describe('Integration Tests', () => {
 				])('should allow updates for %s', (_, accountability) => {
 					const service = new UsersService({
 						knex: db,
-						schema: testSchema,
+						schema,
 						accountability,
 					});
 
 					it.each(['provider', 'external_identifier'])('%s', async (field) => {
-						const promise = service.updateMany([randomUUID()], { [field]: 'test' });
+						const promise = service.updateMany(['user-id-14'], { [field]: 'test' });
 
 						await expect(promise).resolves.not.toThrow();
 
@@ -298,7 +276,7 @@ describe('Integration Tests', () => {
 		});
 
 		describe('deleteMany', () => {
-			vi.spyOn(ItemsService.prototype, 'deleteMany').mockResolvedValue([randomUUID()]);
+			vi.spyOn(ItemsService.prototype, 'deleteMany').mockResolvedValue(['user-id-15']);
 
 			it('should validate remaining admin users', async () => {
 				// mock notifications update query in deleteOne/deleteMany/deleteByQuery methods
@@ -310,20 +288,66 @@ describe('Integration Tests', () => {
 
 				const service = new UsersService({
 					knex: db,
-					schema: testSchema,
+					schema,
 					accountability: { role: 'test', admin: false } as Accountability,
 				});
 
-				await service.deleteMany([randomUUID()]);
+				await service.deleteMany(['user-id-16']);
 
 				expect(validateRemainingAdminUsers).toHaveBeenCalled();
 				expect(clearUserSessionsSpy).toBeCalled();
 			});
 		});
 
+		describe('requestPasswordReset', () => {
+			it('should throw ForbiddenError for external provider users', async () => {
+				tracker.on.select('directus_users').response({
+					id: 'user-id-ext',
+					role: 'role-id',
+					status: 'active',
+					password: 'hashed',
+					email: 'ext@example.com',
+					provider: 'google',
+				});
+
+				const mailService = new MailService({ schema });
+
+				const service = new UsersService({
+					knex: db,
+					schema,
+				});
+
+				await expect(service.requestPasswordReset('ext@example.com', null)).rejects.toThrow(ForbiddenError);
+
+				expect(mailService.send).not.toHaveBeenCalled();
+			});
+
+			it('should send reset email for default provider users', async () => {
+				tracker.on.select('directus_users').response({
+					id: 'user-id-def',
+					role: 'role-id',
+					status: 'active',
+					password: 'hashed',
+					email: 'def@example.com',
+					provider: 'default',
+				});
+
+				const mailService = new MailService({ schema });
+
+				const service = new UsersService({
+					knex: db,
+					schema,
+				});
+
+				await service.requestPasswordReset('def@example.com', null);
+
+				expect(mailService.send).toHaveBeenCalledTimes(1);
+			});
+		});
+
 		describe('invite', () => {
 			const mailService = new MailService({
-				schema: testSchema,
+				schema,
 			});
 
 			vi.spyOn(UsersService.prototype as any, 'inviteUrl').mockImplementation(() => vi.fn());
@@ -333,7 +357,7 @@ describe('Integration Tests', () => {
 
 				const service = new UsersService({
 					knex: db,
-					schema: testSchema,
+					schema,
 					accountability: { role: 'test', admin: true } as Accountability,
 				});
 
@@ -355,7 +379,7 @@ describe('Integration Tests', () => {
 			it('should re-send invites for invited users', async () => {
 				const service = new UsersService({
 					knex: db,
-					schema: testSchema,
+					schema,
 					accountability: { role: 'test', admin: true } as Accountability,
 				});
 
@@ -375,7 +399,7 @@ describe('Integration Tests', () => {
 			it('should not re-send invites for users in state other than invited', async () => {
 				const service = new UsersService({
 					knex: db,
-					schema: testSchema,
+					schema,
 					accountability: { role: 'test', admin: true } as Accountability,
 				});
 
@@ -395,12 +419,12 @@ describe('Integration Tests', () => {
 			it('should update role when re-sent invite contains different role than user has', async () => {
 				const service = new UsersService({
 					knex: db,
-					schema: testSchema,
+					schema,
 					accountability: { role: 'test', admin: true } as Accountability,
 				});
 
 				const mockUser = {
-					id: randomUUID(),
+					id: 'user-id-17',
 					status: 'invited',
 					role: 'existing-role',
 				};

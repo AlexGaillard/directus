@@ -5,11 +5,11 @@ import type { Knex } from 'knex';
 import { afterEach, expect, test, vi } from 'vitest';
 import getDatabase from '../database/index.js';
 import emitter from '../emitter.js';
-import { createDefaultAccountability } from '../permissions/utils/create-default-accountability.js';
 import { fetchRolesTree } from '../permissions/lib/fetch-roles-tree.js';
 import { fetchGlobalAccess } from '../permissions/modules/fetch-global-access/fetch-global-access.js';
-import '../types/express.d.ts';
+import { createDefaultAccountability } from '../permissions/utils/create-default-accountability.js';
 import { handler } from './authenticate.js';
+import '../types/express.d.ts';
 
 const reqGetImplementation = (string: any) => {
 	switch (string) {
@@ -38,6 +38,7 @@ vi.mock('@directus/env', () => ({
 		SESSION_COOKIE_DOMAIN: '',
 		SESSION_COOKIE_TTL: 0,
 		SESSION_COOKIE_SECURE: false,
+		IP_TRUST_PROXY: true,
 	}),
 }));
 
@@ -50,7 +51,8 @@ afterEach(() => {
 
 test('Short-circuits when authenticate filter is used', async () => {
 	const req = {
-		ip: '127.0.0.1',
+		socket: { remoteAddress: '127.0.0.1' },
+		headers: {},
 		cookies: {},
 		get: vi.fn(reqGetImplementation),
 	} as unknown as Request;
@@ -70,7 +72,8 @@ test('Short-circuits when authenticate filter is used', async () => {
 
 test('Uses default public accountability when no token is given', async () => {
 	const req = {
-		ip: '127.0.0.1',
+		socket: { remoteAddress: '127.0.0.1' },
+		headers: {},
 		cookies: {},
 		get: vi.fn(reqGetImplementation),
 	} as unknown as Request;
@@ -114,7 +117,8 @@ test('Sets accountability to payload contents if valid token is passed', async (
 	);
 
 	const req = {
-		ip: '127.0.0.1',
+		socket: { remoteAddress: '127.0.0.1' },
+		headers: {},
 		cookies: {},
 		get: vi.fn(reqGetImplementation),
 		token,
@@ -184,7 +188,8 @@ test('Throws InvalidCredentialsError when static token is used, but user does no
 	} as unknown as Knex);
 
 	const req = {
-		ip: '127.0.0.1',
+		socket: { remoteAddress: '127.0.0.1' },
+		headers: {},
 		cookies: {},
 		get: vi.fn(reqGetImplementation),
 		token: 'static-token',
@@ -193,13 +198,14 @@ test('Throws InvalidCredentialsError when static token is used, but user does no
 	const res = {} as Response;
 	const next = vi.fn();
 
-	expect(handler(req, res, next)).rejects.toEqual(new InvalidCredentialsError());
+	await expect(handler(req, res, next)).rejects.toEqual(new InvalidCredentialsError());
 	expect(next).toHaveBeenCalledTimes(0);
 });
 
 test('Sets accountability to user information when static token is used', async () => {
 	const req = {
-		ip: '127.0.0.1',
+		socket: { remoteAddress: '127.0.0.1' },
+		headers: {},
 		cookies: {},
 		get: vi.fn(reqGetImplementation),
 		token: 'static-token',
@@ -261,7 +267,8 @@ test('Sets accountability to user information when static token is used', async 
 
 test('Invalid session token responds with error and clears the cookie', async () => {
 	const req = {
-		ip: '127.0.0.1',
+		socket: { remoteAddress: '127.0.0.1' },
+		headers: {},
 		cookies: {
 			directus_session: 'session-token',
 		},
@@ -290,7 +297,8 @@ test('Invalid session token responds with error and clears the cookie', async ()
 
 test('Invalid query token responds with error but does not clear the session cookie', async () => {
 	const req = {
-		ip: '127.0.0.1',
+		socket: { remoteAddress: '127.0.0.1' },
+		headers: {},
 		cookies: {
 			directus_session: 'session-token',
 		},

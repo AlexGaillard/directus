@@ -1,11 +1,11 @@
+import { dirname } from 'node:path';
+import { fileURLToPath } from 'node:url';
+import path from 'path';
 import type { Field, Type } from '@directus/types';
 import fse from 'fs-extra';
 import yaml from 'js-yaml';
 import type { Knex } from 'knex';
 import { isObject } from 'lodash-es';
-import { dirname } from 'node:path';
-import { fileURLToPath } from 'node:url';
-import path from 'path';
 import { getHelpers } from '../helpers/index.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -18,7 +18,7 @@ type TableSeed = {
 			primary?: boolean;
 			nullable?: boolean;
 			default?: any;
-			length?: number;
+			length?: number | string;
 			increments?: boolean;
 			unsigned?: boolean;
 			unique?: boolean;
@@ -54,7 +54,15 @@ export default async function runSeed(database: Knex): Promise<void> {
 				if (columnInfo.type === 'alias' || columnInfo.type === 'unknown') return;
 
 				if (columnInfo.type === 'string') {
-					column = tableBuilder.string(columnName, columnInfo.length);
+					let length = columnInfo.length;
+
+					if (length === 'MAX_TABLE_NAME_LENGTH') {
+						length = helpers.schema.getTableNameMaxLength();
+					} else if (length === 'MAX_COLUMN_NAME_LENGTH') {
+						length = helpers.schema.getColumnNameMaxLength();
+					}
+
+					column = tableBuilder.string(columnName, Number(length));
 				} else if (columnInfo.increments) {
 					column = tableBuilder.increments();
 				} else if (columnInfo.type === 'csv') {

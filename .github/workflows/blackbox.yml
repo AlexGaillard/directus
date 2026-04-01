@@ -13,6 +13,9 @@ on:
       - .github/workflows/blackbox.yml
   workflow_call:
 
+permissions:
+  contents: read
+
 concurrency:
   group: blackbox-${{ github.ref }}
   cancel-in-progress: true
@@ -22,26 +25,35 @@ env:
 
 jobs:
   common:
-    name: common
+    name: common (${{ matrix.redis-image }})
     runs-on: ubuntu-latest
     timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        redis-image:
+          - redis:6-alpine
+          - valkey/valkey:8-alpine
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Prepare
         uses: ./.github/actions/prepare
 
       - name: Start services
+        env:
+          REDIS_IMAGE: ${{ matrix.redis-image }}
         run:
-          docker compose -f tests/blackbox/docker-compose.yml up auth-saml redis minio minio-mc -d --quiet-pull --wait
+          docker compose -f tests/blackbox/docker-compose.yml up auth-saml redis minio minio-mc openldap -d --quiet-pull
+          --wait
 
       - name: Run tests
-        run: TEST_DB=sqlite3 pnpm run test:blackbox -- --project common
+        run: TEST_DB=sqlite3 pnpm run test:blackbox --project common
 
   db:
-    name: ${{ matrix.vendor }}
-    runs-on: ${{ matrix.vendor == 'mssql' && 'ubuntu-20.04' || 'ubuntu-latest' }}
+    name: ${{ matrix.vendor }} (${{ matrix.redis-image }})
+    runs-on: ubuntu-latest
     timeout-minutes: 60
     strategy:
       fail-fast: false
@@ -54,30 +66,40 @@ jobs:
           - mssql
           - oracle
           # - cockroachdb
+        redis-image:
+          - redis:6-alpine
+          - valkey/valkey:8-alpine
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Prepare
         uses: ./.github/actions/prepare
 
-      - name: Start mssql
-        if: matrix.vendor == 'mssql'
-        run: |
-          curl https://packages.microsoft.com/keys/microsoft.asc | sudo tee /etc/apt/trusted.gpg.d/microsoft.asc
-          sudo add-apt-repository "$(wget -qO- https://packages.microsoft.com/config/ubuntu/20.04/mssql-server-2019.list)"
-          sudo apt-get update
-          sudo apt-get install -y mssql-server
-          sudo /opt/mssql/bin/mssql-conf set network.tcpport 6105
-          sudo MSSQL_PID='express' MSSQL_SA_PASSWORD='Test@123' /opt/mssql/bin/mssql-conf -n setup accept-eula
-
       - name: Start database
-        if: matrix.vendor != 'sqlite3' && matrix.vendor != 'mssql'
+        if: matrix.vendor != 'sqlite3'
         run: docker compose -f tests/blackbox/docker-compose.yml up ${{ matrix.vendor }} -d --quiet-pull --wait
 
+      - name: MSSQL Set Compatibility Level
+        if: matrix.vendor == 'mssql'
+        run: |
+          for i in {1..30}
+          do
+            docker exec blackbox-mssql-1 \
+              /opt/mssql-tools18/bin/sqlcmd -S localhost -U SA -P 'Test@123' -C \
+              -Q "SELECT 1" && break
+            sleep 2
+          done
+          docker exec blackbox-mssql-1 \
+            /opt/mssql-tools18/bin/sqlcmd -S localhost -U SA -P 'Test@123' -C \
+            -Q "ALTER DATABASE model SET COMPATIBILITY_LEVEL = 150" \
+            -l 30
+          echo "MSSQL compatibility level set successfully"
+
       - name: Start services
-        run:
-          docker compose -f tests/blackbox/docker-compose.yml up auth-saml redis minio minio-mc -d --quiet-pull --wait
+        env:
+          REDIS_IMAGE: ${{ matrix.redis-image }}
+        run: docker compose -f tests/blackbox/docker-compose.yml up redis minio minio-mc -d --quiet-pull --wait
 
       - name: Run tests
-        run: TEST_DB=${{ matrix.vendor }} pnpm run test:blackbox -- --project db
+        run: TEST_DB=${{ matrix.vendor }} pnpm run test:blackbox --project db

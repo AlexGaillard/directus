@@ -20,6 +20,8 @@
 #'SIMD', 'ArrayBuffer', 'DataView', 'JSON', 'Promise', 'Generator', 'GeneratorFunction', 'Reflect',
 #'Proxy', 'Intl'
 about: Тухай
+first_name: Нэр
+last_name: Овог
 identifier: Тодохойлогч
 avatar: Аватар
 application: Аппликейшн
@@ -132,7 +134,6 @@ create_policy: Бодлого үүсгэх
 create_user: Хэрэглэгч үүсгэх
 message: Зурвас
 delete_panel: Хавтан устгах
-create_webhook: Webhook үүсгэх
 create_custom_translation: Тохируулгат орчуулга үүсгэх
 edit_custom_translation: Тохируулгат орчуулгыг засах
 no_custom_translations: Тохируулгат орчуулга байхгүй байна
@@ -164,19 +165,9 @@ rename_version: Хувилбарын нэр солих
 compare_version: Хувилбар харьцуулах
 save_version: Хувилбар хадгалах
 promote_version: Хувилбар дэвшүүлэх
-promote_version_disabled: Өөрчлөлт байхгүй
-promote_version_drawer_title: '{version}-ийг үндсэн рүү дэвшүүлэх'
-promote_version_changes: Өөрчлөлтүүд
-promote_version_preview: Урьдчилан үзэх
-outdated_notice: >-
-  Энэ хувилбар нь үүссэн тул үндсэн оролт нь шинэчлэгдлээ. Доорх бүх талбаруудын утгуудыг шалгаж, энэ хувилбарыг үндсэн оролт руу дэвшүүлэхэд аль хувилбарыг ашиглахыг батална уу.
-promote_notice: >-
-  Доорх бүх талбаруудын утгуудыг шалгаж, энэ хувилбарыг үндсэн оролт руу дэвшүүлэхэд аль хувилбарыг ашиглахыг батална уу.
 delete_version: Хувилбар устгах
 delete_version_copy: >-
   Хувилбар {version}-ийг устгахдаа итгэлтэй байна уу? Энэ үйлдлийг буцаах боломжгүйг анхаарна уу.
-delete_on_promote_copy: >-
-  Хувилбар {version}-ийг дэвшүүлсний дараа устгах уу эсвэл үлдээх үү?
 reset_bookmark: Тэмдэглэгээг хуучин хэвэнд оруулах
 update_bookmark: Тэмдэглээг шинэлэх
 delete_bookmark: Тэмдэглэгээг устгах
@@ -316,7 +307,6 @@ field_in_collection: '{field} ({collection})'
 reset_page_preferences: Хуудсын тохиргоог дахин тохируулах
 hidden_field: Нуусан талбарууд
 hidden_on_detail: Дэлгэрэнгүй дээр нуусан
-disabled_editing_value: Утга засалтыг идэвхгүй болгох
 key: Түлхүүр
 alias: Нэр
 bigInteger: Том бүхэл тоо
@@ -448,11 +438,11 @@ confirm_revert_body: Энэ нь оролтыг сонгосон төлөв рү
 display: Харагдах байдал
 settings_update_success: Тохиргоо шинэчлэгдлээ
 title: Гарчиг
+subtitle: Дэд гарчиг
 revision_delta_created: Үүссэн
 revision_delta_created_externally: Гадна үүссэн
 revision_delta_updated: '1 талбар шинэчлэгдсэн | {count} талбаруудыг шинэчиллээ'
 revision_delta_deleted: Устгасан
-revision_delta_version_saved: 'Хувилбар хадгалагдсан (1 талбар шинэчлэгдсэн) | Хувилбар хадгалагдсан ({count} талбаруудыг шинэчиллээ)'
 revision_delta_reverted: Буцаагдсан
 revision_delta_update_message: Энэ талбар шинэчлэгдсэн боловч үүний утга нь аюулгүй байдлын үүднээс далдлагдаж байна.
 revision_delta_other: Хянасан
@@ -475,6 +465,8 @@ related_collection: Хамааралтай бүрдэл
 related_collections: Хамааралтай бүрдлүүд
 translations_collection: Орчуулгын бүрдлүүд
 languages_collection: Хэлний бүрдлүүд
+translations_preview_collections: Бүрдлүүд
+translations_preview_fields: Талбарууд
 import_data_input_placeholder: CSV эсвэл JSON...
 import_data_button: Импортлож эхлэх
 import_data_indeterminate: Өгөгдлийг импортлож байна...
@@ -638,10 +630,6 @@ file_count: 'Файл байхгүй | Нэг файл | {count} файлууд'
 no_files_copy: Энд файл байхгүй байна.
 user_count: 'Хэрэглэгч байхгүй | Нэг хэрэглэгч | {count} хэрэглэгчид'
 no_users_copy: Ийм үүрэгтэй хэрэглэгч одоогоор байхгүй байна.
-webhooks_count: 'Вэбхүүк байхгүй | Нэг вэбхүүк | {count} вэбхүүкүүд'
-webhooks_deprecation_notice: |
-  Вэбхүүк ашиглагдахаа больсон бөгөөд цаашид ашиглахгүй байхыг сануулж байна. Оронд нь **Урсгалууд**-ыг [Вэбхүүк / URL үйлдлийн хүсэлт]-тэй хамт ашиглана уу. (https://docs.directus.io/app/flows/operations.html#webhook-request-url).
-no_webhooks_copy: Вэбхүүк одоогоор тохируулагдаагүй байна. Доорх хэсгээс үүсгэнэ үү.
 no_notifications: Мэдэгдэл байхгүй
 no_notifications_copy: Танд одоогоор мэдэгдэл байхгүй байна!
 activity_log: Үйл ажиллагааны бүртгэл
@@ -672,7 +660,6 @@ action: Үйлдэл
 ip_address: IP хаяг
 user_agent: Хэрэглэгчийн агент
 origin: Эх
-webhooks: Вэбхүүкүүд
 decimals: Аравтын бутархай
 value_decimals: Аравтын бутархайн утга
 min_value: Хамгийн бага утга
@@ -756,7 +743,6 @@ errors:
   VALUE_OUT_OF_RANGE: Утга нь хязгаарыг давсан байна
   VALUE_TOO_LONG: Утга нь хэт урт байна
 security: Аюулгүй байдал
-value_hashed: Утгыг найдвартай хэш хийсэн
 bookmark_name: Тэмдэглэгээний нэр...
 create_bookmark: Тэмдэглэгээ үүсгэх
 edit_bookmark: Тэмдэглэгээ засах
@@ -772,7 +758,6 @@ unexpected_error_copy: Гэнэтийн алдаа гарсан байна. Да
 copy_details: Дэлгэрэнгүй мэдээллийг хуулах
 no_app_access: Апп хандалт байхгүй
 no_app_access_copy: Энэ хэрэглэгч админ апп хэрэглэх зөвшөөрөлгүй байна.
-password_reset_sent: Та бүртгэлтэй бол бид тань руу нууц үг сэргээх аюулгүй холбоос илгээлээ
 password_reset_successful: Нууц үгийг амжилттай сэргээгдлээ
 back: Буцах
 filter: Шүүлтүүр
@@ -932,13 +917,10 @@ label: Шошго
 flows: Урсгалууд
 flow: Урсгал
 select_a_flow: Урсгал сонгох
-run_flow_confirm: Энэ урсгалыг ажиллуулахыг хүсэж байна уу?
 run_flow_on_current_collection: Энэ бүрдэл дээр урсгал ажиллуулах
 run_flow_on_current: Энэ оруулга дээр урсгал ажиллуулах
-run_flow_on_current_edited_confirm: Энэ оруулга нь урсгалаар шинэчлэгдсэн байж магадагүй, та ажиллуулахдаа итгэлтэй байна уу?
 run_flow_on_selected: Нэг эсвэл хэд хэдэн оруулгыг эхлээд сонгоно уу | Нэг сонгосон оруулга дээр урсгалыг ажиллуулах | {n} сонгосон оруулгууд дээр урсгал ажиллуулах
 run_flow: Урсгал ажиллуулах
-run_flow_success: '"{flow}" урсгалыг амжилттай ажиллууллаа'
 field_name_placeholder: Талбарын нэрийг оруулна уу...
 field_key_placeholder: Талбарын түлхүүрийг оруулна уу...
 trigger: Өдөөгч
@@ -976,6 +958,15 @@ operation_key_unique_error: Үйлдлийн түлхүүрүүд нь Урсг�
 operation_handle_resolve: 'Шийдэх: Нэмэх бол товшино уу, эсвэл замыг өөрчлөх бол чирнэ үү'
 operation_handle_reject: 'Татгалзах: Нэмэх бол товшино уу эсвэл замыг өөрчлөх бол чирнэ үү'
 insights: Аналитик
+deployment:
+  provider:
+    settings:
+      delete_confirm: Энэ үйлдлийг буцаах боломжгүй. Та үргэлжлүүлэхийг хүсч байна уу?
+    run:
+      cancel_confirm: Энэ үйлдлийг буцаах боломжгүй. Та үргэлжлүүлэхийг хүсч байна уу?
+      log_all: Бүх лог түвшингүүд
+  target_value:
+    preview: Урьдчилан харах
 dashboard: Хянах самбар
 panel: Самбар
 panel_options: Самбарын тохиргоо
@@ -1122,7 +1113,6 @@ settings_roles: Хэрэглэгчийн үүргүүд
 settings_permissions: Хандах бодлогууд
 settings_project: Тохиргоо
 settings_appearance: Харагдах байдал
-settings_webhooks: Вэбхүүкүүд
 settings_flows: Урсгалууд
 settings_system_logs: Системийн логууд
 settings_presets: Тэмдэглэгээнүүд
@@ -1150,49 +1140,6 @@ discard_changes_copy: Хийсэн бүх өөрчлөлтүүдийг цуцл�
 show_x_axis: X тэнхлэгийг харах
 show_y_axis: Y тэнхлэгийг харах
 keep_editing: Засвар үргэлжлүүлэх
-page_help_collections_overview: '**Бүрдлийн тойм** - Таны хандах боломжтой бүх бүрдлийн жагсаалт.'
-page_help_collections_collection: >-
-  **Оруулгуудыг харах** — Таны хандах эрхтэй {collection} доторх бүх оруулгуудын жагсаалт. Хурдан хандахын тулд өөрийн хэрэгцээнд нийцүүлэн бүтэц, шүүлтүүр, эрэмбэлэл зэргийг тохируулж, тэмдэглэлийг өөр өөр тохиргоонд хадгалаарай.
-page_help_collections_item: >-
-  **Оруулгын дэлгэрэнгүй** — Энэ оруулгыг харах болон удирдах маягт. Хажуу цэс нь засваруудын бүрэн түүх, оруулсан сэтгэгдлүүдийг агуулна.
-page_help_activity_collection: >-
-  **Үйл ажиллагааг харах** — Хэрэглэгчийн бүх систем болон контент үйл ажиллагааны дэлгэрэнгүй жагсаалт.
-page_help_docs_global: >-
-  **Гарын авлагыг харах** — Энэ төслийн хувилбар болон схемд тусгайлан тохируулсан гарын авлагууд.
-page_help_files_collection: >-
-  **Файлын сан** — Энэ төсөлд харгалзах бүх файлын жагсаалт. Хурдан хандахын тулд өөрийн хэрэгцээнд нийцүүлэн бүтэц, шүүлтүүр, эрэмбэлэл зэргийг тохируулж, тэмдэглэлийг өөр өөр тохиргоонд хадгалаарай.
-page_help_files_item: >-
-  **Файлын дэлгэрэнгүй** — Файлын мета өгөгдлийг удирдах, анхны файлуудыг засварлах болон хандалтын тохиргоог шинэчлэх маягт.
-page_help_settings_project: "**Тохиргоо** — Төслийн глобал тохируулга."
-page_help_settings_appearance: "**Харагдах байдал** — Төслийн харагдах байдал болон загварын тохируулга."
-page_help_settings_extensions: '**Хэрэгсэл** — Төсөлд зориулан суулгасан хэрэгслүүд.'
-page_help_settings_datamodel_collections: >-
-  **Өгөгдлийн загвар: Бүрдлүүд** — Бүх боломжит бүрдлийн жагсаалт. Үүнд харагдах болон нуусан системийн бүрдлүүд, мөн нэмж болох удирдлагагүй мэдээллийн сангийн хүснэгтүүд орно.
-page_help_settings_datamodel_fields: >-
-  **Өгөгдлийн загвар: Бүрдэл** — Бүрдэл болон түүний талбаруудыг удирдах маягт.
-page_help_settings_system_logs: '**Системийн логууд** — Системийн бүртгэлийн шууд дамжуулалтад хандах.'
-page_help_settings_policies_collection: '**Бодлогуудыг харах** — Төсөлд харгалзах бүх бодлогуудын жагсаалт.'
-page_help_settings_policies_item: "**Бодлогын дэлгэрэнгүй** — Бодлогын эрхүүд болон бусад тохиргоог удирдах."
-page_help_settings_roles_collection: '**Үүргүүдийг харах** — Төсөлд харгалзах бүх хэрэглэгчийн үүргүүдийн жагсаалт.'
-page_help_settings_roles_item: "**Үүргийн дэлгэрэнгүй** — Үүргийн эрхүүд болон бусад тохиргоог удирдах."
-page_help_settings_presets_collection: >-
-  **Урьдчилсан тохиргоог харах** — Төсөлд харгалзах бүх урьдчилсан тохиргооны жагсаалт. Үүнд: хэрэглэгч, үүрэг болон глобал тэмдэглэл, цаашлаад өгөгдмөл харагдац байна.
-page_help_settings_presets_item: >-
-  **Урьдчилсан тохиргооны дэлгэрэнгүй** — Тэмдэглэл болон өгөгдмөл бүрдлийн урьдчилсан тохиргоог удирдах маягт.
-page_help_settings_webhooks_collection: '**Вэбхүүкүүдийг харах** — Төсөлд харгалзах бүх вэбхүүкүүдийн жагсаалт.'
-page_help_settings_webhooks_item: '**Вэбхүүкийн дэлгэрэнгүй** — Төслийн вэбхүүкийг үүсгэх болон удирдах маягт.'
-page_help_settings_flows_collection: '**Урсгалуудыг харах** — Төсөлд харгалзах бүх урсгалуудын жагсаалт.'
-page_help_settings_flows_item: '**Урсгалын дэлгэрэнгүй** — Нэг эсвэл хэд хэдэн үйлдэл удирдах ажлын талбар.'
-page_help_settings_translations_collection: '**Тохируулгат орчуулгуудыг харах** — Төсөлд харгалзах бүх тохируулгат орчуулгуудын жагсаалт.'
-page_help_settings_translations_item: '**Тохируулгат орчуулгын дэлгэрэнгүй** — Оруулгыг харах болон удирдах маягт.'
-page_help_users_collection: '**Хэрэглэгчийн лавлах** — Төсөлд харгалзах бүх системийн хэрэглэгчдийн жагсаалт.'
-page_help_users_item: >-
-  **Хэрэглэгчийн дэлгэрэнгүй** — Өөрийн бүртгэлийн мэдээллийг удирдах болон бусад хэрэглэгчдийн дэлгэрэнгүй мэдээллийг авах.
-page_help_insights_overview: '**Аналитик* — Таны хандаж болох хянах самбруудын жагсаалт.'
-page_help_insights_dashboard: '**Хянах самбар** — Нэг эсвэл хэд хэдэн самбар удирдах ажлын талбар'
-page_help_marketplace_account: '**Бүртгэл* — Нийтэлсэн хэрэгслийн нийтлэгч эсвэл засварлагч.'
-page_help_marketplace_registry: '**Бүртгэл* — Directus нэмэлт хэрэгсэлд байрлах боломжтой хэрэгслүүд.'
-page_help_marketplace_extension: '**Хэрэгсэл** — Directus нэмэлт хэрэгсэл дэх хэрэгсэл.'
 activity_feed: Үйл ажиллагааны хангамж
 add_new: Шинээр нэмэх
 create_new: Шинээр үүсгэх
@@ -1228,7 +1175,6 @@ directus_collection:
   directus_dashboards: Аналитик модулийн хянах самбарууд
   directus_fields: Нэмэлт талбарын тохируулга болон мета өгөгдөл
   directus_files: Бүх удирддаг файлуудын мета өгөгдөл
-  directus_flows: Автоматжуулсан процессууд
   directus_folders: Файлуудад зориулсан виртуал лавлахыг хангадаг
   directus_migrations: Өгөгдлийн сангийн ямар хувилбарыг ашиглаж байгаа
   directus_notifications: Хэрэглэгчдэд мэдэгдлийг илгээлээ
@@ -1244,7 +1190,6 @@ directus_collection:
   directus_settings: Төслийн тохируулга
   directus_shares: Гаднаас хуваалцсан зүйлсийг хянадаг
   directus_users: Платформд зориулсан системийн хэрэглэгчид
-  directus_webhooks: Үйл явдалд суурилсан HTTP хүсэлтийн тохиргоо
   directus_translations: Тохируулгат орчуулгууд
   directus_versions: Оруулгуудын контент хувилбарууд
   directus_extensions: Хэрэгслүүдийн тохируулга
@@ -1392,6 +1337,7 @@ fields:
     public_registration_email_filter_note: Зөвхөн уг шүүлтүүрт нийцэх цахим шууданг бүртгэх боломжтой.
     public_registration_verify_email: Цахим шуудан баталгаажуулах
     public_registration_verify_email_note: Бүртгүүлж буй хэрэглэгч рүү нэвтрэхийн өмнө баталгаажуулах холбоос дээр дарахыг хүссэн имэйл илгээнэ.
+    ai_header_name: Толгой
   directus_shares:
     name: Нэр
     role: Үүрэг
@@ -1422,18 +1368,6 @@ fields:
     admin_access: Админ хандалт
     ip_access: IP хандалт
     enforce_tfa: 2FA шаардах
-  directus_webhooks:
-    name: Нэр
-    method: Арга
-    status: Статус
-    data: Өгөгдөл
-    header: Толгой
-    value: Утга
-    headers: Хүсэлтийн толгой
-    data_label: Үйл явдлын өгөгдлийг илгээх
-    triggers: Өдөөгчид
-    actions: Үйлдлүүд
-    collections: Бүрдлүүд
 field_options:
   directus_settings:
     project_name_placeholder: Миний төсөл...
@@ -1535,19 +1469,6 @@ field_options:
     status_dropdown_suspended: Түдгэлзүүлсэн
     status_dropdown_archived: Архивласан
     token: Аюулгүй хандалтын токенг оруулах...
-  directus_webhooks:
-    status_options_active: Идэвхтэй
-    status_options_inactive: Идэвхгүй
-    data_label: Үйл явдлын өгөгдлийг илгээх
-    triggers_divider: Өдөөгчид
-    actions_create: Үүсгэх
-    actions_update: Шинэчлэх
-    actions_delete: Устгах
-    actions_login: Нэвтрэх
-    headers:
-      header: Толгой
-      value: Утга
-      add: Толгой нэмэх
 no_fields_in_collection: '"{collection}"-д одоогоор талбар байхгүй байна'
 no_value: Утга байхгүй
 do_nothing: Юу ч хийхгүй
@@ -1569,11 +1490,34 @@ live_preview:
   new_window: Шинэ цонхонд нээх
   close_window: Дэлгэц хуваах горимд нээх
   toggle_3d: 3D солих
+  display_options: Харагдах байдлын тохиргоо
 shares: Хуваалцсан
 unlimited_usage: Хязгааргүй хэрэглээ
 uses_left: Ашиглалт үлдсэнгүй | Нэг ашиглалт үлдсэн | {n} ашиглалт үлдсэн
 no_shares: Хуваалцсан зүйл байхгүй
 new_share: Шинэ хуваалцал
+ai:
+  input: Оролт
+  unknown: Үл мэдэгдэх
+  items: Оруулгууд
+  content: Контент
+  settings: Тохиргоо
+  tool_approval:
+    disabled: Идэвхгүй
+  ask_user_submit: Батлах
+  ask_user_next: Дараагийн
+ai_tools:
+  items: Оруулгууд
+  files: Файлууд
+  folders: Хавтсууд
+  flows: Урсгалууд
+  trigger-flow: Урсгал өдөөх
+  operations: Үйлдлүүд
+  schema: Схем
+  collections: Бүрдлүүд
+  fields: Талбарууд
+mcp_prompts_collection_schema:
+  messages_role_user: Хэрэглэгч
 expired: Хугацаа дууссан
 upcoming: Удахгүй
 share: Хуваалцах
@@ -1608,7 +1552,6 @@ editing_role: 'Үүрэг {role}'
 editing_policy: 'Бодлого {policy}'
 no_permissions: Эрх байхгүй
 permission_add_collection: Бүрдэл нэмэх
-creating_webhook: Вебхүүк үүсгэж байна
 default_label: Өгөгдмөл
 delete_label: Устгах
 delete_are_you_sure: >-
@@ -1696,7 +1639,6 @@ translation_placeholder: Орчуулга оруулна уу...
 value: Утга
 view_project: Төсөл үзэх
 report_error: Алдааг мэдээлэх
-start: Эхлэх
 table: Хүснэгт
 list: Жагсаалт
 search_filter: Хайлт ба шүүлт
@@ -1741,9 +1683,7 @@ interfaces:
     accordion_mode: Аккордеон горим
     max_one_section_open: Ихдээ 1 нээлттэй хэсэг
   presentation-links:
-    presentation-links: Товчлууран холбоосууд
-    links: Холбоосууд
-    description: Динамик URL-д зориулсан тусгай холбоос товчлуурууд
+    presentation-links: Товчлуур
     style: Хэв маяг
     primary: Үндсэн
     link: Холбоосууд
@@ -2065,6 +2005,9 @@ interfaces:
   input-password:
     input-password: Нууц үг оруулах
     description: Утгыг нуух боломжтой нууц үгийн талбар
+  header:
+    header: Толгой
+    links: Холбоосууд
 displays:
   translations:
     translations: Орчуулгууд
@@ -2279,6 +2222,7 @@ show_labels: Шошгуудыг харуулах
 show_legend: Тайлбар харуулах
 right: Баруун
 left: Зүүн
+start: Эхлэх
 donut: Дугуй
 panels:
   metric:
@@ -2367,11 +2311,9 @@ triggers:
 a_flow_uuid: Өдөөгдөх урсгалыг сонгоно уу...
 any_string_or_json: Ямар ч тэмдэгтэн мөр эсвэл JSON...
 item_payload_placeholder: Энэ бол оруулгын талбарын утгыг шинэчлэхэд хэрэглэгддэг JSON юм...
-operation_variables_note: Та урсгалын өгөгдөлд **{'{'}{'{'}$last{'}'}{'}'}**, **{'{'}{'{'}$trigger{'}'}{'}'}** болон **{'{'}{'{'}$accountability{'}'}{'}'}** хувьсагчуудаар хандах, эсвэл өмнөх үйлдлийг ашиглаж болно **{'{'}{'{'}operation_key{'}'}{'}'}**.'
 operations:
   condition:
     name: Нөхцөл
-    description: If/Else логик дээр суурилсан урсгалын процесс
   exec:
     name: Скрипт ажиллуулах
     description: Чингэлэгийг өөрчлөх дурын кодыг ажиллуулах
@@ -2455,7 +2397,6 @@ operations:
     description: Урсгалын JSON чингэлэгийг өөрчлөх
   trigger:
     name: Урсгал өдөөх
-    description: Энэ өгөгдлийг өөр урсгал руу дамжуулах
     flows: Урсгалууд
     flow: Урсгал
     data: Өгөгдөл
@@ -2509,3 +2450,4 @@ search_flow: Урсгал хайх...
 percent: Хувь
 show_password: Нууц үг харуулах
 hide_password: Нууц үг нуух
+set_to_now: Одоогоор тохируулах

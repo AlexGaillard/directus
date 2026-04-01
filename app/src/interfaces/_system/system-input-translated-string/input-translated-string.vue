@@ -1,14 +1,21 @@
 <script setup lang="ts">
-import { getCurrentLanguage } from '@/lang/get-current-language';
+import { snakeCase } from 'lodash';
+import { computed, ref, unref, watch } from 'vue';
+import CustomTranslationsTooltip from './custom-translations-tooltip.vue';
+import VHighlight from '@/components/v-highlight.vue';
+import VIcon from '@/components/v-icon/v-icon.vue';
+import VInput from '@/components/v-input.vue';
+import VListItemContent from '@/components/v-list-item-content.vue';
+import VListItemIcon from '@/components/v-list-item-icon.vue';
+import VListItem from '@/components/v-list-item.vue';
+import VList from '@/components/v-list.vue';
+import VMenu from '@/components/v-menu.vue';
 import type { Translation } from '@/stores/translations';
 import { useTranslationsStore } from '@/stores/translations';
+import { useUserStore } from '@/stores/user';
 import { fetchAll } from '@/utils/fetch-all';
 import { unexpectedError } from '@/utils/unexpected-error';
 import DrawerItem from '@/views/private/components/drawer-item.vue';
-import { snakeCase } from 'lodash';
-import { computed, ref, unref, watch } from 'vue';
-import { useI18n } from 'vue-i18n';
-import CustomTranslationsTooltip from './custom-translations-tooltip.vue';
 
 const translationPrefix = '$t:';
 
@@ -27,8 +34,6 @@ const props = withDefaults(
 
 const emit = defineEmits(['input']);
 
-const { t } = useI18n();
-
 const menuEl = ref();
 const hasValidKey = ref<boolean>(false);
 const isFocused = ref<boolean>(false);
@@ -39,6 +44,8 @@ const translationsKeys = ref<string[]>([]);
 const translationsStore = useTranslationsStore();
 
 const isCustomTranslationDrawerOpen = ref<boolean>(false);
+
+const userStore = useUserStore();
 
 const fetchTranslationsKeys = async () => {
 	loading.value = true;
@@ -128,7 +135,7 @@ function openNewCustomTranslationDrawer() {
 
 const newTranslationDefaults = computed(() => {
 	const defaults = {
-		language: getCurrentLanguage(),
+		language: userStore.language,
 	};
 
 	if (localValue.value && !localValue.value.startsWith(translationPrefix)) {
@@ -144,9 +151,9 @@ const newTranslationDefaults = computed(() => {
 
 <template>
 	<div class="input-translated-string">
-		<v-menu ref="menuEl" :disabled="disabled" :close-on-content-click="false" attached>
+		<VMenu ref="menuEl" :disabled="disabled" :close-on-content-click="false" attached>
 			<template #activator="{ toggle, active }">
-				<v-input
+				<VInput
 					class="translation-input"
 					:model-value="localValue"
 					:autofocus="autofocus"
@@ -159,39 +166,40 @@ const newTranslationDefaults = computed(() => {
 					@keydown.enter="checkKeyValidity"
 				>
 					<template v-if="hasValidKey" #input>
-						<button :disabled="disabled" @click.stop="setValue(null)">{{ value && getKeyWithoutPrefix(value) }}</button>
+						<button class="selected-translation" :disabled="disabled" @click.stop="setValue(null)">
+							{{ value && getKeyWithoutPrefix(value) }}
+						</button>
 					</template>
 					<template #append>
-						<v-icon
+						<VIcon
 							name="translate"
 							class="translate-icon"
 							:class="{ active }"
 							clickable
-							:tabindex="-1"
 							:disabled="disabled"
 							@click="toggle"
 						/>
 					</template>
-				</v-input>
+				</VInput>
 			</template>
 
 			<div v-if="searchValue !== null || filteredTranslationKeys.length >= 25" class="search">
-				<v-input
+				<VInput
 					class="search-input"
 					type="text"
 					:model-value="searchValue"
 					autofocus
-					:placeholder="t('interfaces.input-translated-string.search_placeholder')"
+					:placeholder="$t('interfaces.input-translated-string.search_placeholder')"
 					@update:model-value="searchValue = $event"
 				>
 					<template #append>
-						<v-icon name="search" class="search-icon" />
+						<VIcon name="search" class="search-icon" />
 					</template>
-				</v-input>
+				</VInput>
 			</div>
 
-			<v-list :loading="loading">
-				<v-list-item
+			<VList :loading="loading">
+				<VListItem
 					v-for="translationKey in filteredTranslationKeys"
 					:key="translationKey"
 					class="translation-key"
@@ -199,26 +207,26 @@ const newTranslationDefaults = computed(() => {
 					clickable
 					@click="selectKey(translationKey)"
 				>
-					<v-list-item-icon>
-						<v-icon name="translate" />
-					</v-list-item-icon>
-					<v-list-item-content><v-highlight :text="translationKey" :query="searchValue" /></v-list-item-content>
-					<v-list-item-icon class="info">
-						<custom-translations-tooltip :translation-key="translationKey" />
-					</v-list-item-icon>
-				</v-list-item>
-				<v-list-item class="new-custom-translation" clickable @click="openNewCustomTranslationDrawer">
-					<v-list-item-icon>
-						<v-icon name="add" />
-					</v-list-item-icon>
-					<v-list-item-content>
-						{{ t('interfaces.input-translated-string.new_custom_translation') }}
-					</v-list-item-content>
-				</v-list-item>
-			</v-list>
-		</v-menu>
+					<VListItemIcon>
+						<VIcon name="translate" />
+					</VListItemIcon>
+					<VListItemContent><VHighlight :text="translationKey" :query="searchValue" /></VListItemContent>
+					<VListItemIcon class="info">
+						<CustomTranslationsTooltip :translation-key="translationKey" />
+					</VListItemIcon>
+				</VListItem>
+				<VListItem class="new-custom-translation" clickable @click="openNewCustomTranslationDrawer">
+					<VListItemIcon>
+						<VIcon name="add" />
+					</VListItemIcon>
+					<VListItemContent>
+						{{ $t('interfaces.input-translated-string.new_custom_translation') }}
+					</VListItemContent>
+				</VListItem>
+			</VList>
+		</VMenu>
 
-		<drawer-item
+		<DrawerItem
 			v-model:active="isCustomTranslationDrawerOpen"
 			collection="directus_translations"
 			primary-key="+"
@@ -230,20 +238,19 @@ const newTranslationDefaults = computed(() => {
 
 <style lang="scss" scoped>
 .translation-input {
-	:deep(button) {
-		margin-right: auto;
-		padding: 2px 8px 0;
+	.selected-translation {
+		margin-inline-end: auto;
+		padding: 0.125rem 0.4375rem 0;
 		color: var(--theme--primary);
 		background-color: var(--theme--primary-background);
 		border-radius: var(--theme--border-radius);
 		transition: var(--fast) var(--transition);
 		transition-property: background-color, color;
-		user-select: none;
 		font-family: var(--theme--fonts--monospace--font-family);
 		overflow-x: hidden;
 	}
 
-	:deep(button:not(:disabled):hover) {
+	.selected-translation:not(:disabled):hover {
 		color: var(--white);
 		background-color: var(--theme--danger);
 	}
@@ -258,10 +265,10 @@ const newTranslationDefaults = computed(() => {
 }
 
 .search {
-	padding: 12px 8px 6px 8px;
+	padding: 0.6875rem 0.4375rem 0.3125rem;
 
 	.search-input {
-		--input-height: 40px;
+		--input-height: 2.25rem;
 	}
 
 	.search-icon {
@@ -277,14 +284,14 @@ const newTranslationDefaults = computed(() => {
 		opacity: 0;
 	}
 
+	.info :deep(.icon:focus-visible),
+	&:focus-visible .info :deep(.icon),
 	&:hover .info :deep(.icon) {
 		opacity: 1;
 	}
 
 	:deep(mark) {
-		flex-basis: auto;
-		flex-grow: 0;
-		flex-shrink: 1;
+		flex: 0 1 auto;
 		color: var(--theme--primary);
 	}
 
@@ -293,12 +300,15 @@ const newTranslationDefaults = computed(() => {
 		--v-list-item-background-color-active: var(--theme--primary);
 		--v-list-item-color-hover: var(--foreground-inverted);
 		--v-list-item-background-color-hover: var(--theme--primary);
+		--focus-ring-color: var(--v-list-item-color-active);
+		--focus-ring-offset: var(--focus-ring-offset-inset);
 
 		background-color: var(--theme--primary);
 		color: var(--foreground-inverted);
 
 		.v-list-item-icon {
 			--v-icon-color: var(--foreground-inverted);
+			--focus-ring-offset: var(--focus-ring-offset-invert);
 		}
 
 		.info :deep(.icon) {

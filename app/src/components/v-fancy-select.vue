@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import { computed } from 'vue';
+import VDivider from '@/components/v-divider.vue';
+import VIcon from '@/components/v-icon/v-icon.vue';
 
 export type FancySelectItem = (
 	| {
@@ -55,11 +57,13 @@ function toggle(item: Record<string, any>) {
 
 <template>
 	<div class="v-fancy-select">
-		<transition-group tag="div" name="option">
-			<template v-for="(item, index) in visibleItems" :key="index">
-				<v-divider v-if="item.divider === true" />
-				<div
+		<TransitionGroup tag="div" name="option">
+			<template v-for="(item, index) in visibleItems" :key="item[props.itemValue]">
+				<VDivider v-if="item.divider === true" />
+				<button
 					v-else
+					type="button"
+					:disabled="disabled"
 					class="v-fancy-select-option"
 					:class="{ active: item[itemValue] === modelValue, disabled }"
 					:style="{
@@ -68,7 +72,7 @@ function toggle(item: Record<string, any>) {
 					@click="toggle(item)"
 				>
 					<div class="icon">
-						<v-icon :name="item.icon" />
+						<VIcon :name="item.icon" />
 					</div>
 
 					<div class="content">
@@ -76,15 +80,16 @@ function toggle(item: Record<string, any>) {
 						<div class="description">{{ item[itemDescription] }}</div>
 					</div>
 
-					<v-icon
+					<VIcon
 						v-if="modelValue === item[itemValue] && disabled === false"
 						name="cancel"
+						clickable
 						@click.stop="toggle(item)"
 					/>
-					<v-icon v-else-if="item.iconRight" class="icon-right" :name="item.iconRight" />
-				</div>
+					<VIcon v-else-if="item.iconRight" class="icon-right" :name="item.iconRight" />
+				</button>
 			</template>
-		</transition-group>
+		</TransitionGroup>
 	</div>
 </template>
 
@@ -98,14 +103,14 @@ function toggle(item: Record<string, any>) {
 	z-index: 1;
 	display: flex;
 	align-items: center;
-	width: 100%;
-	margin-bottom: 8px;
-	padding: 12px;
+	inline-size: 100%;
+	margin-block-end: 0.4375rem;
+	padding: 0.6875rem;
 	background-color: var(--theme--background-normal);
 	border: var(--theme--border-width) solid var(--theme--background-normal);
-	border-radius: 6px;
+	border-radius: 0.3125rem;
 	backface-visibility: hidden;
-	cursor: pointer;
+	text-align: start;
 	transition-timing-function: var(--transition);
 	transition-duration: var(--fast);
 	transition-property: background-color, border-color;
@@ -122,9 +127,9 @@ function toggle(item: Record<string, any>) {
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		width: 44px;
-		height: 44px;
-		margin-right: 12px;
+		inline-size: 2.5rem;
+		block-size: 2.5rem;
+		margin-inline-end: 0.6875rem;
 		background-color: var(--theme--background);
 		border-radius: 50%;
 	}
@@ -176,6 +181,6 @@ function toggle(item: Record<string, any>) {
 }
 
 .v-divider {
-	margin: 24px 0;
+	margin: 1.375rem 0;
 }
 </style>

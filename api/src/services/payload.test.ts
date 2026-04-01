@@ -1,28 +1,44 @@
+import { SchemaBuilder } from '@directus/schema-builder';
+import type { Accountability, Item, PayloadAction } from '@directus/types';
 import type { Knex } from 'knex';
 import knex from 'knex';
-import { MockClient, Tracker, createTracker } from 'knex-mock-client';
+import { createTracker, MockClient, Tracker } from 'knex-mock-client';
 import type { MockedFunction } from 'vitest';
 import { afterEach, beforeAll, beforeEach, describe, expect, test, vi } from 'vitest';
 import type { Helpers } from '../database/helpers/index.js';
 import { getHelpers } from '../database/helpers/index.js';
+import { useLogger } from '../logger/index.js';
+import { decrypt, encrypt } from '../utils/encrypt.js';
+import { getSecret } from '../utils/get-secret.js';
 import { PayloadService } from './index.js';
-import type { SchemaOverview } from '@directus/types';
 
 vi.mock('../../src/database/index', () => ({
-	getDatabaseClient: vi.fn().mockReturnValue('postgres'),
+	getDatabaseClient: vi.fn().mockReturnValue('sqlite'),
 }));
+
+vi.mock('../utils/get-secret.js', () => ({
+	getSecret: vi.fn(),
+}));
+
+vi.mock('../logger/index.js', () => ({
+	useLogger: vi.fn(),
+}));
+
+vi.mock('../utils/encrypt.js');
 
 describe('Integration Tests', () => {
 	let db: MockedFunction<Knex>;
 	let tracker: Tracker;
 
 	beforeAll(async () => {
+		vi.stubEnv('TZ', 'UTC');
 		db = vi.mocked(knex.default({ client: MockClient }));
 		tracker = createTracker(db);
 	});
 
 	afterEach(() => {
 		tracker.reset();
+		vi.clearAllMocks();
 	});
 
 	describe('Services / PayloadService', () => {
@@ -45,9 +61,10 @@ describe('Integration Tests', () => {
 						value: 123,
 						action: 'read',
 						payload: {},
-						accountability: { role: null },
+						accountability: { role: null } as Accountability,
 						specials: [],
 						helpers,
+						overwriteDefaults: undefined,
 					});
 
 					expect(result).toBe(undefined);
@@ -58,9 +75,10 @@ describe('Integration Tests', () => {
 						value: '',
 						action: 'read',
 						payload: {},
-						accountability: { role: null },
+						accountability: { role: null } as Accountability,
 						specials: [],
 						helpers,
+						overwriteDefaults: undefined,
 					});
 
 					expect(result).toMatchObject([]);
@@ -71,9 +89,10 @@ describe('Integration Tests', () => {
 						value: ['test', 'directus'],
 						action: 'read',
 						payload: {},
-						accountability: { role: null },
+						accountability: { role: null } as Accountability,
 						specials: [],
 						helpers,
+						overwriteDefaults: undefined,
 					});
 
 					expect(result).toEqual(['test', 'directus']);
@@ -84,9 +103,10 @@ describe('Integration Tests', () => {
 						value: 'test,directus',
 						action: 'read',
 						payload: {},
-						accountability: { role: null },
+						accountability: { role: null } as Accountability,
 						specials: [],
 						helpers,
+						overwriteDefaults: undefined,
 					});
 
 					expect(result).toMatchObject(['test', 'directus']);
@@ -97,9 +117,10 @@ describe('Integration Tests', () => {
 						value: ['test', 'directus'],
 						action: 'create',
 						payload: {},
-						accountability: { role: null },
+						accountability: { role: null } as Accountability,
 						specials: [],
 						helpers,
+						overwriteDefaults: undefined,
 					});
 
 					expect(result).toBe('test,directus');
@@ -110,12 +131,121 @@ describe('Integration Tests', () => {
 						value: 'test,directus',
 						action: 'create',
 						payload: {},
-						accountability: { role: null },
+						accountability: { role: null } as Accountability,
 						specials: [],
 						helpers,
+						overwriteDefaults: undefined,
 					});
 
 					expect(result).toBe('test,directus');
+				});
+			});
+
+			describe('encrypt', () => {
+				let warn: ReturnType<typeof vi.fn>;
+
+				beforeEach(() => {
+					warn = vi.fn();
+					vi.mocked(useLogger).mockReturnValue({ warn } as any);
+					vi.mocked(getSecret).mockReturnValue('test-secret');
+				});
+
+				test('returns null and logs warning when decrypt throws', async () => {
+					vi.mocked(decrypt).mockRejectedValue(new Error('bad key'));
+
+					const result = await service.transformers['encrypt']!({
+						value: 'some-encrypted-blob',
+						action: 'read',
+						payload: {},
+						accountability: null,
+						specials: ['encrypt'],
+						helpers,
+						overwriteDefaults: undefined,
+					});
+
+					expect(result).toBeNull();
+					expect(warn).toHaveBeenCalledWith(expect.stringContaining('bad key'));
+				});
+
+				test.each([null, '', false, undefined])('Returns falsy value (%s) as-is', async (value) => {
+					const result = await service.transformers['encrypt']!({
+						value,
+						action: 'read',
+						payload: {},
+						accountability: { role: null } as Accountability,
+						specials: [],
+						helpers,
+						overwriteDefaults: undefined,
+					});
+
+					expect(result).toBe(value);
+					expect(decrypt).not.toHaveBeenCalled();
+					expect(encrypt).not.toHaveBeenCalled();
+				});
+
+				test('Returns redacted value on read when accountability is set', async () => {
+					const result = await service.transformers['encrypt']!({
+						value: 'some-encrypted-value',
+						action: 'read',
+						payload: {},
+						accountability: { role: null } as Accountability,
+						specials: [],
+						helpers,
+						overwriteDefaults: undefined,
+					});
+
+					expect(result).toBe('**********');
+					expect(decrypt).not.toHaveBeenCalled();
+				});
+
+				test('Decrypts value on read when accountability is null', async () => {
+					vi.mocked(decrypt).mockResolvedValue('decrypted');
+
+					const result = await service.transformers['encrypt']!({
+						value: 'some-encrypted-value',
+						action: 'read',
+						payload: {},
+						accountability: null,
+						specials: [],
+						helpers,
+						overwriteDefaults: undefined,
+					});
+
+					expect(result).toBe('decrypted');
+					expect(decrypt).toHaveBeenCalledWith('some-encrypted-value', 'test-secret');
+					expect(warn).not.toHaveBeenCalled();
+				});
+
+				test.each<PayloadAction>(['create', 'update'])('Encrypts string value on %s', async (action) => {
+					vi.mocked(encrypt).mockResolvedValue('encrypted');
+
+					const result = await service.transformers['encrypt']!({
+						value: 'plain-text',
+						action,
+						payload: {},
+						accountability: { role: null } as Accountability,
+						specials: [],
+						helpers,
+						overwriteDefaults: undefined,
+					});
+
+					expect(result).toBe('encrypted');
+					expect(encrypt).toHaveBeenCalledWith('plain-text', 'test-secret');
+				});
+
+				test('Returns non-string value as-is on non-read action', async () => {
+					const result = await service.transformers['encrypt']!({
+						value: 123,
+						action: 'create',
+						payload: {},
+						accountability: { role: null } as Accountability,
+						specials: [],
+						helpers,
+						overwriteDefaults: undefined,
+					});
+
+					expect(result).toBe(123);
+					expect(encrypt).not.toHaveBeenCalled();
 				});
 			});
 		});
@@ -123,67 +253,14 @@ describe('Integration Tests', () => {
 		describe('processDates', () => {
 			let service: PayloadService;
 
-			const dateFieldId = 'date_field';
-			const dateTimeFieldId = 'datetime_field';
-			const timestampFieldId = 'timestamp_field';
-
-			const schema: SchemaOverview = {
-				collections: {
-					test: {
-						collection: 'test',
-						primary: 'id',
-						singleton: false,
-						sortField: null,
-						note: null,
-						accountability: null,
-						fields: {
-							[dateFieldId]: {
-								field: dateFieldId,
-								defaultValue: null,
-								nullable: true,
-								generated: false,
-								type: 'date',
-								dbType: 'date',
-								precision: null,
-								scale: null,
-								special: [],
-								note: null,
-								validation: null,
-								alias: false,
-							},
-							[dateTimeFieldId]: {
-								field: dateTimeFieldId,
-								defaultValue: null,
-								nullable: true,
-								generated: false,
-								type: 'dateTime',
-								dbType: 'datetime',
-								precision: null,
-								scale: null,
-								special: [],
-								note: null,
-								validation: null,
-								alias: false,
-							},
-							[timestampFieldId]: {
-								field: timestampFieldId,
-								defaultValue: null,
-								nullable: true,
-								generated: false,
-								type: 'timestamp',
-								dbType: 'timestamp',
-								precision: null,
-								scale: null,
-								special: [],
-								note: null,
-								validation: null,
-								alias: false,
-							},
-						},
-					},
-				},
-				relations: [],
-			};
+			const schema = new SchemaBuilder()
+				.collection('test', (c) => {
+					c.field('id').id();
+					c.field('date_field').date();
+					c.field('datetime_field').dateTime();
+					c.field('timestamp_field').timestamp();
+				})
+				.build();
 
 			const fieldEntries = Object.entries(schema.collections['test']!.fields);
 
@@ -200,9 +277,9 @@ describe('Integration Tests', () => {
 						fieldEntries,
 						[
 							{
-								[dateFieldId]: '0000-00-00',
-								[dateTimeFieldId]: '0000-00-00 00:00:00',
-								[timestampFieldId]: '0000-00-00 00:00:00.000',
+								date_field: '0000-00-00',
+								datetime_field: '0000-00-00 00:00:00',
+								timestamp_field: '0000-00-00 00:00:00.000',
 							},
 						],
 						'read',
@@ -210,9 +287,31 @@ describe('Integration Tests', () => {
 
 					expect(result).toMatchObject([
 						{
-							[dateFieldId]: null,
-							[dateTimeFieldId]: null,
-							[timestampFieldId]: null,
+							date_field: null,
+							datetime_field: null,
+							timestamp_field: null,
+						},
+					]);
+				});
+
+				test('with unpadded values', () => {
+					const result = service.processDates(
+						fieldEntries,
+						[
+							{
+								date_field: new Date(1, 1, 3).setFullYear(1),
+								datetime_field: new Date(1, 1, 3, 4, 5, 6).setFullYear(1),
+								timestamp_field: new Date(1, 1, 3, 4, 5, 6, 7).setFullYear(1),
+							},
+						],
+						'read',
+					);
+
+					expect(result).toMatchObject([
+						{
+							date_field: '0001-02-03',
+							datetime_field: '0001-02-03T04:05:06',
+							timestamp_field: new Date(new Date(1, 1, 3, 4, 5, 6, 7).setFullYear(1)).toISOString(),
 						},
 					]);
 				});
@@ -222,9 +321,9 @@ describe('Integration Tests', () => {
 						fieldEntries,
 						[
 							{
-								[dateFieldId]: '2022-01-10',
-								[dateTimeFieldId]: '2021-09-31 12:34:56',
-								[timestampFieldId]: '1980-12-08 00:11:22.333',
+								date_field: '2022-01-10',
+								datetime_field: '2021-09-31 12:34:56',
+								timestamp_field: '1980-12-08 00:11:22.333',
 							},
 						],
 						'read',
@@ -232,9 +331,9 @@ describe('Integration Tests', () => {
 
 					expect(result).toMatchObject([
 						{
-							[dateFieldId]: '2022-01-10',
-							[dateTimeFieldId]: '2021-10-01T12:34:56',
-							[timestampFieldId]: new Date('1980-12-08 00:11:22.333').toISOString(),
+							date_field: '2022-01-10',
+							datetime_field: '2021-10-01T12:34:56',
+							timestamp_field: new Date('1980-12-08 00:11:22.333').toISOString(),
 						},
 					]);
 				});
@@ -244,9 +343,9 @@ describe('Integration Tests', () => {
 						fieldEntries,
 						[
 							{
-								[dateFieldId]: new Date(1666777777000),
-								[dateTimeFieldId]: new Date(1666666666000),
-								[timestampFieldId]: new Date(1666555444333),
+								date_field: new Date(1666777777000),
+								datetime_field: new Date(1666666666000),
+								timestamp_field: new Date(1666555444333),
 							},
 						],
 						'read',
@@ -254,9 +353,9 @@ describe('Integration Tests', () => {
 
 					expect(result).toMatchObject([
 						{
-							[dateFieldId]: toLocalISOString(new Date(1666777777000)).slice(0, 10),
-							[dateTimeFieldId]: toLocalISOString(new Date(1666666666000)),
-							[timestampFieldId]: new Date(1666555444333).toISOString(),
+							date_field: toLocalISOString(new Date(1666777777000)).slice(0, 10),
+							datetime_field: toLocalISOString(new Date(1666666666000)),
+							timestamp_field: new Date(1666555444333).toISOString(),
 						},
 					]);
 				});
@@ -272,7 +371,7 @@ describe('Integration Tests', () => {
 							},
 						],
 						'read',
-						{ 'date-alias': dateFieldId, 'datetime-alias': dateTimeFieldId, 'timestamp-alias': timestampFieldId },
+						{ 'date-alias': 'date_field', 'datetime-alias': 'datetime_field', 'timestamp-alias': 'timestamp_field' },
 					);
 
 					expect(result).toMatchObject([
@@ -295,7 +394,7 @@ describe('Integration Tests', () => {
 							},
 						],
 						'read',
-						{ 'date-alias': dateFieldId, 'datetime-alias': dateTimeFieldId, 'timestamp-alias': timestampFieldId },
+						{ 'date-alias': 'date_field', 'datetime-alias': 'datetime_field', 'timestamp-alias': 'timestamp_field' },
 					);
 
 					expect(result).toMatchObject([
@@ -306,62 +405,172 @@ describe('Integration Tests', () => {
 						},
 					]);
 				});
+
+				test('with aggregate and typical values', () => {
+					const result = service.processDates(
+						fieldEntries,
+						[
+							{
+								'max->date_field': '2022-01-10',
+								'max->datetime_field': '2021-09-31 12:34:56',
+								'max->timestamp_field': '1980-12-08 00:11:22.333',
+							},
+						],
+						'read',
+						{},
+						{ max: ['date_field', 'datetime_field', 'timestamp_field'] },
+					);
+
+					expect(result).toMatchObject([
+						{
+							'max->date_field': '2022-01-10',
+							'max->datetime_field': '2021-10-01T12:34:56',
+							'max->timestamp_field': new Date('1980-12-08 00:11:22.333').toISOString(),
+						},
+					]);
+				});
+
+				test('with aggregate and object values', () => {
+					const result = service.processDates(
+						fieldEntries,
+						[
+							{
+								'max->date_field': new Date(1666777777000),
+								'max->datetime_field': new Date(1666666666000),
+								'max->timestamp_field': new Date(1666555444333),
+							},
+						],
+						'read',
+						{},
+						{ max: ['date_field', 'datetime_field', 'timestamp_field'] },
+					);
+
+					expect(result).toMatchObject([
+						{
+							'max->date_field': toLocalISOString(new Date(1666777777000)).slice(0, 10),
+							'max->datetime_field': toLocalISOString(new Date(1666666666000)),
+							'max->timestamp_field': new Date(1666555444333).toISOString(),
+						},
+					]);
+				});
+			});
+		});
+
+		describe('processAggregates', () => {
+			let service: PayloadService;
+
+			const schema = new SchemaBuilder()
+				.collection('test', (c) => {
+					c.field('id').id();
+					c.field('users').integer();
+					c.field('stars').integer();
+				})
+				.build();
+
+			beforeEach(() => {
+				service = new PayloadService('test', {
+					knex: db,
+					schema,
+				});
+			});
+
+			test('empty payload should not change with aggregates', () => {
+				const payload: Partial<Item>[] = [];
+
+				service.processAggregates(payload, { sum: ['count'] });
+
+				expect(payload).toMatchObject(payload);
+			});
+
+			test('payload should not change with no aggregates', () => {
+				const payload = [
+					{
+						users: 1,
+					},
+				];
+
+				service.processAggregates(payload);
+
+				expect(payload).toMatchObject(payload);
+			});
+
+			test('payload should have expanded aggregate fields', () => {
+				const payload = [
+					{
+						'sum->users': 3,
+						'max->stars': 1,
+					},
+				];
+
+				service.processAggregates(payload, {
+					sum: ['users'],
+					max: ['stars'],
+				});
+
+				expect(payload).toMatchObject([
+					{
+						sum: { users: 3 },
+						max: {
+							stars: 1,
+						},
+					},
+				]);
+			});
+
+			test('payload should have not remove non aggregate fields', () => {
+				const payload = [
+					{
+						users: 1,
+						'sum->stars': 1,
+					},
+				];
+
+				service.processAggregates(payload, {
+					sum: ['stars'],
+				});
+
+				expect(payload).toMatchObject([
+					{
+						users: 1,
+						sum: {
+							stars: 1,
+						},
+					},
+				]);
+			});
+
+			test('payload should handle count(*) aggregate', () => {
+				// When count(*) is used, the DB returns { count: '1' } not { 'count->*': '1' }
+				const payload = [{ count: '1' }];
+
+				service.processAggregates(payload, { count: ['*'] });
+
+				expect(payload).toMatchObject([{ count: '1' }]);
 			});
 		});
 
 		describe('processValues', () => {
 			let service: PayloadService;
 
-			const concealedField = 'hidden';
-			const stringField = 'string';
 			const REDACT_STR = '**********';
+
+			const schema = new SchemaBuilder()
+				.collection('test', (c) => {
+					c.field('id').id();
+					c.field('string').string();
+
+					c.field('hidden')
+						.hash()
+						.options({
+							special: ['hash', 'conceal'],
+						});
+				})
+				.build();
 
 			beforeEach(() => {
 				service = new PayloadService('test', {
 					knex: db,
-					schema: {
-						collections: {
-							test: {
-								collection: 'test',
-								primary: 'id',
-								singleton: false,
-								sortField: null,
-								note: null,
-								accountability: null,
-								fields: {
-									[concealedField]: {
-										field: concealedField,
-										defaultValue: null,
-										nullable: true,
-										generated: false,
-										type: 'hash',
-										dbType: 'nvarchar',
-										precision: null,
-										scale: null,
-										special: ['hash', 'conceal'],
-										note: null,
-										validation: null,
-										alias: false,
-									},
-									[stringField]: {
-										field: stringField,
-										defaultValue: null,
-										nullable: true,
-										generated: false,
-										type: 'string',
-										dbType: 'nvarchar',
-										precision: null,
-										scale: null,
-										special: [],
-										note: null,
-										validation: null,
-										alias: false,
-									},
-								},
-							},
-						},
-						relations: [],
-					},
+					schema,
 				});
 			});
 
@@ -382,9 +591,327 @@ describe('Integration Tests', () => {
 						other_hidden: 'secret',
 					},
 					{ other_string: 'string', other_hidden: 'hidden' },
+					{},
 				);
 
 				expect(result).toMatchObject({ other_string: 'not-redacted', other_hidden: REDACT_STR });
+			});
+		});
+
+		describe('prepareDelta', () => {
+			let service: PayloadService;
+
+			const REDACT_STR = '**********';
+
+			const schema = new SchemaBuilder()
+				.collection('test', (c) => {
+					c.field('id').id();
+					c.field('string').string();
+
+					c.field('hidden')
+						.hash()
+						.options({
+							special: ['hash', 'conceal'],
+						});
+				})
+				.build();
+
+			beforeEach(() => {
+				service = new PayloadService('test', {
+					knex: db,
+					schema,
+				});
+			});
+
+			test('should return an object for non-empty delta', async () => {
+				const result = await service.prepareDelta({ string: 'test-value' });
+
+				expect(result).toEqual({ string: 'test-value' });
+			});
+
+			test('should return null for empty delta', async () => {
+				const result = await service.prepareDelta({});
+				expect(result).toBeNull();
+			});
+
+			test('should process concealed fields through read transformation', async () => {
+				const result = await service.prepareDelta({ string: 'visible', hidden: 'secret' });
+				expect(result).toMatchObject({ string: 'visible', hidden: REDACT_STR });
+			});
+
+			test('should extract bindings from raw instances', async () => {
+				const result = await service.prepareDelta({
+					string: { isRawInstance: true, bindings: ['raw-value'] } as any,
+				});
+
+				expect(result).toEqual({ string: 'raw-value' });
+			});
+
+			test('should not mutate the original delta', async () => {
+				const original = { hidden: 'test' };
+				await service.prepareDelta(original);
+
+				expect(original).toEqual({ hidden: 'test' });
+			});
+		});
+
+		describe('processJsonFunctionResults', () => {
+			let service: PayloadService;
+
+			beforeEach(() => {
+				service = new PayloadService('test', {
+					knex: db,
+					schema: { collections: {}, relations: [] },
+				});
+			});
+
+			test('Parses stringified JSON objects from json() function results', () => {
+				const payload = [
+					{
+						id: 1,
+						metadata_color_json: '{"r":255,"g":0,"b":0}',
+					},
+				];
+
+				const aliasMap = {
+					metadata_color_json: 'json(metadata.color)',
+				};
+
+				service.processJsonFunctionResults(payload, aliasMap);
+
+				expect(payload[0]!.metadata_color_json).toEqual({ r: 255, g: 0, b: 0 });
+			});
+
+			test('Parses stringified JSON arrays from json() function results', () => {
+				const payload = [
+					{
+						id: 1,
+						data_items_json: '[{"name":"item1"},{"name":"item2"}]',
+					},
+				];
+
+				const aliasMap = {
+					data_items_json: 'json(data.items)',
+				};
+
+				service.processJsonFunctionResults(payload, aliasMap);
+
+				expect(payload[0]!.data_items_json).toEqual([{ name: 'item1' }, { name: 'item2' }]);
+			});
+
+			test('Preserves string values that are not JSON objects/arrays', () => {
+				const payload = [
+					{
+						id: 1,
+						metadata_name_json: 'John Doe',
+					},
+				];
+
+				const aliasMap = {
+					metadata_name_json: 'json(metadata.name)',
+				};
+
+				service.processJsonFunctionResults(payload, aliasMap);
+
+				expect(payload[0]!.metadata_name_json).toBe('John Doe');
+			});
+
+			test('Preserves already parsed objects', () => {
+				const payload = [
+					{
+						id: 1,
+						metadata_color_json: { r: 255, g: 0, b: 0 },
+					},
+				];
+
+				const aliasMap = {
+					metadata_color_json: 'json(metadata.color)',
+				};
+
+				service.processJsonFunctionResults(payload, aliasMap);
+
+				expect(payload[0]!.metadata_color_json).toEqual({ r: 255, g: 0, b: 0 });
+			});
+
+			test('Handles malformed JSON gracefully', () => {
+				const payload = [
+					{
+						id: 1,
+						metadata_data_json: '{invalid json}',
+					},
+				];
+
+				const aliasMap = {
+					metadata_data_json: 'json(metadata.data)',
+				};
+
+				service.processJsonFunctionResults(payload, aliasMap);
+
+				// Should keep the original string value when parsing fails
+				expect(payload[0]!.metadata_data_json).toBe('{invalid json}');
+			});
+
+			test('Does nothing when aliasMap is empty', () => {
+				const payload = [
+					{
+						id: 1,
+						name: 'test',
+					},
+				];
+
+				service.processJsonFunctionResults(payload, {});
+
+				expect(payload).toEqual(payload);
+			});
+
+			test('Only processes fields from json() functions', () => {
+				const payload = [
+					{
+						id: 1,
+						metadata_color_json: '{"r":255,"g":0,"b":0}',
+						date_created_year: '2024',
+					},
+				];
+
+				const aliasMap = {
+					metadata_color_json: 'json(metadata.color)',
+					date_created_year: 'year(date_created)',
+				};
+
+				service.processJsonFunctionResults(payload, aliasMap);
+
+				// JSON field should be parsed
+				expect(payload[0]!.metadata_color_json).toEqual({ r: 255, g: 0, b: 0 });
+				// Non-JSON function field should remain unchanged
+				expect(payload[0]!.date_created_year).toBe('2024');
+			});
+
+			test('Handles multiple json() fields in a single payload', () => {
+				const payload = [
+					{
+						id: 1,
+						metadata_color_json: '{"r":255,"g":0,"b":0}',
+						data_settings_json: '{"theme":"dark","locale":"en"}',
+					},
+				];
+
+				const aliasMap = {
+					metadata_color_json: 'json(metadata.color)',
+					data_settings_json: 'json(data.settings)',
+				};
+
+				service.processJsonFunctionResults(payload, aliasMap);
+
+				expect(payload[0]!.metadata_color_json).toEqual({ r: 255, g: 0, b: 0 });
+				expect(payload[0]!.data_settings_json).toEqual({ theme: 'dark', locale: 'en' });
+			});
+
+			test('Handles null values', () => {
+				const payload = [
+					{
+						id: 1,
+						metadata_color_json: null,
+					},
+				];
+
+				const aliasMap = {
+					metadata_color_json: 'json(metadata.color)',
+				};
+
+				service.processJsonFunctionResults(payload, aliasMap);
+
+				expect(payload[0]!.metadata_color_json).toBeNull();
+			});
+
+			test('Parses numeric strings as strings, not numbers', () => {
+				const payload = [
+					{
+						id: 1,
+						metadata_value_json: '123',
+					},
+				];
+
+				const aliasMap = {
+					metadata_value_json: 'json(metadata.value)',
+				};
+
+				service.processJsonFunctionResults(payload, aliasMap);
+
+				// Numeric strings should remain as strings since parseJSON returns primitives
+				expect(payload[0]!.metadata_value_json).toBe('123');
+			});
+		});
+
+		describe('processAggregates', () => {
+			let service: PayloadService;
+
+			const REDACT_STR = '**********';
+
+			const schema = new SchemaBuilder()
+				.collection('test', (c) => {
+					c.field('id').id();
+					c.field('name').string();
+
+					c.field('secret')
+						.string()
+						.options({ special: ['conceal'] });
+				})
+				.build();
+
+			beforeEach(() => {
+				service = new PayloadService('test', {
+					knex: db,
+					schema,
+				});
+			});
+
+			test('redacts concealed fields in aggregate results', async () => {
+				const payload: Record<string, unknown>[] = [{ 'min->secret': 'actual-secret' }];
+
+				await service.processAggregates(payload, { min: ['secret'] });
+
+				expect(payload[0]!['min']).toMatchObject({ secret: REDACT_STR });
+			});
+
+			test('redacts concealed fields with a null value', async () => {
+				const payload: Record<string, unknown>[] = [{ 'max->secret': null }];
+
+				await service.processAggregates(payload, { max: ['secret'] });
+
+				expect(payload[0]!['max']).toMatchObject({ secret: null });
+			});
+
+			test('does not modify non-special fields', async () => {
+				const payload: Record<string, unknown>[] = [{ 'count->name': 42 }];
+
+				await service.processAggregates(payload, { count: ['name'] });
+
+				expect(payload[0]!['count']).toMatchObject({ name: 42 });
+			});
+
+			test('removes the flat arrow-delimited keys from the payload', async () => {
+				const payload: Record<string, unknown>[] = [{ 'min->secret': 'actual-secret' }];
+
+				await service.processAggregates(payload, { min: ['secret'] });
+
+				expect(payload[0]).not.toHaveProperty('min->secret');
+			});
+
+			test('handles multiple aggregate operations on the same concealed field', async () => {
+				const payload: Record<string, unknown>[] = [{ 'min->secret': 'min-value', 'max->secret': 'max-value' }];
+
+				await service.processAggregates(payload, { min: ['secret'], max: ['secret'] });
+
+				expect(payload[0]!['min']).toMatchObject({ secret: REDACT_STR });
+				expect(payload[0]!['max']).toMatchObject({ secret: REDACT_STR });
+			});
+
+			test('preserves all fields when multiple fields share the same aggregate operation', async () => {
+				const payload: Record<string, unknown>[] = [{ 'min->secret': 'actual-secret', 'min->name': 'Alice' }];
+
+				await service.processAggregates(payload, { min: ['secret', 'name'] });
+
+				expect(payload[0]!['min']).toMatchObject({ secret: REDACT_STR, name: 'Alice' });
 			});
 		});
 	});

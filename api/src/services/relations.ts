@@ -3,7 +3,17 @@ import { ForbiddenError, InvalidPayloadError } from '@directus/errors';
 import type { ForeignKey, SchemaInspector } from '@directus/schema';
 import { createInspector } from '@directus/schema';
 import { systemRelationRows } from '@directus/system-data';
-import type { Accountability, Query, Relation, RelationMeta, SchemaOverview } from '@directus/types';
+import type {
+	AbstractServiceOptions,
+	Accountability,
+	ActionEventParams,
+	MutationOptions,
+	Query,
+	QueryOptions,
+	Relation,
+	RelationMeta,
+	SchemaOverview,
+} from '@directus/types';
 import { toArray } from '@directus/utils';
 import type Keyv from 'keyv';
 import type { Knex } from 'knex';
@@ -15,11 +25,10 @@ import emitter from '../emitter.js';
 import { fetchAllowedFieldMap } from '../permissions/modules/fetch-allowed-field-map/fetch-allowed-field-map.js';
 import { fetchAllowedFields } from '../permissions/modules/fetch-allowed-fields/fetch-allowed-fields.js';
 import { validateAccess } from '../permissions/modules/validate-access/validate-access.js';
-import type { AbstractServiceOptions, ActionEventParams, MutationOptions } from '../types/index.js';
 import { getDefaultIndexName } from '../utils/get-default-index-name.js';
 import { getSchema } from '../utils/get-schema.js';
 import { transaction } from '../utils/transaction.js';
-import { ItemsService, type QueryOptions } from './items.js';
+import { ItemsService } from './items.js';
 
 const env = useEnv();
 
@@ -77,7 +86,7 @@ export class RelationsService {
 		return foreignKeys;
 	}
 
-	async readAll(collection?: string, opts?: QueryOptions): Promise<Relation[]> {
+	async readAll(collection?: string, opts?: QueryOptions, bypassCache?: boolean): Promise<Relation[]> {
 		if (this.accountability) {
 			await validateAccess(
 				{
@@ -112,7 +121,12 @@ export class RelationsService {
 			return metaRow.many_collection === collection;
 		});
 
-		const schemaRows = await this.foreignKeys(collection);
+		let schemaRows = bypassCache ? await this.schemaInspector.foreignKeys() : await this.foreignKeys(collection);
+
+		if (collection && bypassCache) {
+			schemaRows = schemaRows.filter((row) => row.table === collection);
+		}
+
 		const results = this.stitchRelations(metaRows, schemaRows);
 		return await this.filterForbidden(results);
 	}

@@ -1,14 +1,22 @@
+import { randomUUID } from 'node:crypto';
 import { getUrl } from '@common/config';
-import { ClearCaches, CreateFieldM2O, CreateItem, DisableTestCachingSetup } from '@common/functions';
+import {
+	ClearCaches,
+	CreateCollection,
+	CreateFieldM2O,
+	CreateFieldO2M,
+	CreateItem,
+	DisableTestCachingSetup,
+} from '@common/functions';
 import vendors, { type Vendor } from '@common/get-dbs-to-test';
 import type { PrimaryKeyType } from '@common/types';
 import { PRIMARY_KEY_TYPES, USER } from '@common/variables';
 import { load as loadYaml } from 'js-yaml';
 import { cloneDeep } from 'lodash-es';
-import { randomUUID } from 'node:crypto';
 import request from 'supertest';
 import { describe, expect, it } from 'vitest';
 import { version as currentDirectusVersion } from '../../../../../../api/package.json';
+import type { Snapshot } from '../../../../../../api/src/types/snapshot.js';
 import {
 	collectionAll,
 	collectionM2A,
@@ -147,7 +155,7 @@ describe('Schema Snapshots', () => {
 		describe('denies non-admin users', () => {
 			it.each(vendors)('%s', async (vendor) => {
 				// Action
-				const currentVendor = vendor.replace(/[0-9]/g, '');
+				const currentVendor = vendor.replace(/[0-9]/g, '') as Exclude<Snapshot['vendor'], undefined>;
 
 				const response = await request(getUrl(vendor))
 					.post('/schema/diff')
@@ -157,8 +165,9 @@ describe('Schema Snapshots', () => {
 						vendor: currentVendor,
 						collections: [],
 						fields: [],
+						systemFields: [],
 						relations: [],
-					})
+					} satisfies Snapshot)
 					.set('Content-type', 'application/json')
 					.set('Authorization', `Bearer ${USER.APP_ACCESS.TOKEN}`);
 
@@ -170,8 +179,9 @@ describe('Schema Snapshots', () => {
 						vendor: currentVendor,
 						collections: [],
 						fields: [],
+						systemFields: [],
 						relations: [],
-					})
+					} satisfies Snapshot)
 					.set('Content-type', 'application/json')
 					.set('Authorization', `Bearer ${USER.API_ONLY.TOKEN}`);
 
@@ -183,8 +193,9 @@ describe('Schema Snapshots', () => {
 						vendor: currentVendor,
 						collections: [],
 						fields: [],
+						systemFields: [],
 						relations: [],
-					})
+					} satisfies Snapshot)
 					.set('Content-type', 'application/json')
 					.set('Authorization', `Bearer ${USER.NO_ROLE.TOKEN}`);
 
@@ -649,6 +660,57 @@ describe('Schema Snapshots', () => {
 						expect(item.o2m).toHaveLength(1);
 						expect(item.o2m[0]).toBe(childrenIDs[pkType].o2m_id);
 					}
+				},
+				300_000,
+			);
+		});
+
+		describe('getSchema bypasses cache when fetching foreign keys', () => {
+			it.each(vendors)(
+				'%s',
+				async (vendor) => {
+					const collection = 'get_schema_fk_cache';
+					const otherCollection = 'get_schema_fk_cache_other';
+
+					// Setup
+					await CreateCollection(vendor, { collection });
+
+					const responseSnapshot = await request(getUrl(vendor))
+						.get('/schema/snapshot')
+						.set('Authorization', `Bearer ${USER.ADMIN.TOKEN}`);
+
+					const snapshot = responseSnapshot.body.data;
+					parseSnapshot(vendor, snapshot);
+					await CreateCollection(vendor, { collection: otherCollection });
+
+					await CreateFieldM2O(vendor, {
+						collection,
+						field: 'other_id',
+						otherCollection,
+					});
+
+					await CreateFieldO2M(vendor, {
+						collection: otherCollection,
+						field: 'o2m',
+						otherCollection: collection,
+						otherField: 'other_id',
+					});
+
+					// Action
+					const responseDiffNew = await request(getUrl(vendor))
+						.post('/schema/diff')
+						.send(snapshot)
+						.set('Content-type', 'application/json')
+						.set('Authorization', `Bearer ${USER.ADMIN.TOKEN}`);
+
+					const responseApplyNew = await request(getUrl(vendor))
+						.post('/schema/apply')
+						.send(responseDiffNew.body.data)
+						.set('Content-type', 'application/json')
+						.set('Authorization', `Bearer ${USER.ADMIN.TOKEN}`);
+
+					// Assert
+					expect(responseApplyNew.statusCode).toEqual(204);
 				},
 				300_000,
 			);
