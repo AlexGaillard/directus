@@ -11,7 +11,7 @@ permissions:
 
 jobs:
   close-stale-prs:
-    if: github.repository == 'directus/directus'
+    if: ${{ true }} # TODO: restore to github.repository == 'directus/directus' before merging
     runs-on: ubuntu-latest
     steps:
       - uses: actions/github-script@v7
