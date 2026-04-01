@@ -3,6 +3,7 @@ name: Close PRs with Changes Requested
 on:
   schedule:
     - cron: '30 1 * * *'
+  workflow_dispatch:
 
 permissions:
   pull-requests: write
@@ -16,7 +17,7 @@ jobs:
       - uses: actions/github-script@v7
         with:
           script: |
-            const TWO_WEEKS_MS = 14 * 24 * 60 * 60 * 1000;
+            const TWO_WEEKS_MS = 60 * 1000; // 1 minute for testing
             const LABEL_NAME = 'Changes Requested';
             const now = new Date();
 
