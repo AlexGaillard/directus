@@ -7,6 +7,11 @@ on:
         description: 'Release version (eg: 11.12.0)'
         required: true
         type: string
+      base_branch:
+        description: 'Base branch to release from (default: main)'
+        required: false
+        type: string
+        default: 'main'
 
 permissions:
   contents: write
@@ -49,6 +54,7 @@ jobs:
         uses: actions/checkout@v6
         with:
           fetch-depth: 0
+          ref: ${{ github.event.inputs.base_branch }}
 
       - name: Check Crowdin PRs
         id: crowdin-check
@@ -192,7 +198,7 @@ jobs:
               --label "Run Blackbox" \
               --label "No Changeset" \
               --head "$BRANCH_NAME" \
-              --base "main" \
+              --base "${{ github.event.inputs.base_branch }}" \
               --draft=false \
               | grep -o '[0-9]\+$')
             echo "pr_number=$NEW_PR" >> $GITHUB_OUTPUT
