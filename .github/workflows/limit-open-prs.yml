@@ -20,25 +20,6 @@ jobs:
             const author = context.payload.pull_request.user.login;
             const prNumber = context.payload.pull_request.number;
 
-            // Check if the author is a member of the directus organization
-            let isMember = false;
-
-            try {
-              const { status } = await github.rest.orgs.checkMembershipForUser({
-                org: 'directus',
-                username: author,
-              });
-
-              isMember = status === 204;
-            } catch {
-              isMember = false;
-            }
-
-            if (isMember) {
-              core.info(`${author} is a Directus org member — skipping check.`);
-              return;
-            }
-
             // Count open PRs by this author (excluding the current one)
             const openPrs = await github.paginate(github.rest.pulls.list, {
               owner: context.repo.owner,
