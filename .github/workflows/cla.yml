@@ -16,9 +16,15 @@ jobs:
     name: Check
     runs-on: ubuntu-latest
     steps:
+      # TEMP(testing): forced failure — restore the real step before merging
+      # - id: check
+      #   uses: directus/cla-bot@v0.0.3
+      #   continue-on-error: true
       - id: check
-        uses: directus/cla-bot@v0.0.3
         continue-on-error: true
+        run: |
+          echo 'missing=test-user' >> "$GITHUB_OUTPUT"
+          exit 1
 
       - name: Create missing CLA handoff
         if: steps.check.outcome == 'failure' && steps.check.outputs.missing
