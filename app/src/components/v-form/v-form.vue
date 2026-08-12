@@ -47,6 +47,8 @@ const props = withDefaults(
 		showDivider?: boolean;
 		inline?: boolean;
 		version?: ContentVersionMaybeNew | null;
+		// when true, an edit moves the item to a Draft version; interfaces use it to gate edit-on-open intents
+		canAutoSwitchToDraft?: boolean;
 		comparison?: ComparisonContext;
 		collabContext?: CollabContext;
 	}>(),
@@ -101,8 +103,9 @@ const { width } = useElementSize(el);
 const gridClass = computed<string | null>(() => {
 	if (el.value === null) return null;
 
-	// 770 (drawer width) - 2 * 22 (content-padding) = 726
-	if (width.value > 726) {
+	// 342px (--form-column-max-width) * 2 + 28 (--theme--form--column-gap) = 712 (44.5rem)
+	// Keep the value in sync with the `@container (inline-size > 44.5rem)` breakpoint in the app/src/styles/mixins/_form-grid.scss
+	if (width.value > 712) {
 		return 'grid with-fill';
 	} else {
 		return 'grid';
@@ -538,6 +541,7 @@ function getComparisonIndicatorClasses(field: TFormField, isGroup = false) {
 					:disabled-menu="disabledMenu"
 					:direction="direction"
 					:version
+					:can-auto-switch-to-draft="canAutoSwitchToDraft"
 					@update:model-value="setValue(fieldName, $event)"
 					@set-field-value="setValue($event.field, $event.value, { force: true })"
 					@unset="unsetValue(fieldsMap[fieldName]!)"

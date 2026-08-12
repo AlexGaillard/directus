@@ -1,6 +1,6 @@
 import type { MappedFieldNames } from './functions.js';
 import type { FieldOutputMap } from './output.js';
-import type { RelationalFields } from './schema.js';
+import type { ItemType, RelationalFields } from './schema.js';
 import type { IfNever, IsDateTime, IsNullable, IsNumber, IsString, Merge, UnpackList } from './utils.js';
 
 /**
@@ -36,7 +36,7 @@ export type NestedQueryFilter<Schema, Item> =
  */
 export type NestedRelationalFilter<Schema, Item, Field extends keyof Item> =
 	| (Field extends RelationalFields<Schema, Item>
-			? WrapRelationalFilters<NestedQueryFilter<Schema, Item[Field]>>
+			? WrapRelationalFilters<NestedQueryFilter<Schema, Extract<Item[Field], ItemType<Schema>>>>
 			: never)
 	| FilterOperators<Item[Field]>;
 
@@ -75,11 +75,12 @@ export type FilterOperators<
 	_nempty: boolean;
 	_nnull: IsNullable<FieldType, boolean, never>;
 	_null: IsNullable<FieldType, boolean, never>;
+	_json: Record<string, FilterOperators<string | number | boolean | null>>;
 	_intersects: T;
 	_nintersects: T;
 	_intersects_bbox: T;
 	_nintersects_bbox: T;
-	// regex is not available over the API https://docs.directus.io/reference/filter-rules.html#filter-operators
+	// regex is not available over the API https://directus.com/docs/guides/connect/filter-rules#available-operators
 	// _regex: IsDateTime<Type, never, IsString<T, string, never>>;
 }>;
 

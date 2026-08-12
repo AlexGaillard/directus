@@ -20,6 +20,7 @@
 #'SIMD', 'ArrayBuffer', 'DataView', 'JSON', 'Promise', 'Generator', 'GeneratorFunction', 'Reflect',
 #'Proxy', 'Intl'
 about: माहिती
+continue: चालू ठेवा
 first_name: पहिले नाव
 last_name: आडनाव
 identifier: ओळखकर्ता
@@ -157,14 +158,12 @@ keep: ठेवा
 version: आवृत्ती
 version_key: व्हर्जन की
 version_name: व्हर्जन चे नाव
-main_version: मुख्य
-switch_version: व्हर्जन स्विच करा
+switch_version: व्हर्जन स्विच करा 
 switch_version_copy: तुम्हाला खात्री आहे की तुम्ही "{version}" व्हर्जन वरती स्विच करू इच्छिता? जतन केले नाहीत असे बदल गमावले जातील.
 create_version: व्हर्जन तयार करा
 rename_version: व्हर्जन नाव बदला
 compare_version: व्हर्जन तुलना करा
 save_version: व्हर्जन जतन करा
-promote_version: व्हर्जन प्रमोट करा
 delete_version: व्हर्जन डिलीट करा
 delete_version_copy: >-
   तुम्हाला खात्री आहे की तुम्ही "{version}" व्हर्जन डिलीट करू इच्छिता? ही क्रिया पूर्ववत केली जाऊ शकत नाही.
@@ -179,7 +178,7 @@ delete_global_bookmark: "ग्लोबल बुकमार्क डिल�
 logoutReason:
   SIGN_OUT: साइन आउट केले
   SESSION_EXPIRED: सेशन कालबाह्य झाले
-public_label: पब्लिक
+public_label: पब्लिक 
 public_description: प्रमाणीकरणाशिवाय कोणता API डेटा उपलब्ध आहे हे नियंत्रित करते.
 public_role_info: >-
   पब्लिक रोल अनधिकृत USER साठी किंवा रोल नसलेल्या USER साठी कोणता API डेटा उपलब्ध आहे हे नियंत्रित करते. पब्लिक रोल असलेल्या विनंत्यांना APP किंवा प्रशासक प्रवेश असू शकत नाही. पब्लिक रोल साठी नियुक्त केलेल्या धोरणास APP किंवा प्रशासक प्रवेश दिला असल्यास त्याकडे दुर्लक्ष केले जाईल.
@@ -503,6 +502,7 @@ functions:
   minute: मिनिटे
   second: सेकंद
   count: मोजा
+  json: JSON
 date-fns_date: PPP
 date-fns_time: 'h:mm:ss a'
 date-fns_time_no_seconds: 'h:mm a'
@@ -843,6 +843,7 @@ operators:
   nintersects: एकमेकांना छेदत नाही
   intersects_bbox: बाउंडिंग बॉक्सला छेदतो
   nintersects_bbox: बाउंडिंग बॉक्सला छेदत नाही
+  json: JSON
   regex: RegExp शी जुळते
 custom_validation_message: कस्टम प्रमाणीकरण संदेश
 loading: लोड करत आहे...
@@ -1056,12 +1057,15 @@ wysiwyg_options:
   bullist: बुलेट यादी
   numlist: क्रमांकित यादी
   hr: समांतर नियम
+  insertdatetime_date: दिनांक
+  insertdatetime_time: वेळ
   link: लिंक जोडा/संपादित करा
   unlink: लिंक काढा
   media: मीडिया जोडा/संपादित करा
   image: प्रतिमा जोडा/संपादित करा
   copy: कॉपी
   cut: कट
+  default: डीफॉल्ट
   paste: पेस्ट करा
   heading: शीर्षक
   h1: हेडिंग १
@@ -1084,6 +1088,8 @@ wysiwyg_options:
   source_code: सोर्स कोड एडिट करा
   fullscreen: फुल स्क्रीन
   directionality: दिशाहीनता
+  ltr: डावीकडून उजवीकडे
+  rtl: उजवीकडून डावीकडे
   lazy_loading: लेझी लोड इमेज
   lazy_loading_label: लेझी लोड एनेबल करा
 dropdown: ड्रॉप डाऊन
@@ -1111,6 +1117,17 @@ settings_data_model: डेटा मॉडेल
 settings_roles: वापरकर्ता भूमिका
 settings_permissions: प्रवेश धोरणे
 settings_project: सेटिंग्ज
+licensing:
+  unlimited: अमर्याद
+  addon_manage: मॅनेज
+  addon_update: अपडेट करा
+  resolve_continue: चालू ठेवा
+  resolve_show_n_more: 'आणखी {count} दाखवा'
+  resolve_section_flows: फ्लोव
+  resolve_sso_admin_password: पासवर्ड
+  entitlements:
+    collections: कलेक्शन्स
+    flows: फ्लोव
 settings_appearance: देखावा
 settings_flows: फ्लोव
 settings_system_logs: सिस्टम लॉग
@@ -1208,6 +1225,7 @@ fields:
     collection: कलेक्शन
     icon: आयकॉन
     note: नोट
+    status: स्टेटस
     color: कलर
     display_template: डिस्प्ले टेम्प्लेट
     hidden: लपलेले
@@ -1872,6 +1890,7 @@ interfaces:
     incompatible_data: वर्तमान डेटा रिपीटर इंटरफेसशी सुसंगत नाही आणि रिपीटरमध्ये आयटम जोडताना ओव्हरराइड केला जाईल
     interface_group: इंटरफेस पर्याय
     display_group: प्रदर्शन पर्याय
+    edit_mode_inline: इनलाईन
   slider:
     slider: स्लाइडर
     description: स्लाइडर वापरून संख्या निवडा
@@ -1945,9 +1964,6 @@ interfaces:
     description: HTML सामग्री लिहिणारा रिच टेक्स्ट एडिटर
     toolbar: टूलबार
     custom_formats: कस्टम स्वरूप
-    custom_formats_note: TinyMCE सामग्री स्वरूपांची सूची. अधिक माहितीसाठी [सामग्री फॉरमॅटिंग](https://www.tiny.cloud/docs/tinymce/latest/content-formatting/) बद्दल TinyMCE दस्तऐवजीकरण पहा.
-    options_override: पर्याय ओव्हरराइड
-    options_override_note: TinyMCE वापरकर्ता स्वरूपन की आणि त्यांची मूल्ये. अधिक माहितीसाठी [User Formatting](https://www.tiny.cloud/docs/tinymce/latest/user-formatting-options/) बद्दल TinyMCE दस्तऐवज पहा
     folder_note: अपलोड केलेल्या फायलींसाठी फोल्डर. विद्यमान फाइल्सवर परिणाम होत नाही.
     imageToken: स्थिर प्रवेश टोकन
     imageToken_label: स्टॅटिक ऍक्सेस टोकन मालमत्तेच्या URL मध्ये जोडलेले आहे
@@ -1998,7 +2014,9 @@ interfaces:
     value_securely_saved: मूल्य सुरक्षितपणे जतन केले
     generate: टोकन जनरेट करा
     regenerate: टोकन पुन्हा जनरेट करा
+    regenerate_confirm_title: टोकन पुन्हा जनरेट करा
     remove_token: टोकन काढा
+    remove_confirm_title: टोकन काढा
   system-raw-editor:
     system-raw-editor: raw एडिटर
     description: कच्च्या किंवा मिश्या टेम्प्लेटिंग मूल्ये प्रविष्ट करण्यास अनुमती द्या
@@ -2172,7 +2190,7 @@ layouts:
     default_template: कलेक्शन डीफॉल्ट वापरत आहे..
     no_compatible_fields: कोणतीही सुसंगत फील्ड नाहीत
   kanban:
-    name: Kanban
+    name: Kanban 
     group_field: द्वारे गट
     group_field_placeholder: द्वारे गटासाठी फील्ड...
     group_title: गट शीर्षक
@@ -2450,4 +2468,6 @@ search_flow: शोध प्रवाह...
 percent: टक्के
 show_password: पासवर्ड दाखवा
 hide_password: पासवर्ड लपवा
+license_grace_key_modal:
+  optional: पर्यायी
 set_to_now: आता वर सेट करा

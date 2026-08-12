@@ -20,6 +20,7 @@
 #'SIMD', 'ArrayBuffer', 'DataView', 'JSON', 'Promise', 'Generator', 'GeneratorFunction', 'Reflect',
 #'Proxy', 'Intl'
 about: O aplikacji
+continue: Kontynuuj
 first_name: Imię
 last_name: Nazwisko
 identifier: Identyfikator
@@ -157,14 +158,12 @@ keep: Zachowaj
 version: Wersja
 version_key: Klucz wersji
 version_name: Nazwa wersji
-main_version: Główny
 switch_version: Przełącz wersję
 switch_version_copy: Czy na pewno chcesz przełączyć się na wersję "{version}"? Niezapisane zmiany zostaną utracone.
 create_version: Utwórz wersję
 rename_version: Zmień nazwę wersji
 compare_version: Porównaj wersję
 save_version: Zapisz wersję
-promote_version: Promuj wersję
 delete_version: Usuń wersję
 delete_version_copy: >-
   Czy na pewno chcesz usunąć wersję "{version}"? Tej akcji nie można cofnąć.
@@ -503,6 +502,7 @@ functions:
   minute: Minuta
   second: Drugi
   count: Licz
+  json: JSON
 date-fns_date: PPP
 date-fns_time: 'h:mm:ss a'
 date-fns_time_no_seconds: 'h:mm a'
@@ -840,6 +840,7 @@ operators:
   nintersects: Nie przecina się
   intersects_bbox: Przecina pole ograniczające
   nintersects_bbox: Nie przecina pola ograniczającego
+  json: JSON
   regex: Wyrażenie dopasowania
 custom_validation_message: Niestandardowy komunikat walidacyjny
 loading: Wczytywanie...
@@ -1045,12 +1046,15 @@ wysiwyg_options:
   bullist: Lista wypunktowana
   numlist: Lista numerowana
   hr: Pozioma linia
+  insertdatetime_date: Data
+  insertdatetime_time: Czas
   link: Dodaj/edytuj link
   unlink: Usuń link
   media: Dodaj/Edytuj media
   image: Dodaj/Edytuj obraz
   copy: Kopiuj
   cut: Wytnij
+  default: Domyślny
   paste: Wklej
   heading: Nagłówek
   h1: Nagłówek 1
@@ -1073,6 +1077,8 @@ wysiwyg_options:
   source_code: Edytuj kod źródłowy
   fullscreen: Pełny ekran
   directionality: Kierunek
+  ltr: Od lewej do prawej
+  rtl: Od prawej do lewej
   lazy_loading: Lazy load dla obrazów
   lazy_loading_label: Włącz Lazy Ładowanie
 dropdown: Lista rozwijana
@@ -1100,6 +1106,17 @@ settings_data_model: Model danych
 settings_roles: Role użytkownika
 settings_permissions: Polityki dostępu
 settings_project: Ustawienia
+licensing:
+  unlimited: Nielimitowany
+  addon_manage: Zarządzaj
+  addon_update: Zaktualizuj
+  resolve_continue: Kontynuuj
+  resolve_show_n_more: 'Pokaż {count} więcej'
+  resolve_section_flows: Przepływy
+  resolve_sso_admin_password: Hasło
+  entitlements:
+    collections: Kolekcje
+    flows: Przepływy
 settings_appearance: Wygląd
 settings_flows: Przepływy
 settings_system_logs: Dzienniki systemowe
@@ -1193,6 +1210,7 @@ fields:
     collection: Kolekcja
     icon: Ikona
     note: Notatka
+    status: Status
     color: Kolor
     display_template: Wyświetl szablon
     hidden: Ukryte
@@ -1845,6 +1863,7 @@ interfaces:
     incompatible_data: Bieżące dane nie są kompatybilne z interfejsem iteratora i zostaną nadpisane podczas dodawania elementów do iteratora
     interface_group: Opcje interfejsu
     display_group: Opcje wyświetlania
+    edit_mode_inline: W lini
   slider:
     slider: Suwak
     description: Wybierz numer używając suwaka
@@ -1918,9 +1937,6 @@ interfaces:
     description: Edytor zawartość HTML
     toolbar: Pasek narzędzi
     custom_formats: Niestandardowe formaty
-    custom_formats_note: Lista formatów zawartości TinyMCE. Więcej informacji można znaleźć w dokumentacji TinyMCE na temat [Formatowania Treści](https://www.tiny.cloud/docs/tinymce/latest/content-formatting/).
-    options_override: Zastąp opcje
-    options_override_note: Klucze formatowania użytkownika TinyMCE i ich wartości. Więcej informacji można znaleźć w dokumentacji TinyMCE na temat opcji [Formatowania Użytkownika](https://www.tiny.cloud/docs/tinymce/latest/user-formatting-options/).
     folder_note: Folder dla przesłanych plików. Nie ma wpływu na istniejące pliki.
     imageToken: Statyczny token dostępu
     imageToken_label: Statyczny token dostępu jest dołączony do adresu URL aktywów
@@ -1971,7 +1987,9 @@ interfaces:
     value_securely_saved: Wartość bezpiecznie zapisana
     generate: Generuj token
     regenerate: Wygeneruj ponownie token
+    regenerate_confirm_title: Wygeneruj ponownie token
     remove_token: Usuń token
+    remove_confirm_title: Usuń token
   system-raw-editor:
     system-raw-editor: Edycja bezpośrednia
     description: Zezwalaj na wprowadzanie wartości szablonów surowych lub muszlowych
@@ -2423,4 +2441,6 @@ search_flow: Szukaj przepływu...
 percent: Procent
 show_password: Pokaż hasło
 hide_password: Schowaj hasło
+license_grace_key_modal:
+  optional: Opcjonalnie
 set_to_now: Ustaw na teraz

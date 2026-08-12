@@ -63,7 +63,7 @@ const props = withDefaults(
 		value?: Settings['module_bar'];
 	}>(),
 	{
-		value: () => MODULE_BAR_DEFAULT as Settings['module_bar'],
+		value: () => MODULE_BAR_DEFAULT,
 	},
 );
 
@@ -118,7 +118,7 @@ const isSaveDisabled = computed(() => {
 	return false;
 });
 
-function valueToPreview(value: Settings['module_bar']): PreviewValue[] {
+function valueToPreview(value: NonNullable<Settings['module_bar']>): PreviewValue[] {
 	return value.flatMap((part): PreviewValue[] => {
 		if (part.type === 'link') {
 			return [{ ...part, to: part.url, icon: part.icon, name: translate(part.name) }];
@@ -247,13 +247,8 @@ function remove(id: string) {
 			@cancel="editing = null"
 			@apply="save"
 		>
-			<template #actions>
-				<PrivateViewHeaderBarActionButton
-					v-tooltip.bottom="$t('save')"
-					:disabled="isSaveDisabled"
-					icon="check"
-					@click="save"
-				/>
+			<template #actions:primary>
+				<PrivateViewHeaderBarActionButton :label="$t('save')" :disabled="isSaveDisabled" icon="check" @click="save" />
 			</template>
 
 			<div class="drawer-content">

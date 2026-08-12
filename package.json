@@ -1,7 +1,7 @@
 {
 	"name": "directus-monorepo",
 	"private": true,
-	"homepage": "https://directus.io",
+	"homepage": "https://directus.com",
 	"type": "module",
 	"scripts": {
 		"build": "pnpm --recursive run build",
@@ -18,7 +18,7 @@
 		"@eslint/js": "catalog:",
 		"eslint": "catalog:",
 		"eslint-config-prettier": "catalog:",
-		"eslint-plugin-import": "catalog:",
+		"eslint-plugin-import-x": "catalog:",
 		"eslint-plugin-vue": "catalog:",
 		"globals": "catalog:",
 		"postcss-html": "catalog:",
@@ -30,25 +30,18 @@
 		"stylelint-config-standard-vue": "catalog:",
 		"stylelint-use-logical": "catalog:",
 		"typescript": "catalog:",
-		"typescript-eslint": "catalog:"
+		"typescript-eslint": "catalog:",
+		"vue-eslint-parser": "catalog:"
 	},
 	"pnpm": {
 		"overrides": {
-			"fast-xml-parser": "5.5.11",
+			"fast-xml-parser": "5.10.1",
 			"@yarnpkg/shell>cross-spawn": "7.0.6",
-			"tar": "7.5.13",
-			"qs": "6.15.1",
-			"minimatch@10": "10.2.5",
+			"tar": "7.5.22",
 			"minimatch@9": "9.0.9",
-			"basic-ftp": "5.2.2",
-			"underscore": "1.13.8",
-			"flatted": "3.4.2",
 			"express@4>path-to-regexp": "0.1.13",
-			"micromatch>picomatch": "2.3.2",
-			"anymatch>picomatch": "2.3.2",
-			"picomatch": "4.0.4",
-			"defu": "6.1.7",
-			"unplugin-vue>vite": "8.0.8"
+			"adm-zip": "0.6.0",
+			"js-yaml@4": "4.3.0"
 		}
 	},
 	"packageManager": "pnpm@10.27.0",

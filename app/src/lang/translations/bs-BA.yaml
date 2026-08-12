@@ -1,4 +1,5 @@
 ---
+continue: Nastavi
 first_name: Ime
 last_name: Prezime
 identifier: Identifikator
@@ -817,12 +818,15 @@ wysiwyg_options:
   bullist: Popis sa grafičkim oznakama
   numlist: Numerisani popis
   hr: Vodoravno pravilo
+  insertdatetime_date: Datum
+  insertdatetime_time: Vrijeme
   link: Dodaj/uredi link
   unlink: Ukloni link
   media: Dodaj/uredi medijski zapis
   image: Dodaj/uredi sliku
   copy: Kopiraj
   cut: Izreži
+  default: Zadano
   paste: Zalijepi
   heading: Naslov
   h1: Zaglavlje 1
@@ -845,6 +849,8 @@ wysiwyg_options:
   source_code: Uredi izvorni kod
   fullscreen: Puni zaslon
   directionality: Usmjerenost
+  ltr: S lijeva na desno
+  rtl: S desna na lijevo
 dropdown: Padajući meni
 choices: Izbori
 choices_option_configured_incorrectly: Izbori su pogrešno konfigurisani
@@ -862,6 +868,16 @@ editing_in_batch: 'Skupno uređivanje {count} stavki'
 no_options_available: Nema dostupnih opcija
 settings_data_model: Model podataka
 settings_project: Postavke
+licensing:
+  unlimited: Neograničeno
+  addon_update: Ažuriraj
+  resolve_continue: Nastavi
+  resolve_show_n_more: 'Prikaži još {count}'
+  resolve_section_flows: Tokovi
+  resolve_sso_admin_password: Lozinka
+  entitlements:
+    collections: Kolekcije
+    flows: Tokovi
 settings_flows: Tokovi
 settings_translations: Prijevodi
 one_or_more_options_are_missing: Nedostaje jedna ili više opcija
@@ -1546,7 +1562,6 @@ interfaces:
     description: Uređivač bogatog teksta koji piše HTML sadržaj
     toolbar: Alatna traka
     custom_formats: Prilagođeni formati
-    options_override: Nadjačavanje opcija
     folder_note: Folder za učitane fajlove. Ne utječe na postojeće fajlove.
     imageToken: Statički pristupni token
     imageToken_label: Statički pristupni token se dodaje URL-u
@@ -1585,7 +1600,9 @@ interfaces:
     value_securely_saved: Vrijednost sigurno sačuvana
     generate: Generiši token
     regenerate: Ponovno generiši token
+    regenerate_confirm_title: Ponovno generiši token
     remove_token: Ukloni token
+    remove_confirm_title: Ukloni token
   system-raw-editor:
     system-raw-editor: Uređivač sirovog sadržaja
     description: Omogućuje unos neobrađenih ili "mustache" predložaka
@@ -1906,4 +1923,6 @@ fonts:
   black: Crna
   italic: Kurziv
   auto: Automatski
+license_grace_key_modal:
+  optional: Opcionalno
 set_to_now: Postavi na sad

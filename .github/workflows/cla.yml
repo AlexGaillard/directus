@@ -1,13 +1,15 @@
 name: CLA Assistant
 
 on:
-  pull_request_target:
+  pull_request:
     types:
       - opened
+      - reopened
       - synchronize
 
 permissions:
-  pull-requests: write
+  contents: read
+  pull-requests: read
 
 jobs:
   check:
@@ -16,18 +18,30 @@ jobs:
     steps:
       - id: check
         uses: directus/cla-bot@v0.0.3
+        continue-on-error: true
 
-      - if: failure() && steps.check.outputs.missing
-        uses: marocchino/sticky-pull-request-comment@v2
+      - name: Create missing CLA handoff
+        # TESTING: forced true, restore to `steps.check.outcome == 'failure' && steps.check.outputs.missing`
+        if: always()
+        env:
+          MISSING: ${{ steps.check.outputs.missing }}
+          # TESTING: stand-in mentions so the comment renders when the bot found nothing
+          MISSING_FALLBACK: '@cla-test-user'
+        run: |
+          mkdir -p cla-missing
+          printf '%s' "${MISSING:-$MISSING_FALLBACK}" > cla-missing/missing
+
+      - name: Upload missing CLA handoff
+        # TESTING: forced true, restore to `steps.check.outcome == 'failure' && steps.check.outputs.missing`
+        if: always()
+        uses: actions/upload-artifact@v4
         with:
-          message: |
-            Hi ${{steps.check.outputs.missing}}!
+          name: cla-missing
+          path: cla-missing
+          if-no-files-found: error
+          retention-days: 1
 
-            Thank you for contributing to Directus! Before we consider your Pull Request, we ask that you sign [our Contributor License Agreement (CLA)](https://github.com/directus/directus/blob/main/cla.md). This is only required for your first Pull Request.
-
-            Please [review the CLA](https://github.com/directus/directus/blob/main/cla.md), and sign it by adding your GitHub username to [the contributors.yml file](https://github.com/${{github.event.pull_request.head.repo.full_name}}/blob/${{github.head_ref}}/contributors.yml). Thanks!
-
-      - if: success()
-        uses: marocchino/sticky-pull-request-comment@v2
-        with:
-          delete: true
+      - name: Preserve CLA result
+        # TESTING: forced true, restore to `steps.check.outcome == 'failure'`
+        if: always()
+        run: exit 1
