@@ -21,15 +21,19 @@ jobs:
         continue-on-error: true
 
       - name: Create missing CLA handoff
-        if: steps.check.outcome == 'failure' && steps.check.outputs.missing
+        # TESTING: forced true, restore to `steps.check.outcome == 'failure' && steps.check.outputs.missing`
+        if: always()
         env:
           MISSING: ${{ steps.check.outputs.missing }}
+          # TESTING: stand-in mentions so the comment renders when the bot found nothing
+          MISSING_FALLBACK: '@cla-test-user'
         run: |
           mkdir -p cla-missing
-          printf '%s' "$MISSING" > cla-missing/missing
+          printf '%s' "${MISSING:-$MISSING_FALLBACK}" > cla-missing/missing
 
       - name: Upload missing CLA handoff
-        if: steps.check.outcome == 'failure' && steps.check.outputs.missing
+        # TESTING: forced true, restore to `steps.check.outcome == 'failure' && steps.check.outputs.missing`
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: cla-missing
@@ -38,5 +42,6 @@ jobs:
           retention-days: 1
 
       - name: Preserve CLA result
-        if: steps.check.outcome == 'failure'
+        # TESTING: forced true, restore to `steps.check.outcome == 'failure'`
+        if: always()
         run: exit 1
