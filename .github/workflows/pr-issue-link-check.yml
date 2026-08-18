@@ -10,7 +10,6 @@ permissions:
 
 jobs:
   check-issue-link:
-    if: github.repository == 'directus/directus'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/github-script@v7
@@ -81,7 +80,8 @@ jobs:
 
                 issues.push(issue);
               } catch (error) {
-                if (error.status === 404) continue;
+                // 404: no such issue. 410: the repo has issues disabled, which forks do by default
+                if (error.status === 404 || error.status === 410) continue;
                 throw error;
               }
             }
