@@ -1,0 +1,121 @@
+name: Check PR Issue Link
+
+on:
+  pull_request_target:
+    types: [opened, reopened, edited]
+
+permissions:
+  pull-requests: write
+  issues: read
+
+jobs:
+  check-issue-link:
+    if: github.repository == 'directus/directus'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/github-script@v7
+        with:
+          script: |
+            const { owner, repo } = context.repo;
+            const pr = context.payload.pull_request;
+            const author = pr.user.login;
+
+            if (pr.state !== 'open') {
+              core.info(`PR #${pr.number} is not open — nothing to do`);
+              return;
+            }
+
+            const closePr = async (body) => {
+              await github.rest.issues.createComment({
+                owner,
+                repo,
+                issue_number: pr.number,
+                body,
+              });
+
+              await github.rest.pulls.update({
+                owner,
+                repo,
+                pull_number: pr.number,
+                state: 'closed',
+              });
+            };
+
+            // Ignore HTML comments and code blocks so template boilerplate and
+            // sample snippets can't be mistaken for a real issue reference
+            const body = (pr.body || '')
+              .replace(/<!--[\s\S]*?-->/g, '')
+              .replace(/```[\s\S]*?```/g, '')
+              .replace(/`[^`\n]*`/g, '');
+
+            const references = new Set();
+
+            for (const [, number] of body.matchAll(/(?:^|[\s(\[])#(\d+)\b/g)) {
+              references.add(Number(number));
+            }
+
+            const urlPattern = new RegExp(
+              `https?://(?:www\\.)?github\\.com/${owner}/${repo}/issues/(\\d+)`,
+              'gi',
+            );
+
+            for (const [, number] of body.matchAll(urlPattern)) {
+              references.add(Number(number));
+            }
+
+            core.info(`Found references in PR #${pr.number}: ${[...references].join(', ') || 'none'}`);
+
+            // Keep only references that point at an issue in this repo — #123 also
+            // matches pull requests, which don't count as a linked issue
+            const issues = [];
+
+            for (const number of references) {
+              try {
+                const { data: issue } = await github.rest.issues.get({
+                  owner,
+                  repo,
+                  issue_number: number,
+                });
+
+                if (issue.pull_request) continue;
+
+                issues.push(issue);
+              } catch (error) {
+                if (error.status === 404) continue;
+                throw error;
+              }
+            }
+
+            if (issues.length === 0) {
+              core.info(`Closing PR #${pr.number} — no linked issue`);
+
+              await closePr(
+                `Hi @${author}! 👋 We're closing this PR because its description doesn't link to an existing issue in this repository.\n\n` +
+                  `Every pull request needs to reference the issue it addresses, so add a link (for example \`Fixes #123\`) to the description and reopen this PR. ` +
+                  `If there's no issue for this yet, please [open one](https://github.com/${owner}/${repo}/issues/new/choose) and get it assigned to you first.\n\n` +
+                  `Thank you for contributing to Directus! 🐰`,
+              );
+
+              return;
+            }
+
+            const assigned = issues.filter((issue) =>
+              issue.assignees.some((assignee) => assignee.login.toLowerCase() === author.toLowerCase()),
+            );
+
+            if (assigned.length === 0) {
+              const list = issues.map((issue) => `#${issue.number}`).join(', ');
+
+              core.info(`Closing PR #${pr.number} — ${author} is not assigned to ${list}`);
+
+              await closePr(
+                `Hi @${author}! 👋 We're closing this PR because you're not assigned to the linked issue (${list}).\n\n` +
+                  `We assign issues before work starts to avoid duplicate effort. Please comment on the issue to ask for it to be assigned to you, ` +
+                  `then reopen this PR once that's done.\n\n` +
+                  `Thank you for contributing to Directus! 🐰`,
+              );
+
+              return;
+            }
+
+            core.info(`PR #${pr.number} links to ${assigned.map((issue) => `#${issue.number}`).join(', ')} — ${author} is assigned`);
