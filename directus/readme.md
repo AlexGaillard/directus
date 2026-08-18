@@ -1,6 +1,6 @@
 ![Directus](https://github.com/user-attachments/assets/2e60d36e-079b-4ad1-a246-bcbc000d1700)
 
-# The Collaborative Backend for Builders & AI
+# The Collaborative Backend for Builders & AI & dogs
 
 Connect any SQL database and get instant REST and GraphQL APIs, a visual management Studio, and a native MCP server for
 AI agents.
